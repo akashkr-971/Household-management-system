@@ -35,7 +35,31 @@ body {
 }
 
 .acc {
-    margin-right: 80px;
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 120px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+}
+.acc:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
 }
 
 .mid-bar {
@@ -91,7 +115,13 @@ button {
 <div class="top-bar">
     <div class="name">Household Management System</div>
     <input type="text" name="search" id="search" placeholder="Search...">
-    <div class="acc"><a href="#" style="color: #fff; text-decoration: none;">Account</a></div>
+    <div class="acc">
+        <span>Account</span>
+        <div class="dropdown-content">
+            <a href="login.html">Login</a>
+            <a href="signup.html">Singup</a>
+        </div>
+    </div>
 </div>
 
 <div class="mid-bar">

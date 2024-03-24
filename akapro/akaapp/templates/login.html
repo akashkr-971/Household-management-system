@@ -39,14 +39,15 @@
     </style>
 </head>
 <body>
-    <form>
+    <form method="POST">
+        {% csrf_token %}
         <div class="full">
             <div class="headin">Login</div>
             <br>
             <div><label for="uname">Username*</label><br><input type="text" name="uname" required></div><br>
             <div><label for="pass">Password*</label><br><input type="password" name="pass" required></div>
-            <div><a href="forgetpassword.html">Forget password</a></div>
-            <div><input type="button" value="Login" id="Login"></div>
+            <div><a href="{% url 'forgetpassword' %}">Forget password</a></div>
+            <div><input type="submit" value="Login" id="Login"></div>
             <div style="text-align: center;"><a href="signup.html">Create an account</a></div>
         </div>
     </form>

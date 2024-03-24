@@ -16,9 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from akaapp.views import hello
+from akaapp.views import home
+from akaapp.views import login
+from akaapp.views import signup
+from akaapp.views import forgetpassword
+from akaapp.views import Resetpassword
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/',hello)
+    path('',home),
+    path('login.html/',login),
+    path('signup.html/',signup),
+    path('forgetpassword.html/',forgetpassword),
+    path('Resetpassword.html/',Resetpassword)
 ]
