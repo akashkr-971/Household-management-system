@@ -21,12 +21,13 @@ from akaapp.views import login
 from akaapp.views import signup
 from akaapp.views import forgetpassword
 from akaapp.views import Resetpassword
+from akaapp.views import redirect_to_login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',home),
-    path('login.html/',login),
-    path('signup.html/',signup),
-    path('forgetpassword.html/',forgetpassword),
-    path('Resetpassword.html/',Resetpassword)
+    path('', home, name='home'),
+    path('login/', login, name='login'),
+    path('login/forgetpassword/', forgetpassword, name='forgetpassword'),
+    path('signup/', signup, name='signup'),
+    path('resetpassword/', Resetpassword, name='resetpassword'), 
 ]

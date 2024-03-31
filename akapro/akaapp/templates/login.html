@@ -1,5 +1,8 @@
 <html lang="en">
+    
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
         body{
@@ -39,18 +42,18 @@
     </style>
 </head>
 <body>
-    <form method="POST">
-        {% csrf_token %}
+    <form method="POST" action="../jsp/query.jsp">
         <div class="full">
             <div class="headin">Login</div>
             <br>
             <div><label for="uname">Username*</label><br><input type="text" name="uname" required></div><br>
             <div><label for="pass">Password*</label><br><input type="password" name="pass" required></div>
             <div><a href="{% url 'forgetpassword' %}">Forget password</a></div>
-            <div><input type="submit" value="Login" id="Login"></div>
-            <div style="text-align: center;"><a href="signup.html">Create an account</a></div>
+            <div><input type="submit" value="login" name="submit" id="Login"></div>
+            <div style="text-align: center;"><a href="{% url 'signup'%}">Create an account</a></div>
         </div>
     </form>
+    <p id="errorLabel" style="color: red;"></p>
     
 </body>
 </html>

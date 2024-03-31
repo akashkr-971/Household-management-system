@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 # Create your views here.
 
@@ -16,3 +16,6 @@ def forgetpassword(request):
 
 def Resetpassword(request):
     return render(request,'Resetpassword.html')
+
+def redirect_to_login(request):
+    return redirect('login')
