@@ -1,0 +1,391 @@
+<!-- services.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ service.service_name }}</title>
+    <style>
+        body{
+            margin: 0;
+            background-color: rgb(199, 240, 226);
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #333;
+            color: #fff;
+            padding: 0 ;
+        }
+        .name{
+            padding-left: 20px;
+            height: 80px;
+            font-weight: 600;
+            flex:3;
+            display:flex;
+        }
+        .name button{
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .spacer{
+            flex:4
+        }
+        .acc {
+            font-weight: 600;
+            flex:4;
+            text-align:center;
+            display:flex;
+            justify-content: space-evenly;
+            height:80px;
+        }
+        span h3{
+            width: 100%;
+            position:relative;
+            top:10px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 120px;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .acc:hover .dropdown-content {
+            display: block;
+            top:80px;
+            border-radius: 0 0 10px 10px;
+            background-color: #333;
+            
+        }
+        .dropdown-content:hover{
+            display:block;
+        }
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {
+            background-color:black;
+        }
+        .mid-bar {
+            margin-top: 40px;
+            margin-bottom: 40px;
+            padding: 10px;
+            margin: 0;
+        }
+        .bottom {
+            position: fixed;
+            bottom:0;
+            width: 100%;
+            height: 80px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding-top: 20px;
+            font-size: 14px;
+        }
+        .searchbar{
+            margin: 20px 0;
+        }
+        .searchbar input{
+            width: 95%;
+            height: 30px;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 10px;
+            padding-left: 10px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            background-color: #73e29c;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .bookingbutton{
+            padding: 5px 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .bookingbutton:hover {
+            background-color: #17bd54;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4); 
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            background-image: url('{% static "images/bkngimg.png" %}');
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        label, input{
+            font-size: 18px;
+            height: 25px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        input{
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .bkgdetail{
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .formbutton{
+            display: flex;
+            justify-content: space-evenly;
+            font-size: 20px;
+            height: 40px;
+            padding: 10px 30px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        @media only screen and (max-width: 400px) {
+            table ,th, td {
+                font-size: 8px;
+                font-weight: 500;
+            }
+            tr{
+                height: 30px;
+            }
+            .name{
+                padding: 0;
+                flex:3;
+            }
+            .acc{
+                padding-right: 10px;
+                flex: 2;
+            }
+            .spacer{
+                flex:1;
+            }
+        }
+        @media only screen and (min-width:400px) and (max-width: 600px) {
+            th, td {
+                font-size: 10px;
+                font-weight: 500;
+            }
+            tr{
+                height: 30px;
+            }
+            .name{
+                padding: 0;
+                flex:2;
+            }
+            .spacer{
+                flex:1;
+            }
+            .acc{
+                padding-right: 10px;
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="name">
+            <button onclick="redirecttohome()">Household Management System</button>
+            <script>
+                function redirecttohome(){
+                    window.location.href="{% url 'home' %}"
+                }
+            </script>
+        </div>
+        <div class="spacer"></div>
+        <div class="acc">
+            <span>
+                <h3>Account</h3>
+            </span>
+            <div class="dropdown-content">
+                {% if request.session.user_id %}
+                    <a href="#">Account Details</a>
+                    <a href="#">Order History</a>
+                    <a href="{% url 'resetpassword' %}">Reset password</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'Userlogin' %}">Login</a>
+                    <a href="{% url 'Clientsignup' %}">Signup</a>
+                {% endif %}
+            </div>
+            
+        </div>
+    </div>
+    <div class="mid-bar" id="mid-bar">
+        <div class="service_name">
+            <h1>{{ service_name  }}</h1>
+        </div>
+        <div class="searchbar">
+            <form id="searchForm" action="{% url 'search' %}" method="GET">
+                <input type="text" name="search" onkeyup="filterTable()" id="search" placeholder="Search for provider names...">
+                <script>
+                    function filterTable(){
+                        var input = document.getElementById('search').value.toLowerCase();
+                        var tr = document.getElementById('providertable').getElementsByTagName('tr')
+                        for(i=1;i<tr.length;i++){
+                            td=tr[i].getElementsByTagName('td')
+                            var matchfound=false;
+                            for(j=0;j<td.length;j++){
+                                if(td[j]){
+                                    var txtValue = td[j].textContent || td[j].innerText;
+                                    txtValue=txtValue.trim().toLowerCase();
+                                    if (txtValue.toLowerCase().indexOf(input) > -1) {
+                                        matchfound=true;
+                                        break;
+                                    }
+                                }
+                            }
+                            tr[i].style.display = matchfound ? "" : "none";
+                        }
+                    }
+                </script>
+            </form>    
+        </div>
+        <div class="useralert">
+            <h4>Click on the row to book for the service</h4>
+        </div>
+        <table id="providertable">
+            <thead>
+              <tr>
+                <th>Serial No.</th>
+                <th>Provider Name</th>
+                <th>Rate/Unit</th>
+                <th>Rating</th>
+                <th>Place</th>
+                <th>Availability</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for provider in service_providers %}
+              <tr onclick="bookProvider('{{provider.service_provider_id}}','{{service_name}}')">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ provider.user.full_name }}</td>
+                <td>{{ provider.rate }}Rs/{{provider.unit}}</td>
+                <td>{{ provider.average_rating }}</td>
+                <td>{{ provider.user.location }}</td>
+                <td>{{ provider.availability }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+        <div id="bookingFormModal"  class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeform()">&times;</span>
+                <h1 style="text-align: center;">Booking Form</h1>
+                {% if request.session.user_id %}
+                    <form id="bookingForm" method='post' action="{% url 'bookings' %}">
+                        {% csrf_token %}
+                        <div class="bkgdetail">
+                            <label for="username">User name : </label>
+                            <input type="text" name="username" required>
+
+                            <label for="jobdesc">Job Description : </label>
+                            <input type="text" name="jobdesc">
+
+                            <label for="date">Date : </label>
+                            <input type="date" name="date" required>
+
+                            <label for="time">Time : </label>
+                            <input type="time" name="time" required>
+
+                            <label for="location">location : </label>
+                            <input type="text" name="location" required>
+
+                            <label for="LandMark">LandMark : </label>
+                            <input type="text" name="LandMark" required>
+
+                            <input type="hidden" id="provider_id" name="provider_id">
+                            <input type="hidden" id="job" name="job">
+                        </div>
+                        
+                        <div class="formbutton">
+                            <button type="button" onclick="closeform()" id="cancelBtn" style="background-color: rgb(247, 77, 77);"><label>Cancel</label></button>
+                            <button type="submit" id="submitBtn" style="background-color: #20ed6b;"><label>Submit</label></button>
+                        </div>
+                    </form>
+                {% else %}
+                    <h3 style="text-align: center;padding: 30px;"><a href="{% url 'Userlogin'%}">Login to continue booking</a></h3>
+                {% endif %}
+            </div>
+            <script>
+                function bookProvider(providerId, job) {
+                    bookingFormModal = document.getElementById('bookingFormModal');
+                    bookingFormModal.style.display = 'block';
+                    console.log('Provider ID:', providerId);
+                    document.getElementById('provider_id').value = providerId;
+                    console.log('Set Provider ID:', document.getElementById('provider_id').value);
+                    document.getElementById('job').value = job;
+                }
+
+                function closeform(){
+                    var bookingFormModal = document.getElementById('bookingFormModal')
+                    bookingFormModal.style.display = 'none';
+                }
+                window.addEventListener('click', function(event) {
+                var bookingFormModal = document.getElementById('bookingFormModal');
+                if (event.target == bookingFormModal) {
+                    closeform();
+                }
+            });
+            </script>
+        </div>
+    </div>
+    <div class="bottom">
+        <h4>&copy; This website is copyright
+            <br>Contact us: akashkr971@gmail.com</h4>
+    </div>
+</body>
+</html>

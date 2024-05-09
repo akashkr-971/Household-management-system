@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table class="cancelform">
+        <tr><th colspan="2">Cancellation Reason</th></tr>
+        <tr>
+            <td colspan="2"><input type="text" name="cancellation_reason" required></td>
+            <td><input type="hidden" id="cancel_booking_id" name="booking_id"></td>
+            <td><input type="hidden" id="cancel_homeownerid" name="homeownerid"></td>
+            <td><input type="hidden" id="cancel_serviceproviderid" name="serviceproviderid"></td>
+        </tr>
+        <tr><td><input type="submit" value="Submit" name="submit"></td><td><input type="button" value="Cancel" onclick="closecancelform()"></td></tr>
+    </table>
+
+    <label for="cancellationReason{{ booking.booking_id }}">Cancellation Reason</label>
+                <input type="text" name="cancellation_reason" required>
+                <input type="hidden" id="cancel_booking_id" name="booking_id">
+                <input type="hidden" id="cancel_homeownerid" name="homeownerid">
+                <input type="hidden" id="cancel_serviceproviderid" name="serviceproviderid">
+                <input type="submit" value="Submit" name="submit">
+                <input type="button" value="Cancel" onclick="closecancelform()">
+                
+</body>
+</html>
+

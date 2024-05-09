@@ -1,0 +1,22 @@
+git init
+git remote add origin https://github.com/akashkr-971/Mini-project
+git add .
+git commit -m " "
+git push -u origin master
+
+select * from hmsapp_user;
+select * from hmsapp_homeowner;
+select * from hmsapp_serviceprovider;
+select * from hmsapp_service;
+
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+
+insert into hmsapp_service values(1,"plumber");
+insert into hmsapp_service values(2,"electrician");
+insert into hmsapp_service values(3,"carpenter");
+insert into hmsapp_service values(4,"interiordesigner");
+insert into hmsapp_service values(5,"painting");
+insert into hmsapp_service values(6,"landscaping");

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Household Management System</title>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    height:100%;
+}
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    top: 0;
+    width: 100%;
+    height: 80px;
+    background-color: #333;
+    color: #fff;
+    padding: 0 0px;
+}
+
+.name {
+    font-weight: 600;
+    flex:3;
+    text-align:center;
+    display:flex;
+    justify-content:center;
+}
+.searchbar{
+    height: 80px;
+    display:flex;
+    align-items:center;
+    flex:5;
+    justify-content:center;
+}
+
+#search {
+    width: 80%;
+    height: 30px;
+    border-radius: 15px;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.acc {
+    font-weight: 600;
+    flex:2;
+    text-align:center;
+    display:flex;
+    justify-content:center;
+    height:80px;
+}
+span h3{
+    position:relative;
+    top:10px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 120px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+}
+.acc:hover .dropdown-content {
+    display: block;
+    top:80px;
+    border-radius: 0 0 10px 10px;
+    background-color: #333;
+    
+}
+.dropdown-content:hover{
+    display:block;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color:black;
+}
+
+.mid-bar {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding: 20px;
+    margin: 0;
+}
+.greet{
+    font-size: 30px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    margin: 10px 0 ;
+    font-weight: 800;
+}
+
+.ad img{
+    width: 100%;
+    overflow: hidden;
+    height: 250px;
+    border-radius: 10px;
+}
+.pentask{
+    text-align: center;
+    height: 200px;
+    font-size: 20px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: 600;
+    background-color: blanchedalmond;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.ad{
+    margin-bottom:20px;
+}
+
+button {
+    height: 80px;
+    width: 100%;
+    border: none;
+    background-color: #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.bottom {
+    position:absolute;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding-top: 20px;
+    font-size: 14px;
+}
+@media only screen and (max-width: 600px) {
+    .bottom{
+        position: inherit;
+        bottom: 0;
+    }
+    #search{
+        width:70%;
+    }
+    .uptask{
+        width:95%
+    }
+    .services{
+        height:100%
+    }
+}
+</style>
+</head>
+    <body>
+
+    <div class="top-bar">
+        <div class="name">Household Management System</div>
+        <div class="searchbar">
+            <form id="searchForm" action="{% url 'search' %}" method="GET">
+                <input type="text" name="search" id="search" placeholder="Search...">
+            </form>    
+        </div>
+        <div class="acc">
+            <span>
+                <h3>Account</h3>
+            </span>
+            <div class="dropdown-content">
+                {% if user %}
+                    <a href="#">Account Details</a>
+                    <a href="#">Job History</a>
+                    <a href="{% url 'resetpassword' %}">Reset password</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'Userlogin' %}">Login</a>
+                    <a href="{% url 'Clientsignup' %}">Signup</a>
+                {% endif %}
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="mid-bar">
+        <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
+        <div class="ad">
+            <img class="img1" src="https://i.ibb.co/s6LQh9m/fun.jpg" alt="fun" border="0">
+            <img class="img2" src="https://i.ibb.co/KwtjX8W/fun2.jpg" alt="fun2" border="0" style="display: none;">
+            <img class="img3" src="https://i.ibb.co/xGL3PmV/fun3.jpg" alt="fun3" border="0" style="display: none;">
+            
+            <script>
+                let currentIndex=1;
+                const totalimg=3;
+
+                function nextImg(){
+                    document.querySelector('.img' + currentIndex).style.display = 'none';
+                    currentIndex++;
+                    if (currentIndex > totalimg) {
+                        currentIndex = 1;
+                    }
+                    document.querySelector('.img' + currentIndex).style.display = 'block';
+                }
+                setInterval(nextImg,5000)
+            </script>
+        </div>
+        <div class="pentask">Pending Tasks</div>
+    </div>
+
+    <div class="bottom">
+        <h4>&copy; This website is copyright
+            <br>Contact us: akashkr971@gmail.com</h4>
+    </div>
+
+    </body>
+</html>

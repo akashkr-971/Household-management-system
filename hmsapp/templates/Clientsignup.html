@@ -1,0 +1,239 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singup</title>
+    <style>
+        body{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('{% static "images/logimg.png" %}');
+            background-repeat:no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        .full{
+            background-color: aqua;
+            height: 620px;
+            padding: 30px;
+            width: 350px;
+            border-radius: 30px;
+        }
+        input{
+            margin-top: 5px;
+            width:350px;
+            border-radius: 10px;
+            height: 30px;
+            margin-bottom: 10px;
+        }
+        input[type="radio"] {
+            width: 20px;   
+            margin:0 ;
+        }
+        #signup{
+            margin-top: 20px;
+            border-radius: 30px;
+            height: 40;
+        }
+        label{
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        .headin{
+            font-size: 30;
+            text-align: center;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        .password-container {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 60%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            background-image:url('{% static "images/showpass.png" %}');
+        }
+
+        input[type="password"] {
+            padding-right: 30px;
+        }  
+        .select-style {
+            margin-top: 5px;
+            width: 100%;
+            border-radius: 10px;
+            height: 30px;
+            margin-bottom: 10px;
+            font-size: 15;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        .styled-input {
+            margin-top: 5px;
+            width: 100%;
+            border-radius: 10px;
+            height: 30px;
+            margin-bottom: 10px;
+        }
+        .rate-unit {
+            display: flex;
+            justify-content: space-between;
+        }
+        .role{
+            display: inline-block;
+            width: 300px;
+        }
+        .role input[type="radio"], .role label{
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .role label{
+            margin-right: 43px;
+        }
+        #signup{
+            margin: 10 0 10 0 ;
+            font-size: 20;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <form method="post" action="{% url 'Clientsignup' %}" onsubmit="return validateform()">
+        {% csrf_token %}
+        <div class="full">
+            <div class="headin">Signup</div>
+            <br>
+            {% if error %}
+            <div class="error-message" style="color: red;">{{ error }}</div>
+            {% endif %}
+            <div><label for="fname">Full Name*</label><br><input type="text" name="fname" required></div>
+            <div><label for="uname">User Name*</label><br><input type="text" name="uname" required></div>
+            <div><label for="email">Email*</label><br><input type="email" name="email" required></div>
+            <div class="password-container">
+                <label for="pass">Password*</label><br>
+                <input type="password" name="pass" id="pass" required>
+                <span class="toggle-password" onclick="togglePasswordVisibility('pass')"></span>
+            </div>
+            <div class="password-container">
+                <label for="cpass">Confirm password*</label><br>
+                <input oninput="verifyPassword()" type="password" name="cpass" id="cpass" required>
+                <span class="toggle-password" onclick="togglePasswordVisibility('cpass')"></span>
+            </div>
+            <div><label for="phone">Phone number*</label><br><input type="number" name="phone" required></div>
+            <div><label for="Location">Location</label><br><input type="text" name="location"></div>
+            <div class="role">
+                <label>Role*</label><br>
+                <input type="radio" name="role" id="client-radio" value="client" checked onclick="toggleproviderinfo()">
+                <label for="client-radio">Client</label>
+                <input type="radio" name="role" id="provider-radio" value="Service-provider" onclick="toggleproviderinfo()">
+                <label for="provider-radio">Service-provider</label>
+            </div>
+            <div class="providerinfo" style="display: none; margin-top: 5px;">
+                <div>
+                    <label for="Profession">Profession*</label><br>
+                    <select name="Profession" class="select-style">
+                        <option value="---Select a profession---" selected disabled>---Select a profession---</option>
+                        <option value="plumber">plumber</option>
+                        <option value="electrician">electrician</option>
+                        <option value="carpenter">carpenter</option>
+                        <option value="interiordesigner">Interior Designer</option>
+                        <option value="painting">Painting</option>
+                        <option value="landscaping">Land Scaping</option>
+                    </select>
+                </div>
+                <div class="rate-unit">
+                    <div>
+                        <label for="rate">Rate*</label><br>
+                        <input type="number" name="rate" required class="styled-input">
+                    </div>
+                    <div>
+                        <label for="unit">Per</label><br>
+                        <select name="unit" class="select-style">
+                            <option value="---Select a Unit---" selected disabled>---Select a Unit---</option>
+                            <option value="Hour">Hour</option>
+                            <option value="Square feet">Square feet</option>
+                            <option value="Day">Day</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="signupbutton"><input type="submit" value="SIGNUP" name="submit" id="signup"></div>
+            <div style="text-align: center;"><a href="{% url 'Userlogin'%}">Already have an account</a></div>
+        </div>
+    </form>
+    <script>
+        function verifyPassword(){
+            var entered=document.getElementById('pass').value;
+            var cnfpassword=document.getElementById('cpass').value;
+            if(entered!==cnfpassword){
+                document.getElementById("cpass").setCustomValidity("Password do not match");
+                return false;
+            } 
+            else {
+                document.getElementById("cpass").setCustomValidity("");
+                return true;
+            }
+        }
+        function togglePasswordVisibility(inputId) {
+            var passwordInput = document.getElementById(inputId);
+            var toggleIcon = passwordInput.nextElementSibling;
+    
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.style.backgroundImage = "url('{% static 'images/hidepass.png' %}')";
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.style.backgroundImage = "url('{% static 'images/showpass.png' %}')";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var role = document.querySelector('input[name="role"]:checked').value;
+            var profession = document.querySelector('select[name="Profession"]');
+            var rate = document.querySelector('input[name="rate"]');
+            
+            if (role === 'Service-provider') {
+                profession.setAttribute('required', true);
+                rate.setAttribute('required', true);
+            } else {
+                profession.removeAttribute('required');
+                rate.removeAttribute('required');
+            }
+        });
+
+        function toggleproviderinfo(){
+            var providerInfo = document.querySelector('.providerinfo');
+            var serviceProviderRadio = document.querySelector('input[name="role"][value="Service-provider"]');
+            var signupform = document.querySelector('.full')
+            var profession = document.querySelector('select[name="Profession"]');
+            var rate = document.querySelector('input[name="rate"]');
+
+            if (serviceProviderRadio.checked) {
+                providerInfo.style.display = 'block';
+                signupform.style.height = '760px'
+                profession.setAttribute('required', true);
+                rate.setAttribute('required', true);
+            } else {
+                providerInfo.style.display = 'none';
+                signupform.style.height = '620px'
+                profession.removeAttribute('required');
+                rate.removeAttribute('required');
+            }
+        }
+        function validateform(){
+            var profession = document.getElementById("Profession").value;
+            var unit = document.getElementById("unit").value;
+
+            if (profession === "---Select a profession---" || unit === "---Select a unit---") {
+                alert("Please select a profession and unit.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
