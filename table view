@@ -1,5 +1,5 @@
 git init
-git remote add origin https://github.com/akashkr-971/Mini-project
+git remote add origin https://github.com/akashkr-971/Household-management-system
 git add .
 git commit -m " "
 git push -u origin master

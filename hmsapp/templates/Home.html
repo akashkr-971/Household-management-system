@@ -338,8 +338,8 @@ button {
         </span>
         <div class="dropdown-content">
             {% if user %}
-                <a href="#">Account Details</a>
-                <a href="#">Order History</a>
+                <a href="{% url 'accountdetails' %}">Account Details</a>
+                <a href="{% url 'orderhistory' %}">Order History</a>
                 <a href="{% url 'resetpassword' %}">Reset password</a>
                 <a href="{% url 'logout' %}">Logout</a>
             {% else %}

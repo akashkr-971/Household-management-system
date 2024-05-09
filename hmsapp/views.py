@@ -217,3 +217,15 @@ def Resetpassword(request):
     else:
         return render(request,'Userlogin.html')
 
+def orderhistory(request):
+    user=None;
+    if 'user_id' in request.session:
+        user = User.objects.get(user_id=request.session['user_id'])
+    return render(request,'orderhistory.html',{'user': user})
+
+def accountdetails(request):
+    user=None;
+    if 'user_id' in request.session:
+        user = User.objects.get(user_id=request.session['user_id'])
+    return render(request,'accountdetails.html',{'user': user})
+

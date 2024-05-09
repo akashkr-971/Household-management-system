@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Account Details</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                height:100%;
+            }
+
+            .top-bar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                top: 0;
+                width: 100%;
+                height: 80px;
+                background-color: #333;
+                color: #fff;
+                padding: 0 0px;
+            }
+
+            .name {
+                font-weight: 600;
+                flex:3;
+                text-align:center;
+                display:flex;
+                justify-content:center;
+            }
+            .acc {
+                font-weight: 600;
+                flex:2;
+                text-align:center;
+                display:flex;
+                justify-content:center;
+                height:80px;
+            }
+            span h3{
+                position:relative;
+                top:10px;
+            }
+
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #f9f9f9;
+                min-width: 120px;
+                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+                z-index: 1;
+            }
+            .acc:hover .dropdown-content {
+                display: block;
+                top:80px;
+                border-radius: 0 0 10px 10px;
+                background-color: #333;
+                
+            }
+            .dropdown-content:hover{
+                display:block;
+            }
+
+            .dropdown-content a {
+                color: white;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+            .dropdown-content a:hover {
+                background-color:black;
+            }
+
+            .mid-bar {
+                margin-top: 40px;
+                margin-bottom: 40px;
+                padding: 20px;
+                margin: 0;
+            }
+            .greet{
+                font-size: 30px;
+                font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                margin: 10px 0 ;
+                font-weight: 800;
+            }
+            button {
+                height: 80px;
+                width: 100%;
+                border: none;
+                background-color: #ddd;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            a{
+                text-decoration: none;
+                font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;;
+                font-size: 20px;
+                color: #000;
+            }
+            .bottom {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 80px;
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                padding-top: 20px;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="top-bar">
+            <div class="name">
+                <button onclick="redirecttohome()" style="background:transparent;color: white;">Household Management System</button>
+                <script>
+                    function redirecttohome(){
+                        window.location.href="{% url 'home' %}"
+                    }
+                </script>
+            </div>
+            <div class="acc">
+                <span>
+                    <h3>Account</h3>
+                </span>
+                <div class="dropdown-content">
+                    {% if user %}
+                        <a href="{% url 'orderhistory' %}">Order History</a>
+                        <a href="{% url 'resetpassword' %}">Reset password</a>
+                        <a href="{% url 'logout' %}">Logout</a>
+                    {% else %}
+                        <a href="{% url 'Userlogin' %}">Login</a>
+                        <a href="{% url 'Clientsignup' %}">Signup</a>
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="mid-bar">
+            <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
+        </div>
+        <div class="bottom">
+            <h4>&copy; This website is copyright
+                <br>Contact us: akashkr971@gmail.com</h4>
+        </div>
+    </body>
+</html>

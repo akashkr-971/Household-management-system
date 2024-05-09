@@ -69,6 +69,7 @@ class Booking(models.Model):
     landmark = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     isupdated=models.TextField(default='No')
+    totalrate = models.DecimalField(max_digits=10, decimal_places=2,default=0)
 
     def __str__(self):
         return f"Booking {self.booking_id} - {self.homeowner.user.user_name} - {self.service_provider.user.user_name}"
