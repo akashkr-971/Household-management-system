@@ -143,10 +143,17 @@
 
         <div class="mid-bar">
             <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
+            <div class="content">
+                <form action="" method="post">
+                    {% csrf_token %}
+
+                </form>
+            </div>
+        
+        
         </div>
         <div class="bottom">
-            <h4>&copy; This website is copyright
-                <br>Contact us: akashkr971@gmail.com</h4>
+            <h4>Contact us: akashkr971@gmail.com</h4>
         </div>
     </body>
 </html>

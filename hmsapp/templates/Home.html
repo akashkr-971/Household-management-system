@@ -280,6 +280,9 @@ button {
     .cancellationform{
         left:13%
     }
+    .updateform{
+        left:2%;
+    }
 }
 @media only screen and (min-width:500px) and  (max-width: 650px) {
     table ,th, td {
@@ -388,7 +391,7 @@ button {
             <tbody>
                 {% if user.homeowner.bookings.all%}
                     {% for booking in user.homeowner.bookings.all %}
-                        {% if booking.status != 'Cancelled' %}
+                        {% if booking.status != 'Cancelled' and booking.status != 'Finished' %}
                             <tr onclick="Viewbooking('{{ booking.service_provider.user.full_name }}','{{ booking.job }}','{{ booking.service_provider.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}')">
                                 <td>{{ booking.booking_id }}</td>
                                 <td>{{ booking.service_provider.user.full_name }}</td>
@@ -402,7 +405,7 @@ button {
                                         <button class="update-btn" data-booking-id="{{ booking.booking_id }}" onclick="updatebooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Update</button>
                                         <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
                                     {% elif booking.status == 'Completed' %}
-                                        <button class="complete-btn" data-booking-id="{{ booking.booking_id }}">Pay</button>
+                                        <button class="viewbill-btn" data-booking-id="{{ booking.booking_id }}">View bill</button>
                                     {% else %}
                                         <p>Cancelled</p>
                                     {% endif %}
@@ -538,8 +541,7 @@ button {
 </div>
 
 <div class="bottom">
-    <h4>&copy; This website is copyright
-        <br>Contact us: akashkr971@gmail.com</h4>
+    <h4>Contact us: akashkr971@gmail.com</h4>
 </div>
 
 </body>

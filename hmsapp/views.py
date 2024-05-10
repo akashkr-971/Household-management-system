@@ -171,6 +171,7 @@ def updatebooking(request):
         booking.servicedate = updatetodate
         booking.servicetime = updatetotime
         booking.isupdated='yes'
+        booking.status='Pending'
         booking.save()
 
         update = Update.objects.create(
@@ -228,4 +229,34 @@ def accountdetails(request):
     if 'user_id' in request.session:
         user = User.objects.get(user_id=request.session['user_id'])
     return render(request,'accountdetails.html',{'user': user})
+
+def acceptbooking(request):
+    if request.method == 'POST':
+        booking_id = request.POST.get('booking_id')
+        new_status = request.POST.get('new_status')
+
+        booking=Booking.objects.get(booking_id=booking_id)
+        booking.status = new_status
+        booking.save()
+    return redirect('serviceproviderhome')
+
+def completebooking(request):
+    if request.method == 'POST':
+        booking_id = request.POST.get('booking_id')
+        new_status = request.POST.get('new_status')
+
+        booking=Booking.objects.get(booking_id=booking_id)
+        booking.status = new_status
+        booking.save()
+    return redirect('serviceproviderhome')
+
+def finishbooking(request):
+    if request.method == 'POST':
+        booking_id = request.POST.get('booking_id')
+        new_status = request.POST.get('new_status')
+
+        booking=Booking.objects.get(booking_id=booking_id)
+        booking.status = new_status
+        booking.save()
+    return redirect('serviceproviderhome')
 

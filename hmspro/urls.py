@@ -16,8 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from hmsapp.views import home,Userlogin,Clientsignup,forgetpassword,Resetpassword,Userlogout,search
+from hmsapp.views import home,Userlogin,Clientsignup,forgetpassword,Resetpassword,Userlogout,search,acceptbooking
 from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,updatebooking,orderhistory,accountdetails
+from hmsapp.views import completebooking,finishbooking
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,6 +36,8 @@ urlpatterns = [
     path('updatebooking/', updatebooking, name='updatebooking'),
     path('orderhistory/', orderhistory, name='orderhistory'),
     path('accountdetails/', accountdetails, name='accountdetails'),
-
+    path('acceptbooking/', acceptbooking, name='acceptbooking'),
+    path('completebooking/', completebooking, name='completebooking'),
+    path('finishbooking/', finishbooking, name='finishbooking'),
 ]   
 

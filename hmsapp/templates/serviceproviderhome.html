@@ -110,7 +110,7 @@ span h3{
 }
 .pentask{
     text-align: center;
-    height: 200px;
+    height: 380px;
     font-size: 20px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-weight: 600;
@@ -144,6 +144,89 @@ button {
     padding-top: 20px;
     font-size: 14px;
 }
+table {
+    width: 100%;
+    border-collapse:collapse;
+    border: 1px solid wheat;
+    border-radius: 10px;
+}
+th, td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ffcdcd;
+    word-wrap: break-word;
+}
+th,tr {
+    background-color: aliceblue;
+}
+tr:hover {
+    background-color: #f5f5f5;
+}
+table button{
+    height: 30px;
+    width: 100%;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+    font-size: 16px;
+}
+.cancel-btn{
+    background-color: rgb(228, 49, 49);
+    color: white;
+}
+.accept-btn,.recievedbtn{
+    background-color: rgba(83, 248, 122, 0.813);
+    color: white;
+    margin-bottom: 1px;
+}
+.cancellationform{
+    display: flex;
+    position: absolute;
+    background-color: rgb(243, 193, 193);
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 10;
+    top: 48%;
+    left: 36%;
+}
+.cancellationform input[type="text"]{
+    height:30px;
+    width: 200px;
+}
+.cancellationform input[type="submit"]{
+    height:30px;
+    width: 80px;
+    background-color: rgb(61, 163, 246);
+    color: white;
+    border-radius: 10px;
+    font-size: 18px;
+    border: none;
+}
+.cancellationform input[type="button"]{
+    height:30px;
+    width: 80px;
+    background-color: rgb(255, 57, 57);
+    color: white;
+    border-radius: 10px;
+    font-size: 18px;
+    border: none;
+}
+.updateform input[type="time"]{
+    height:30px;
+    width: 200px;
+}
+#viewtable{
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    width: 320px;
+}
+.complete-btn{
+    background-color: rgb(52, 245, 52);
+    color: white;
+    padding: 0px;
+}
+
 @media only screen and (max-width: 600px) {
     .bottom{
         position: inherit;
@@ -211,12 +294,168 @@ button {
                 setInterval(nextImg,5000)
             </script>
         </div>
-        <div class="pentask">Pending Tasks</div>
+        <div class="pentask">
+            <p>Pending Tasks</p>
+            {% if user %}
+            <table id="detailstable">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Name</th>
+                        <th>location</th>
+                        <th>Booking Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if user.serviceprovider.bookings.all%}
+                        {% for booking in user.serviceprovider.bookings.all %}
+                        {% if booking.status != 'Cancelled' and booking.status != 'Finished' %}
+                                <tr onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}')">
+                                    <td>{{ booking.booking_id }}</td>
+                                    <td>{{ booking.homeowner.user.full_name }}</td>
+                                    <td>{{ booking.location }}</td>
+                                    <td>{{ booking.status }}</td>
+                                    <td>
+                                        {% if booking.status == 'Pending' %}
+                                            <button class="accept-btn" data-booking-id="{{ booking.booking_id }}" onclick="acceptbooking('{{ booking.booking_id }}'); event.stopPropagation();">Accept</button>
+                                            <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
+                                        {% elif booking.status == 'Confirmed' %}
+                                            <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
+                                            <button class="complete-btn" data-booking-id="{{ booking.booking_id }}" onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Mark as complete</button>
+                                        {% elif booking.status == 'Completed' %}
+                                        <button class="createbillbtn" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
+                                            <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
+                                        {% else %}
+                                            <p>Cancelled</p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}          
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No upcoming bookings available</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <div class="cancellationform" style="display: none;" id="cancellationform">
+                <form method="post" action="{% url 'cancelbooking' %}">
+                    {% csrf_token %}
+                    <table class="canceltable" style="th{
+                        width: 100%;
+                    }">
+                        <tr><th colspan="2">Cancellation Reason</th></tr>
+                        <tr>
+                            <td colspan="2"><input type="text" name="cancellation_reason" required>
+                            <input type="hidden" id="cancel_booking_id" name="booking_id">
+                            <input type="hidden" id="cancel_homeownerid" name="homeownerid">
+                            <input type="hidden" id="cancel_serviceproviderid" name="serviceproviderid"></td>
+                        </tr>
+                        <tr><td><input type="submit" value="Submit" name="submit"></td><td><input type="button" value="Cancel" onclick="closecancelform()"></td></tr>
+                    </table>
+                </form>
+                <script>
+                    function cancelbooking(bid,uid,sid){
+                        document.getElementById('cancel_booking_id').value=bid;
+                        document.getElementById('cancel_homeownerid').value=uid;
+                        document.getElementById('cancel_serviceproviderid').value=sid;
+    
+                        document.getElementById('cancellationform').style.display='block';
+                        document.getElementById('detailstable').style.opacity = "0";
+                    }
+                    function closecancelform(){
+                        var cancellationform = document.getElementById('cancellationform')
+                        cancellationform.style.display = 'none';
+                        document.getElementById('detailstable').style.opacity = "1";
+                    }
+                </script>
+            </div>
+            <div class="viewbooking" >
+                <div class="viewcontainer" >
+                    <table id="viewtable" border="0"  style="display: none;">
+                        <tr style="color: red;background-color: blue;"><th>Title</th><th></th><th>Details</th></tr>
+                        <tr><td>Name</td><td>:</td><td><label id="namelabel"></label></td></tr>
+                        <tr><td>Location</td><td>:</td><td><label id="locationlabel"></label></td></tr>
+                        <tr><td>Phone number</td><td>:</td><td><label id="phonelabel"></label></td></tr>
+                        <tr><td>Date</td><td>:</td><td><label id="datelabel"></label></td></tr>
+                        <tr><td>Time</td><td>:</td><td><label id="timelabel"></label></td></tr>
+                        <tr><td colspan="3"  style="padding: 0;"><input type="button" value="Close" onclick="closeviewform()" style="width: 80%;border-radius: 10px;background-color: rgb(246, 80, 80);color: white;height: 25px;font: 16px;"></td></tr>
+                        <style>td{
+                            height: 18px;
+                            padding: 8px;
+                        }</style>
+                    </table>
+                </div>
+                <script>
+                    function Viewbooking(uname,location,phone,date,time){
+                        document.getElementById('namelabel').textContent=uname;
+                        document.getElementById('locationlabel').textContent=location;
+                        document.getElementById('phonelabel').textContent=phone;
+                        document.getElementById('datelabel').textContent=date;
+                        document.getElementById('timelabel').textContent=time;
+    
+    
+                        viewtable=document.getElementById('viewtable')
+                        viewtable.style.display='block'
+                        document.getElementById('detailstable').style.opacity = "0";
+                    }
+                    function closeviewform(){
+                        var viewtable = document.getElementById('viewtable')
+                        viewtable.style.display = 'none';
+                        document.getElementById('detailstable').style.opacity = "1";
+                    }
+                </script>
+            </div>
+            <div class="acceptclick">
+                <form method="post" action="{% url 'acceptbooking' %}" id="accept-booking-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" id="acceptbookingid">
+                    <input type="hidden" name="new_status" value="Confirmed">
+                    <input type="submit" value="Accept" style="display: none;">
+                </form>
+                <script>
+                    function acceptbooking(abid){
+                        document.getElementById('acceptbookingid').value=abid;
+                        document.getElementById('accept-booking-form').submit();
+                    }
+                </script>
+            </div>
+            <div class="completeclick">
+                <form method="post" action="{% url 'completebooking' %}" id="completebookingform">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" id="completebookingid">
+                    <input type="hidden" name="new_status" value="Completed">
+                    <input type="submit" value="Accept" style="display: none;">
+                </form>
+                <script>
+                    function completebooking(cbid){
+                        document.getElementById('completebookingid').value=cbid;
+                        document.getElementById('completebookingform').submit();
+                    }
+                </script>
+            </div>
+            <div class="finishclick">
+                <form method="post" action="{% url 'finishbooking' %}" id="finishbookingform">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" id="finishbookingid">
+                    <input type="hidden" name="new_status" value="Finished">
+                    <input type="submit" value="Accept" style="display: none;">
+                </form>
+                <script>
+                    function finishbooking(cbid){
+                        document.getElementById('finishbookingid').value=cbid;
+                        document.getElementById('finishbookingform').submit();
+                    }
+                </script>
+            </div>
+            {% endif %}
+        </div>
     </div>
 
     <div class="bottom">
-        <h4>&copy; This website is copyright
-            <br>Contact us: akashkr971@gmail.com</h4>
+        <h4>Contact us: akashkr971@gmail.com</h4>
     </div>
 
     </body>
