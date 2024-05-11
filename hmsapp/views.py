@@ -6,6 +6,11 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from .models import User, Homeowner ,Service , ServiceProvider ,Booking ,Cancellation , Update
 from django.http import HttpResponseBadRequest
+from django.core.mail import send_mail
+from django.conf import settings
+from django.http import JsonResponse
+import json
+import random
 
 # Create your views here.
 
@@ -187,7 +192,24 @@ def updatebooking(request):
         return redirect('home')
 
 def forgetpassword(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        email = request.POST.get('email')
+        otp = ''.join(random.choices('0123456789',k=6))
+        send_mail(
+            'Password Reset OTP',
+            f'Your OTP for password reset is: {otp}',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+        request.session['resetotp'] = otp
+        request.session['reset_email'] = email
+        return JsonResponse({'success': True})
     return render(request,'forgetpassword.html')
+
+def verifyotp(request):
+    return redirect('forgetpassword')
 
 def Resetpassword(request):
     error_message= None
