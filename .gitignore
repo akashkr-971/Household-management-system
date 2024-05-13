@@ -2,5 +2,5 @@ email_settings.py
 __pycache__/
 .gitignore
 tableview.txt
-git commands
+git_commands
 hmsapp/static
