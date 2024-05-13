@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html{
+            height: 98%;
+        }
+        body{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: aliceblue;
+            height: 100%;
+        }
+        .full{
+            background-color: aqua;
+            height: 140px;
+            padding: 30px;
+            width: 250px;
+            border-radius: 30px;
+        }
+        input{
+            margin-top: 5px;
+            width:250px;
+            border-radius: 10px;
+            height: 30px;
+            margin-bottom: 5px;
+        }
+        #submitbutton{
+            margin-top: 20px;
+            border-radius: 30px;
+            height: 40;
+        }
+        label{
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        .headin{
+            font-size: 26;
+            text-align: center;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        </style>
+    </head>
+<body>
+    <div class="full" id="full">
+        <div class="first">
+            <div class="headin"><label>Enter the OTP</label></div><br>
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+                <style>
+                    .full{
+                        height: 200px;
+                    }
+                </style>
+            {% endif %}
+            <form action="{% url 'verifyotp' %}" method="post" id="passwordform">
+                {% csrf_token %}
+                <input type="number" name="enteredotp">
+                <input type="submit" value="Submit" id="submitbutton">
+                <div style="text-align: center;"><a href="{% url 'home'%}">Return home</a></div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
