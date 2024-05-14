@@ -102,7 +102,7 @@
     </style>
 </head>
 <body>
-    <form method="post" action="{% url 'Clientsignup' %}" onsubmit="return validateform()">
+    <form method="post" action="{% url 'clientsignupwithoutotp' %}" onsubmit="return validateform()">
         {% csrf_token %}
         <div class="full">
             <div class="headin">Signup</div>

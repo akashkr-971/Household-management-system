@@ -10,7 +10,6 @@ body {
     padding: 0;
     height:100%;
 }
-
 .top-bar {
     display: flex;
     align-items: center;
@@ -22,7 +21,6 @@ body {
     color: #fff;
     padding: 0 0px;
 }
-
 .name {
     font-weight: 600;
     flex:3;
@@ -37,7 +35,6 @@ body {
     flex:5;
     justify-content:center;
 }
-
 #search {
     width: 80%;
     height: 30px;
@@ -45,7 +42,6 @@ body {
     padding: 5px 10px;
     font-size: 14px;
 }
-
 .acc {
     font-weight: 600;
     flex:2;
@@ -58,7 +54,6 @@ span h3{
     position:relative;
     top:10px;
 }
-
 .dropdown-content {
     display: none;
     position: absolute;
@@ -77,18 +72,17 @@ span h3{
 .dropdown-content:hover{
     display:block;
 }
-
 .dropdown-content a {
     color: white;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
+    font-size: 18px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
-
 .dropdown-content a:hover {
     background-color:black;
 }
-
 .mid-bar {
     margin-top: 40px;
     margin-bottom: 40px;
@@ -101,7 +95,6 @@ span h3{
     margin: 10px 0 ;
     font-weight: 800;
 }
-
 .ad img{
     width: 100%;
     overflow: hidden;
@@ -118,11 +111,9 @@ span h3{
     border-radius: 10px;
     padding: 10px;
 }
-
 .ad{
     margin-bottom:20px;
 }
-
 button {
     height: 80px;
     width: 100%;
@@ -132,7 +123,6 @@ button {
     cursor: pointer;
     font-size: 16px;
 }
-
 .bottom {
     position:absolute;
     bottom: 0;
@@ -164,18 +154,19 @@ tr:hover {
 }
 table button{
     height: 30px;
-    width: 100%;
+    width: 80%;
     border: none;
     background-color: #ddd;
     cursor: pointer;
     font-size: 16px;
+    margin-bottom: 2px;
 }
 .cancel-btn{
     background-color: rgb(228, 49, 49);
     color: white;
 }
 .accept-btn,.recievedbtn{
-    background-color: rgba(83, 248, 122, 0.813);
+    background-color: rgba(37, 254, 88, 0.813);
     color: white;
     margin-bottom: 1px;
 }
@@ -226,6 +217,55 @@ table button{
     color: white;
     padding: 0px;
 }
+.createbill{
+    height: 70%;
+    width: 70%;
+    background-color: #333;
+    color: white;
+    position:absolute;
+    top: 13%;
+    left: 18%;
+    overflow: auto;
+}
+.billlabel{
+    display: flex;
+    justify-content: center;
+    padding: 10px 0; 
+
+}
+.createbill table{
+    color: black;
+    width: 100%;
+}
+.createbill table input{
+    border: none;
+    height: 100%;
+    width: 80%;
+    background:transparent;
+    font-size: 18px;
+    text-align: center;
+    font-weight: 600;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.createbill table input[type="button"]{
+    font-size: 20px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: 600;
+}
+.buttonlast{
+    display: flex;
+    height: 40px ;
+    justify-content: center;
+    justify-content: center;
+}
+.buttonlast button{
+    width: 150px;
+    height: 30px;
+    margin: 10px 10px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+}
 
 @media only screen and (max-width: 600px) {
     .bottom{
@@ -241,7 +281,19 @@ table button{
     .services{
         height:100%
     }
+    table ,th, td {
+        font-size: 8px;
+        font-weight: 300;
+    }
+    table button{
+        height: 20px;
+        width: 50px;
+        font-size: 10px;
+
+    }
+
 }
+
 </style>
 </head>
     <body>
@@ -259,8 +311,8 @@ table button{
             </span>
             <div class="dropdown-content">
                 {% if user %}
-                    <a href="#">Account Details</a>
-                    <a href="#">Job History</a>
+                    <a href="{% url 'accountdetails' %}">Account Details</a>
+                    <a href="{% url 'jobhistory' %}">Job History</a>
                     <a href="{% url 'resetpassword' %}">Reset password</a>
                     <a href="{% url 'logout' %}">Logout</a>
                 {% else %}
@@ -271,7 +323,6 @@ table button{
             
         </div>
     </div>
-
     <div class="mid-bar">
         <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
         <div class="ad">
@@ -322,7 +373,7 @@ table button{
                                             <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
                                         {% elif booking.status == 'Confirmed' %}
                                             <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
-                                            <button class="complete-btn" data-booking-id="{{ booking.booking_id }}" onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Mark as complete</button>
+                                            <button class="complete-btn" data-booking-id="{{ booking.booking_id }}" onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Completed</button>
                                         {% elif booking.status == 'Completed' %}
                                         <button class="createbillbtn" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
                                             <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
@@ -447,6 +498,147 @@ table button{
                     function finishbooking(cbid){
                         document.getElementById('finishbookingid').value=cbid;
                         document.getElementById('finishbookingform').submit();
+                    }
+                </script>
+            </div>
+            <div class="createbill" id="createbill" style="display: none;">
+                <form class="billform" method="post">
+                    {% csrf_token %}
+                    <label class="billlabel">Create Bill</label>                
+                    <table id="billtable">
+                        <thead>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Service</td>
+                                <td><input id="raterow" value="{{ user.serviceprovider.rate }}/{{ user.serviceprovider.unit }}"></td>
+                                <td><input type="number" id="serviceQuantity" onkeyup="calculatefirstAmount()"></td>
+                                <td><label id="serviceamount"></label></td>
+                            </tr>
+                            <tr id="lastrow">
+                                <td colspan="2"><input type="button" value="Delete row" onclick="deleterow()"></td>
+                                <td colspan="2"><input type="button" value="Add row" onclick="addrow()"></td>
+                            </tr>
+                            <tr id="totalrow">
+                                <td colspan="2">The Total amount for the service </td>
+                                <td colspan="2"><label id="totallabel"></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="buttonlast">
+                        <button style="background-color: red;color: white;" onclick="closebillform(event)">Close</button>
+                        <button style="background-color: rgb(21, 0, 255);color: white; width: 200px;" onclick="calculatetotal(event)" >Calculate Total</button>
+                        <button style="background-color: green; color: white;">Publish</button>
+                    </div>
+                </form>
+                <script>
+                    let rowcount=0;
+                    function createbill(createbid){
+                        document.getElementById('createbill').style.display='block'
+                    }
+                    function deleterow(){
+                        const maintable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
+                        const rowCount = maintable.rows.length;
+                        console.log('nuber of row counted = '+rowcount)
+                        rowscannotdelete = [0,rowCount-1,rowCount-2];
+                        if (rowCount > 3) {
+                            firstdeleteablerow=rowCount-3;
+                            while(rowscannotdelete.includes(firstdeleteablerow)){
+                                firstdeleteablerow++
+                            }
+                            maintable.deleteRow(firstdeleteablerow)
+                        }
+                        else{
+                            console.log('not enough row')
+                        }
+                        rowcount--
+                    }         
+                    function addrow(){
+                        rowcount++;
+                        const lastrow = document.getElementById('lastrow');
+                        const totalrow = document.getElementById('totalrow')
+                        const maintable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
+                        const newRow = document.createElement('tr');
+                        maintable.removeChild(lastrow);
+                        maintable.removeChild(totalrow);
+
+                        const firstCol = document.createElement('td');
+                        const secondCol = document.createElement('td');
+                        const thirdCol = document.createElement('td');
+                        const fourthCol = document.createElement('td');
+
+                        const firstField = document.createElement('input');
+
+                        const secondField = document.createElement('input');
+                        secondField.type = 'number';
+                        secondField.id='raterow'+rowcount
+                        
+                        const thirdField = document.createElement('input');
+                        thirdField.id='serviceQuantity'+rowcount
+                        thirdField.type = 'number';
+                        
+                        const fourthField = document.createElement('label');
+                        fourthField.id='serviceamount'+rowcount
+
+                        firstCol.appendChild(firstField);
+                        secondCol.appendChild(secondField);
+                        thirdCol.appendChild(thirdField);
+                        fourthCol.appendChild(fourthField);
+
+                        newRow.appendChild(firstCol);
+                        newRow.appendChild(secondCol);
+                        newRow.appendChild(thirdCol);
+                        newRow.appendChild(fourthCol);
+
+                        maintable.appendChild(newRow);
+                        maintable.appendChild(lastrow);
+                        maintable.appendChild(totalrow);
+
+                        secondField.onkeyup = function(){
+                            calculateAmount('raterow' + rowcount, 'serviceQuantity' + rowcount, 'serviceamount' + rowcount);
+                        };
+                        thirdField.onkeyup = function() {
+                            calculateAmount('raterow' + rowcount, 'serviceQuantity' + rowcount, 'serviceamount' + rowcount);
+                        };
+                    }
+                    function calculateAmount(rate,quantity,amount){
+                        quantity = document.getElementById(quantity).value
+                        rate = document.getElementById(rate).value
+                        total=quantity*rate;
+                        amount=document.getElementById(amount)
+                        amount.textContent=total
+                        console.log(quantity,rate,total)
+                    }
+                    function calculatefirstAmount(){
+                        quantity = document.getElementById('serviceQuantity').value;
+                        rate=document.getElementById('raterow').value
+                        slash = rate.indexOf('.')
+                        ratevalue = rate.substring(0, slash);
+                        total=quantity*ratevalue;
+                        amount=document.getElementById('serviceamount')
+                        amount.textContent=total
+                        console.log(rate,ratevalue,quantity,total)
+                    }
+                    function calculatetotal(event){
+                        event.preventDefault();
+                        event.stopPropagation(); 
+                        const maintable = document.getElementById('billtable')
+                        const rowCount = maintable.rows.length;
+                        let total=0;
+                        for (let i = 1; i < rowCount-2; i++) {
+                            const cellValue = parseFloat(maintable.rows[i].cells[3].textContent.trim());
+                            total+=cellValue
+                        }
+                        document.getElementById('totallabel').textContent=total
+                    }
+                    function closebillform(event){
+                        event.preventDefault();
+                        event.stopPropagation(); 
+                        document.getElementById('createbill').style.display='none'
                     }
                 </script>
             </div>

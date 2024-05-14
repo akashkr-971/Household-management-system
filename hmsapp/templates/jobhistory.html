@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Account Details</title>
+        <title>Job history</title>
         <style>
             body {
                 margin: 0;
@@ -85,6 +85,32 @@
                 margin: 10px 0 ;
                 font-weight: 800;
             }
+            table {
+                width: 100%;
+                border-collapse:collapse;
+                border: 1px solid wheat;
+                border-radius: 10px;
+            }
+            th, td {
+                padding: 8px;
+                text-align: center;
+                border-bottom: 1px solid #ffcdcd;
+                word-wrap: break-word;
+            }
+            th,tr {
+                background-color: aliceblue;
+            }
+            tr:hover {
+                background-color: #f5f5f5;
+            }
+            #search {
+                height: 30px;
+                border-radius: 15px;
+                padding: 5px 10px;
+                font-size: 14px;
+                width: 97%;
+                margin-bottom: 20px;
+            }
             button {
                 height: 80px;
                 width: 100%;
@@ -111,6 +137,26 @@
                 padding-top: 20px;
                 font-size: 14px;
             }
+            @media only screen and (max-width:500px){
+                table ,th, td {
+                    font-size: 8px;
+                    font-weight: 300;
+                }
+                .bottom{
+                    position: relative;
+                    bottom: 0;
+                }
+            }
+            @media only screen and (min-width:500px) and  (max-width: 650px) {
+                table ,th, td {
+                    font-size: 14px;
+                    font-weight: 500;
+                    height: 20px;
+                }
+                tr{
+                    height: 30px;
+                }
+            }
         </style>
     </head>
     <body>
@@ -128,12 +174,8 @@
                     <h3>Account</h3>
                 </span>
                 <div class="dropdown-content">
-                    {% if user.role == 'client' %}
-                        <a href="{% url 'orderhistory' %}">Order History</a>
-                        <a href="{% url 'resetpassword' %}">Reset password</a>
-                        <a href="{% url 'logout' %}">Logout</a>
-                    {% elif user.role == 'Service-provider' %}
-                        <a href="{% url 'jobhistory' %}">Job History</a>
+                    {% if user %}
+                    <a href="{% url 'accountdetails' %}">Account Details</a>
                         <a href="{% url 'resetpassword' %}">Reset password</a>
                         <a href="{% url 'logout' %}">Logout</a>
                     {% else %}
@@ -144,17 +186,66 @@
                 
             </div>
         </div>
-
         <div class="mid-bar">
             <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
-            <div class="content">
-                <form action="" method="post">
-                    {% csrf_token %}
-
-                </form>
+            <div class="orderdetails">
+                {% if user %}
+                <div class="search-bar">
+                    <form id="searchForm" action="{% url 'search' %}" method="GET">
+                        <input type="text" name="search" onkeyup="filterTable()" id="search" placeholder="Search for specific details...">
+                        <script>
+                            function filterTable(){
+                                var input = document.getElementById('search').value.toLowerCase();
+                                var tr = document.getElementById('detailstable').getElementsByTagName('tr')
+                                for(i=1;i<tr.length;i++){
+                                    td=tr[i].getElementsByTagName('td')
+                                    var matchfound=false;
+                                    for(j=0;j<td.length;j++){
+                                        if(td[j]){
+                                            var txtValue = td[j].textContent || td[j].innerText;
+                                            txtValue=txtValue.trim().toLowerCase();
+                                            if (txtValue.toLowerCase().indexOf(input) > -1) {
+                                                matchfound=true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    tr[i].style.display = matchfound ? "" : "none";
+                                }
+                            }
+                        </script>
+                    </form>
+                </div>
+                <table id="detailstable">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Name</th>
+                            <th>location</th>
+                            <th>Status</th>
+                            <th>Total Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if user.serviceprovider.bookings.all%}
+                            {% for booking in user.serviceprovider.bookings.all %}
+                                <tr>
+                                    <td>{{ booking.booking_id }}</td>
+                                    <td>{{ booking.homeowner.user.full_name }}</td>
+                                    <td>{{ booking.location }}</td>
+                                    <td>{{ booking.status }}</td>
+                                    <td>{{ booking.totalrate }}
+                                </tr>                  
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="6">No bookings available</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                {% endif %}
             </div>
-        
-        
         </div>
         <div class="bottom">
             <h4>Contact us: akashkr971@gmail.com</h4>

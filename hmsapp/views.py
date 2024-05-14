@@ -347,6 +347,12 @@ def orderhistory(request):
         user = User.objects.get(user_id=request.session['user_id'])
     return render(request,'orderhistory.html',{'user': user})
 
+def jobhistory(request):
+    user=None;
+    if 'user_id' in request.session:
+        user = User.objects.get(user_id=request.session['user_id'])
+    return render(request,'jobhistory.html',{'user': user})
+
 def accountdetails(request):
     user=None;
     if 'user_id' in request.session:
