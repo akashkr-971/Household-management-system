@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from hmsapp.views import home,Userlogin,Clientsignup,forgetpassword,Resetpassword,Userlogout,search,acceptbooking
 from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,updatebooking,orderhistory,accountdetails
-from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory
+from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory,publishbill
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,5 +42,6 @@ urlpatterns = [
     path('finishbooking/', finishbooking, name='finishbooking'),
     path('verifyotp/', verifyotp, name='verifyotp'),
     path('jobhistory/', jobhistory, name='jobhistory'),
+    path('publishbill/', publishbill, name='publishbill'),
 ]   
 

@@ -4,11 +4,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
 from django.contrib import messages
-from .models import User, Homeowner ,Service , ServiceProvider ,Booking ,Cancellation , Update
+from .models import User, Homeowner ,Service , ServiceProvider ,Booking ,Cancellation , Update ,Billing
 from django.http import HttpResponseBadRequest
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
+import json
 import random
 
 # Create your views here.
@@ -389,3 +390,41 @@ def finishbooking(request):
         booking.save()
     return redirect('serviceproviderhome')
 
+def publishbill(request):
+    if request.method == 'POST':
+        billdatajson = request.POST.get('billData')
+        totalamount = request.POST.get('totalfinalamount')
+        bookingid = request.POST.get('bookingid')
+        print('the booking id is : ',bookingid)
+        print('total amont = ',totalamount)
+        print('bill json is ',billdatajson)
+        
+        
+        booking = Booking.objects.get(booking_id=bookingid)
+        homeowner = booking.homeowner
+        service_provider = booking.service_provider
+
+        try:
+            if billdatajson:
+                billdata = json.loads(billdatajson)
+                print('The data in the bill data is : ',billdatajson)
+            else:
+                print('data is not found')
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+
+
+        billing = Billing(
+            booking=booking,
+            homeowner=homeowner,
+            service_provider=service_provider,
+            items=billdata,
+            total_amount=totalamount,
+            date=date.today(),
+            payment_status='Pending'
+        )
+        billing.save()
+        booking.status='Bill created'
+        booking.save()
+        return redirect(serviceproviderhome)
+    return render(request, 'serviceproviderhome.html')

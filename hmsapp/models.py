@@ -53,7 +53,9 @@ class Booking(models.Model):
         ('Pending', 'Pending'),
         ('Confirmed', 'Confirmed'),
         ('Cancelled', 'Cancelled'),
-        ('Completed','Completed')
+        ('Completed','Completed'),
+        ('Bill created','Bill created'),
+        ('Finished','Finished')
     ]
     booking_id = models.AutoField(primary_key=True)
     name = models.TextField()
@@ -119,6 +121,7 @@ class Billing(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     homeowner = models.ForeignKey(Homeowner, on_delete=models.CASCADE, default=1)
     service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, default=1) 
+    items = models.JSONField(default=list) 
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
     payment_status = models.CharField(max_length=100)

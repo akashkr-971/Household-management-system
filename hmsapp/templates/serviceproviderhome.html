@@ -206,11 +206,12 @@ table button{
     height:30px;
     width: 200px;
 }
-#viewtable{
+
+.viewcontainer{
     position: absolute;
+    left: 33%;
     top: 50%;
-    left: 35%;
-    width: 320px;
+    height: 100px;
 }
 .complete-btn{
     background-color: rgb(52, 245, 52);
@@ -361,8 +362,16 @@ table button{
                 <tbody>
                     {% if user.serviceprovider.bookings.all%}
                         {% for booking in user.serviceprovider.bookings.all %}
-                        {% if booking.status != 'Cancelled' and booking.status != 'Finished' %}
-                                <tr onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}')">
+                            {% if booking.status != 'Cancelled' and booking.status != 'Finished' %}
+                            {% if booking.isupdated == 'No' %}
+                            <tr onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}')">
+                            {% else %}
+                            {% for update in booking.update_set.all %}
+                                <tr onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}','{{ update.description }}')">
+                            {% endfor %}
+                            {% endif %}    
+                            
+                            
                                     <td>{{ booking.booking_id }}</td>
                                     <td>{{ booking.homeowner.user.full_name }}</td>
                                     <td>{{ booking.location }}</td>
@@ -375,7 +384,10 @@ table button{
                                             <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
                                             <button class="complete-btn" data-booking-id="{{ booking.booking_id }}" onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Completed</button>
                                         {% elif booking.status == 'Completed' %}
-                                        <button class="createbillbtn" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
+                                            <button class="createbillbtn" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
+                                            <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
+                                        {% elif booking.status == 'Bill created' %}
+                                            <button class="updatebillbtn" data-booking-id="{{ booking.booking_id }}" onclick="updatebill('{{ booking.booking_id }}'); event.stopPropagation();">Update bill</button>
                                             <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
                                         {% else %}
                                             <p>Cancelled</p>
@@ -432,6 +444,7 @@ table button{
                         <tr><td>Phone number</td><td>:</td><td><label id="phonelabel"></label></td></tr>
                         <tr><td>Date</td><td>:</td><td><label id="datelabel"></label></td></tr>
                         <tr><td>Time</td><td>:</td><td><label id="timelabel"></label></td></tr>
+                        <tr id="updated-data"><td>Description</td><td>:</td><td><label id="updatedisc"></label></td></tr>
                         <tr><td colspan="3"  style="padding: 0;"><input type="button" value="Close" onclick="closeviewform()" style="width: 80%;border-radius: 10px;background-color: rgb(246, 80, 80);color: white;height: 25px;font: 16px;"></td></tr>
                         <style>td{
                             height: 18px;
@@ -440,13 +453,21 @@ table button{
                     </table>
                 </div>
                 <script>
-                    function Viewbooking(uname,location,phone,date,time){
+                    function Viewbooking(uname,location,phone,date,time,updated,desc){
                         document.getElementById('namelabel').textContent=uname;
                         document.getElementById('locationlabel').textContent=location;
                         document.getElementById('phonelabel').textContent=phone;
                         document.getElementById('datelabel').textContent=date;
                         document.getElementById('timelabel').textContent=time;
-    
+                        
+                        if(updated=='yes'){
+                        document.getElementById('updated-data').style.display='table-row'
+                        document.getElementById('updatedisc').textContent=desc;
+
+                        }
+                        else{
+                            document.getElementById('updated-data').style.display='none'
+                        }
     
                         viewtable=document.getElementById('viewtable')
                         viewtable.style.display='block'
@@ -502,7 +523,7 @@ table button{
                 </script>
             </div>
             <div class="createbill" id="createbill" style="display: none;">
-                <form class="billform" method="post">
+                <form class="billform" method="post" action="{% url 'publishbill' %}">
                     {% csrf_token %}
                     <label class="billlabel">Create Bill</label>                
                     <table id="billtable">
@@ -514,7 +535,7 @@ table button{
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Service</td>
+                                <td><input type="text" readonly value="Service" ></td>
                                 <td><input id="raterow" value="{{ user.serviceprovider.rate }}/{{ user.serviceprovider.unit }}"></td>
                                 <td><input type="number" id="serviceQuantity" onkeyup="calculatefirstAmount()"></td>
                                 <td><label id="serviceamount"></label></td>
@@ -529,16 +550,22 @@ table button{
                             </tr>
                         </tbody>
                     </table>
+                    <input type="text" name="bookingid"  id='createbookingid'>
+                    <input type="hidden" name="billData" id="billData">
+                    <input type="text" name="totalfinalamount" id="totalfinalamount">
                     <div class="buttonlast">
                         <button style="background-color: red;color: white;" onclick="closebillform(event)">Close</button>
                         <button style="background-color: rgb(21, 0, 255);color: white; width: 200px;" onclick="calculatetotal(event)" >Calculate Total</button>
-                        <button style="background-color: green; color: white;">Publish</button>
+                        <button style="background-color: green; color: white;" onclick="gatherdata()">Publish</button>
                     </div>
                 </form>
                 <script>
                     let rowcount=0;
                     function createbill(createbid){
                         document.getElementById('createbill').style.display='block'
+                        document.getElementById('createbookingid').value = createbid
+                        console.log(createbid)
+                        console.log(document.getElementById('createbookingid').value)
                     }
                     function deleterow(){
                         const maintable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
@@ -611,7 +638,6 @@ table button{
                         total=quantity*rate;
                         amount=document.getElementById(amount)
                         amount.textContent=total
-                        console.log(quantity,rate,total)
                     }
                     function calculatefirstAmount(){
                         quantity = document.getElementById('serviceQuantity').value;
@@ -621,7 +647,6 @@ table button{
                         total=quantity*ratevalue;
                         amount=document.getElementById('serviceamount')
                         amount.textContent=total
-                        console.log(rate,ratevalue,quantity,total)
                     }
                     function calculatetotal(event){
                         event.preventDefault();
@@ -634,14 +659,49 @@ table button{
                             total+=cellValue
                         }
                         document.getElementById('totallabel').textContent=total
+                        document.getElementById('totalfinalamount').value=total
                     }
-                    function closebillform(event){
+                    function closebillform(event){s
                         event.preventDefault();
                         event.stopPropagation(); 
                         document.getElementById('createbill').style.display='none'
                     }
+                    function gatherdata(){
+                        
+                        const maintable = document.getElementById('billtable')
+                        const rowCount = maintable.rows.length;
+                        let total=0;
+                        for (let i = 1; i < rowCount-2; i++) {
+                            const cellValue = parseFloat(maintable.rows[i].cells[3].textContent.trim());
+                            total+=cellValue
+                        }
+                        document.getElementById('totallabel').textContent=total
+                        document.getElementById('totalfinalamount').value=total
+
+                        const data = [];
+                        const tableRows = document.querySelectorAll('#billtable tbody tr');
+
+                        tableRows.forEach((row) => {
+                            const cells = row.cells;
+                            if (cells.length === 4) {
+                            const [descriptionCell, priceCell, quantityCell, amountCell] = cells;
+
+                            const description = descriptionCell.querySelector('input')?.value || '';
+                            const price = priceCell.querySelector('input')?.value || '';
+                            const quantity = quantityCell.querySelector('input')?.value || '';
+                            const amount = amountCell.querySelector('label')?.textContent || '';
+
+                            if (description && price && quantity && amount) {
+                                data.push({ description, price, quantity, amount });
+                            }
+                            }
+                        });
+                        document.getElementById('billData').value = JSON.stringify(data);
+                        console.log(data);
+                    }
                 </script>
             </div>
+
             {% endif %}
         </div>
     </div>
