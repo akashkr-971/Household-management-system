@@ -428,3 +428,14 @@ def publishbill(request):
         booking.save()
         return redirect(serviceproviderhome)
     return render(request, 'serviceproviderhome.html')
+
+def getbill(request,booking_id):
+    print('the bill id is : ',booking_id)
+    bookings = Booking.objects.get(booking_id = booking_id)
+    bill = Billing.objects.get(booking=bookings)
+    print('got booking')
+    bill_data = {
+        'total_amount': bill.total_amount,
+        'items': list(bill.items)
+    }
+    return JsonResponse({'bill': bill_data})

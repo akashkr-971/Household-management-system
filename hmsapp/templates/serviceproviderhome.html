@@ -206,7 +206,6 @@ table button{
     height:30px;
     width: 200px;
 }
-
 .viewcontainer{
     position: absolute;
     left: 33%;
@@ -550,9 +549,9 @@ table button{
                             </tr>
                         </tbody>
                     </table>
-                    <input type="text" name="bookingid"  id='createbookingid'>
+                    <input type="hidden" name="bookingid"  id='createbookingid'>
                     <input type="hidden" name="billData" id="billData">
-                    <input type="text" name="totalfinalamount" id="totalfinalamount">
+                    <input type="hidden" name="totalfinalamount" id="totalfinalamount">
                     <div class="buttonlast">
                         <button style="background-color: red;color: white;" onclick="closebillform(event)">Close</button>
                         <button style="background-color: rgb(21, 0, 255);color: white; width: 200px;" onclick="calculatetotal(event)" >Calculate Total</button>
@@ -661,7 +660,7 @@ table button{
                         document.getElementById('totallabel').textContent=total
                         document.getElementById('totalfinalamount').value=total
                     }
-                    function closebillform(event){s
+                    function closebillform(event){
                         event.preventDefault();
                         event.stopPropagation(); 
                         document.getElementById('createbill').style.display='none'

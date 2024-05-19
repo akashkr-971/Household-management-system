@@ -99,7 +99,6 @@ span h3{
     border-radius: 10px;
 }
 .uptask{
-    position: relative;
     text-align: center;
     width: 98%;
     height: 250px;
@@ -205,14 +204,15 @@ button {
     padding: 20px;
     border-radius: 5px;
     z-index: 10;
+    transform: translate(-50%, -50%);
 }
 .cancellationform{
-    top: 18%;
-    left: 36%;
+    top: 60%;
+    left: 50%;
 }
 .updateform{
-    top: 3%;
-    left: 43%;
+    top: 59.5%;
+    left: 50%;
     width:260px;
     height: 210px;
 }
@@ -245,10 +245,28 @@ button {
     height:30px;
     width: 200px;
 }
-#viewtable{
+.viewcontainer{
     position: absolute;
-    top: 2%;
-    left: 20%;
+    top: 59.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.billcontainer{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 600px;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #77dd77;
+    padding: 5px;
+    padding-top: 20px;
+    border-radius:10px;
+}
+.billcontainer table{
+    margin-top: 10px;
 }
 
 @media only screen and (max-width:500px){
@@ -410,7 +428,7 @@ button {
                                         <button class="update-btn" data-booking-id="{{ booking.booking_id }}" onclick="updatebooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Update</button>
                                         <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
                                     {% elif booking.status == 'Bill created' %}
-                                        <button class="viewbill-btn" data-booking-id="{{ booking.booking_id }}">View bill</button>
+                                        <button class="viewbill-btn" data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
                                     {% else %}
                                         <p>Cancelled</p>
                                     {% endif %}
@@ -490,7 +508,7 @@ button {
         </div>
         <div class="viewbooking" >
             <div class="viewcontainer" >
-                <table id="viewtable" border="0"  style="display: none;">
+                <table id="viewtable" border="0" style="display: none;" >
                     <tr style="color: red;background-color: blue;"><th>Title</th><th> </th><th>Details</th></tr>
                     <tr><td>Name</td><td>:</td><td><label id="namelabel"></label></td></tr>
                     <tr><td>Job</td><td>:</td><td><label id="joblabel"></label></td></tr>
@@ -525,6 +543,77 @@ button {
                     var viewtable = document.getElementById('viewtable')
                     viewtable.style.display = 'none';
                     document.getElementById('detailstable').style.opacity = "1";
+                }
+            </script>
+        </div>
+        <div class="viewbill">
+            <div class="billcontainer" id="billcontainer" style="display: none;">
+                <label>Service Bill</label>
+                <input type="hidden" id="billbookingid">
+                <button id="fetchbillbutton" onclick="fetchbill()" style="display: none;"></button>
+                <table class="billtable" id="billtable">
+                    <thead>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Amount</th>
+                    </thead>
+                    <tbody>
+                        <tr id="totalrow">
+                            <td colspan="2">The Total price is</td>
+                            <td colspan="2"><label id="totalbilllabel"></label></td>
+                        </tr>
+                        <tr id="buttons">
+                            <td colspan="2"><button onclick="closebill(event)" style="background-color: red;color: white;">Close</button></td>
+                            <td colspan="2"><button onclick="paybill()" style="background-color: rgb(52, 240, 35);color: white;">Pay now</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <script>
+                function viewbill(billbid,event){
+                    event.preventDefault()
+                    event.stopPropagation(); 
+                    document.getElementById('billbookingid').value=billbid
+                    document.getElementById('billcontainer').style.display='block';
+                    document.getElementById('fetchbillbutton').click()
+                }
+                function closebill(event){
+                    event.preventDefault()
+                    event.stopPropagation();
+                    document.getElementById('billcontainer').style.display='none'
+                }
+                function fetchbill(){
+                    const bid=document.getElementById('billbookingid').value
+                    console.log('button clicked the value is : ',bid)
+                    const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
+
+                    fetch(`/getbill/${bid}/`).then(response => response.json())
+                    .then(data => {
+                        const totalamount = document.getElementById('totalbilllabel')
+                        const bill = data.bill;
+                        totalamount.textContent = bill.total_amount
+
+                        bill.items.forEach(item=>{
+                            const row = document.createElement('tr');
+                            row.innerHTML=`
+                            <td>${item.description}</td>
+                            <td>${item.price}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.amount}</td>
+                            `;
+                            billtable.appendChild(row)
+                        })
+                    });
+                    
+                    populatetable()
+                }
+                function populatetable(){
+                    billtable = document.getElementById('billtable')
+                    totalrow = document.getElementById('totalrow')
+                    billtable.appendChild(totalrow)
+                    buttons = document.getElementById('buttons')
+                    billtable.appendChild(buttons)
                 }
             </script>
         </div>
