@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from email_settings import *
+from private import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -138,3 +138,6 @@ EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
 EMAIL_USE_TLS = EMAIL_USE_TLS
 
 DEFAULT_FROM_EMAIL = DEFAULT_FROM_EMAIL
+
+RAZOR_PAY_KEY_ID = RAZOR_PAY_KEY_ID
+RAZOR_PAY_SECRET = RAZOR_PAY_SECRET

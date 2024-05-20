@@ -548,40 +548,50 @@ button {
         </div>
         <div class="viewbill">
             <div class="billcontainer" id="billcontainer" style="display: none;">
-                <label>Service Bill</label>
-                <input type="hidden" id="billbookingid">
-                <button id="fetchbillbutton" onclick="fetchbill()" style="display: none;"></button>
-                <table class="billtable" id="billtable">
-                    <thead>
-                        <th>Description</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Amount</th>
-                    </thead>
-                    <tbody>
-                        <tr id="totalrow">
-                            <td colspan="2">The Total price is</td>
-                            <td colspan="2"><label id="totalbilllabel"></label></td>
-                        </tr>
-                        <tr id="buttons">
-                            <td colspan="2"><button onclick="closebill(event)" style="background-color: red;color: white;">Close</button></td>
-                            <td colspan="2"><button onclick="paybill()" style="background-color: rgb(52, 240, 35);color: white;">Pay now</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <form action="{% url 'initiate_payment' %}" method="post">
+                    {%csrf_token%}
+                    <label>Service Bill</label>
+                    <input type="text" id="billbookingid">
+                    <input type="text" name="userid" value={{user.user_id}}>
+                    <input type="text" id="totalamountinput" name="totalamountinput">
+                    <table class="billtable" id="billtable">
+                        <thead>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
+                        </thead>
+                        <tbody>
+                            <tr id="totalrow">
+                                <td colspan="2">The Total price is</td>
+                                <td colspan="2"><label id="totalbilllabel"></label></td>
+                            </tr>
+                            <tr id="buttons">
+                                <td colspan="2"><button onclick="closebill(event)" style="background-color: red;color: white;">Close</button></td>
+                                <td colspan="2"><button id="rzp-button1" style="background-color: rgb(60, 255, 109);color: white;">Pay</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                </div>
             <script>
                 function viewbill(billbid,event){
                     event.preventDefault()
                     event.stopPropagation(); 
                     document.getElementById('billbookingid').value=billbid
                     document.getElementById('billcontainer').style.display='block';
-                    document.getElementById('fetchbillbutton').click()
+                    fetchbill();
                 }
                 function closebill(event){
                     event.preventDefault()
                     event.stopPropagation();
                     document.getElementById('billcontainer').style.display='none'
+                    const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
+                    billtable.innerHTML=''
+                    totalrow = document.getElementById('totalrow')
+                    billtable.appendChild(totalrow)
+                    buttons = document.getElementById('buttons')
+                    billtable.appendChild(buttons)
                 }
                 function fetchbill(){
                     const bid=document.getElementById('billbookingid').value
@@ -591,8 +601,11 @@ button {
                     fetch(`/getbill/${bid}/`).then(response => response.json())
                     .then(data => {
                         const totalamount = document.getElementById('totalbilllabel')
+                        const totalamountinput = document.getElementById('totalamountinput')
                         const bill = data.bill;
                         totalamount.textContent = bill.total_amount
+                        totalamountinput.value = bill.total_amount
+
 
                         bill.items.forEach(item=>{
                             const row = document.createElement('tr');
@@ -641,6 +654,33 @@ button {
 <div class="bottom">
     <h4>Contact us: akashkr971@gmail.com</h4>
 </div>
-
 </body>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script> -->
+<script>
+    var options = {
+      "key": "{{ razorpay_key }}",  
+      "amount": "{{ amount }}", 
+      "currency": "INR",
+      "name": "{{ business_name }}",  
+      "description": "Payment Transaction",
+      "order_id": "{{ order_id }}",  
+      "callback_url": "{{ callback_url }}", 
+      "prefill": {
+        "name": "{{ user.full_name }}",  
+        "email": "{{ user.email }}",  
+        "contact": "{{ user.phone }}" 
+      },
+      "notes": {
+        "address": "Razorpay Corporate Office"
+      },
+      "theme": {
+        "color": "#3399cc"
+      }
+    };
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button1').onclick = function(e) {
+      rzp1.open();
+      e.preventDefault();
+    }
+  </script>
 </html>

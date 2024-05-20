@@ -11,7 +11,7 @@ from django.conf import settings
 from django.http import JsonResponse
 import json
 import random
-
+import razorpay
 # Create your views here.
 
 def home(request):
@@ -439,3 +439,29 @@ def getbill(request,booking_id):
         'items': list(bill.items)
     }
     return JsonResponse({'bill': bill_data})
+
+def initiate_payment(request):
+    if request.method == 'POST':
+        client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_SECRET))
+        amount = request.POST.get('totalamountinput')
+        amount = float(amount) * 100
+        amount = int(amount)
+        userid = request.POST.get('userid')
+        print(amount)
+        print(userid)
+        order = client.order.create(dict(amount=amount, currency="INR", payment_capture='0'))
+        user = User.objects.get(user_id = userid)
+        context = {
+            'razorpay_key': settings.RAZOR_PAY_KEY_ID,
+            'amount': amount,
+            'business_name': 'Household management system',
+            'order_id': order['id'],
+            'callback_url': 'home.html',
+            'user': user,
+        }
+        return render(request, 'home.html', context)
+
+    return render(request, 'home.html')
+
+def capture_payment():
+    return redirect('home.html')

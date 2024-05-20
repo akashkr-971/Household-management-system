@@ -33,3 +33,21 @@
 </body>
 </html>
 
+def initiate_payment(request):
+    if request.method == 'POST':
+        client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_SECRET))
+        amount = request.POST.get('totalamountinput')
+        user_id = request.POST.get('totalamountinput')
+        order = client.order.create(dict(amount=amount, currency="INR", payment_capture='0'))
+        user = User.objects.get(user_id = user_id)
+        context = {
+            'razorpay_key': settings.RAZOR_PAY_KEY_ID,
+            'amount': amount,
+            'business_name': 'Household management system',
+            'order_id': order['id'],
+            'callback_url': 'https://your-django-site.com/payment/callback/',
+            'user': user,
+        }
+        return render(request, 'home.html', context)
+
+    return render(request, 'home.html')
