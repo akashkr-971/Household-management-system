@@ -19,7 +19,7 @@ from django.urls import path
 from hmsapp.views import home,Userlogin,Clientsignup,forgetpassword,Resetpassword,Userlogout,search,acceptbooking
 from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,updatebooking,orderhistory,accountdetails
 from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory,publishbill,getbill
-from hmsapp.views import initiate_payment
+from hmsapp.views import initiate_payment,capture_payment,rate_service_provider
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,6 +46,8 @@ urlpatterns = [
     path('publishbill/', publishbill, name='publishbill'),
     path('getbill/<int:booking_id>/', getbill, name='getbill'),
     path('initiate_payment', initiate_payment, name='initiate_payment'),
+    path('capture_payment/', capture_payment, name='capture_payment'),
+    path('rate_service_provider/', rate_service_provider, name='rate_service_provider'),
 ]
 
 

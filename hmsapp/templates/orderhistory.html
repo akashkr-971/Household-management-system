@@ -9,6 +9,7 @@
                 margin: 0;
                 padding: 0;
                 height:100%;
+                font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
             }
 
             .top-bar {
@@ -137,6 +138,31 @@
                 padding-top: 20px;
                 font-size: 14px;
             }
+            .ratebutton{
+                height: 30px;
+                background-color: greenyellow;
+                color: black;
+            }
+            .ratingform{
+                position: absolute;
+                top: 0;
+                transform: translate(-50%, -50%); 
+                background-color: #77dd77;
+                left: 50%;
+                top: 50%;
+                width: 500px;
+                height: 200px;
+            }
+            .buttons{
+                display: flex;
+                justify-content: space-evenly;
+                align-items: center;
+            }
+            .ratingform button{
+                margin-top: 20px;
+                width: 130px;
+                height: 30px;
+            }
             @media only screen and (max-width:500px){
                 table ,th, td {
                     font-size: 8px;
@@ -224,6 +250,7 @@
                             <th>Job</th>
                             <th>Status</th>
                             <th>Total Price</th>
+                            <th>Rating</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -234,16 +261,50 @@
                                     <td>{{ booking.service_provider.user.full_name }}</td>
                                     <td>{{ booking.job }}</td>
                                     <td>{{ booking.status }}</td>
-                                    <td>{{ booking.totalrate }}
+                                    <td>{{ booking.totalrate }}</td>
+                                    {% if booking.israted == 'No' %}
+                                    <td>
+                                        <button onclick="addrating(booking.service_provider.id)" class="ratebutton">Rate</button>
+                                    </td>
+                                    {% endif %}
                                 </tr>                  
-                            {% endfor %}
-                        {% else %}
+                                {% endfor %}
+                                {% else %}
                         <tr>
                             <td colspan="6">No bookings available</td>
                         </tr>
                         {% endif %}
                     </tbody>
                 </table>
+                <div class="ratingform" id="ratingform">
+                    <form method="post" action="{% url 'rate_service_provider' %}">
+                        <!-- {% csrf_token %} -->
+                        <input type="hidden" name="service_provider_id" value="{{ booking.service_provider.id }}">
+                        <div class="staring">
+                            <Label>Rating</Label>
+                            <div class="star-rating">
+                                <span class="star" data-value="1">&#9733;</span>
+                                <span class="star" data-value="2">&#9733;</span>
+                                <span class="star" data-value="3">&#9733;</span>
+                                <span class="star" data-value="4">&#9733;</span>
+                                <span class="star" data-value="5">&#9733;</span>
+                            </div>
+                        </div>
+                        <div class="comment">
+                            <label>Comments</label>
+                            <textarea name="" id="" rows="3" cols="30"></textarea>    
+                        </div> 
+                        <div class="buttons">
+                            <button class="closebutton" onclick="closerateform()" style="background-color: red;color: white;">Close</button>
+                            <button type="submit" class="ratebutton">Rate</button>
+                        </div>                       
+                    </form>
+                    <script>
+                        function closerateform(){
+                            document.getElementById('ratingform').style.display='none'
+                        }
+                    </script>
+                </div>
                 {% endif %}
             </div>
         </div>

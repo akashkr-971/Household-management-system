@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Status</title>
+    <style>
+        body{
+            background-color: rgb(203, 220, 234);
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        .status-success {
+            color: green;
+        }
+        .status-failed {
+            color: red;
+        }
+        .paymentcontent{
+            position: absolute;
+            top: 0;
+            transform: translate(-50%, -50%);
+            background-color: #77dd77;
+            left:50%;
+            top: 50%;
+            padding: 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .paymentcontent button{
+            width: 120px;
+            font-size: 16px;
+            height: 40px;
+            background-color: red;
+            color: white;
+            border-radius: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="paymentcontent" id="paymentcontent">
+        <div class="maincontent">
+            <h1>Payment Information</h1>
+            {% if status == 'success' %}
+                <p class="status-success">Payment was successful!</p>
+                <p>Razorpay Payment ID: {{ razorpay_payment_id }}</p>
+                <button onclick="returnhome('{{ user_id }}')">Return Home</button>
+            {% else %}
+                <p class="status-failed">Payment failed. Please try again.</p>
+                <button onclick="returnhome('{{ user_id }}')">Return Home</button>
+            {% endif %}
+        </div>
+        <script>
+            function returnhome(userid){
+                sessionStorage.setItem('user_id', userid);
+                window.location.href='/';
+            }
+        </script>
+    </div>
+</body>
+</html>

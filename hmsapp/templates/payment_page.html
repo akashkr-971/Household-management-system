@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Initiate Payment</title>
+</head>
+<body>
+    <button id="rzp-button1" style="display: none;">Pay</button>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        var options = {
+            "key": "{{ razorpay_key }}",  
+            "amount": "{{ amount }}", 
+            "currency": "INR",
+            "name": "{{ business_name }}",  
+            "description": "Payment Transaction",
+            "order_id": "{{ order_id }}", 
+            "callback_url": "{{ callback_url }}", 
+            "prefill": {
+                "name": "{{ user.full_name }}",  
+                "email": "{{ user.email }}",  
+                "contact": "{{ user.phone }}" 
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+            },
+            "modal": {
+                "ondismiss": function(){
+                    window.location.href = "{% url 'home' %}";
+                }
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button1').onclick = function(e) {
+            rzp1.open();
+            e.preventDefault();
+        }
+        window.onload = function(){
+            document.getElementById('rzp-button1').click();
+        }
+    </script>
+</body>
+</html>

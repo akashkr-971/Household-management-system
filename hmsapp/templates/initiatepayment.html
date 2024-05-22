@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Initiate Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <h1>Initiate Payment</h1>
+    <form id="razorpay-form">
+        <input type="hidden" id="razorpay_key" value="{{ razorpay_key }}">
+        <input type="hidden" id="order_id" value="{{ order_id }}">
+        <input type="hidden" id="amount" value="{{ amount }}">
+        <input type="hidden" id="callback_url" value="{{ callback_url }}">
+    </form>
+    <button id="pay-button">Pay Now</button>
+
+    <script>
+        document.getElementById('pay-button').onclick = function(e) {
+            var options = {
+                "key": document.getElementById('razorpay_key').value,
+                "amount": document.getElementById('amount').value,
+                "currency": "INR",
+                "name": "{{ business_name }}",
+                "order_id": document.getElementById('order_id').value,
+                "handler": function (response){
+                    var form = document.createElement("form");
+                    form.setAttribute("method", "post");
+                    form.setAttribute("action", document.getElementById('callback_url').value);
+
+                    var razorpay_payment_id = document.createElement("input");
+                    razorpay_payment_id.setAttribute("type", "hidden");
+                    razorpay_payment_id.setAttribute("name", "razorpay_payment_id");
+                    razorpay_payment_id.setAttribute("value", response.razorpay_payment_id);
+                    form.appendChild(razorpay_payment_id);
+
+                    var razorpay_order_id = document.createElement("input");
+                    razorpay_order_id.setAttribute("type", "hidden");
+                    razorpay_order_id.setAttribute("name", "razorpay_order_id");
+                    razorpay_order_id.setAttribute("value", response.razorpay_order_id);
+                    form.appendChild(razorpay_order_id);
+
+                    var razorpay_signature = document.createElement("input");
+                    razorpay_signature.setAttribute("type", "hidden");
+                    razorpay_signature.setAttribute("name", "razorpay_signature");
+                    razorpay_signature.setAttribute("value", response.razorpay_signature);
+                    form.appendChild(razorpay_signature);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                },
+                "theme": {
+                    "color": "#F37254"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html>

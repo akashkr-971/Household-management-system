@@ -55,6 +55,7 @@ class Booking(models.Model):
         ('Cancelled', 'Cancelled'),
         ('Completed','Completed'),
         ('Bill created','Bill created'),
+        ('Paid','Paid'),
         ('Finished','Finished')
     ]
     booking_id = models.AutoField(primary_key=True)
@@ -72,6 +73,7 @@ class Booking(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     isupdated=models.TextField(default='No')
     totalrate = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    israted = models.CharField(max_length=100,default='No')
 
     def __str__(self):
         return f"Booking {self.booking_id} - {self.homeowner.user.user_name} - {self.service_provider.user.user_name}"
@@ -86,13 +88,19 @@ class Reviews(models.Model):
 
 class Payment(models.Model):
     payment_id = models.AutoField(primary_key=True)
+    order_id = models.CharField(max_length=100, unique=True,null=True)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     homeowner = models.ForeignKey(Homeowner, on_delete=models.CASCADE, default=1)
     service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, default=1) 
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
     method = models.CharField(max_length=100)
-    payment_status = models.CharField(max_length=100)
+    payment_status = models.CharField(max_length=100,default='Pending')
+    razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
+    payment_method = models.CharField(max_length=100,default='card')
+
+    def __str__(self):
+        return f"Payment {self.payment_id}"
 
 class Cancellation(models.Model):
     cancellation_id = models.AutoField(primary_key=True)
@@ -114,7 +122,6 @@ class Update(models.Model):
     updateto_time = models.TimeField(auto_now_add=True)
     updatemade_date = models.DateField(auto_now_add=True)
     description = models.TextField()
-
 
 class Billing(models.Model):
     bill_id = models.AutoField(primary_key=True)

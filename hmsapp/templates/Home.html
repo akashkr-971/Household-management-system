@@ -268,6 +268,15 @@ button {
 .billcontainer table{
     margin-top: 10px;
 }
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: none;
+}
 
 @media only screen and (max-width:500px){
     table ,th, td {
@@ -329,7 +338,7 @@ button {
 </style>
 </head>
 <body>
-
+<div id="overlay" class="overlay"></div>
 <div class="top-bar">
     <div class="name">
         <button onclick="redirecttohome()" style="background:transparent;color: white;">Household Management System</button>
@@ -408,7 +417,7 @@ button {
             <tbody>
                 {% if user.homeowner.bookings.all%}
                     {% for booking in user.homeowner.bookings.all %}
-                        {% if booking.status != 'Cancelled' and booking.status != 'Finished' %}
+                        {% if booking.status != 'Cancelled' and booking.status != 'Finished' and booking.status != 'Paid' %}
                         {% if booking.isupdated == 'No' %}
                             <tr onclick="Viewbooking('{{ booking.service_provider.user.full_name }}','{{ booking.job }}','{{ booking.service_provider.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}')">
                         {% else %}
@@ -547,13 +556,13 @@ button {
             </script>
         </div>
         <div class="viewbill">
-            <div class="billcontainer" id="billcontainer" style="display: none;">
+            <div class="billcontainer" id="billcontainer" style="display: none;" >
                 <form action="{% url 'initiate_payment' %}" method="post">
                     {%csrf_token%}
                     <label>Service Bill</label>
-                    <input type="text" id="billbookingid">
-                    <input type="text" name="userid" value={{user.user_id}}>
-                    <input type="text" id="totalamountinput" name="totalamountinput">
+                    <input type="hidden" id="billbookingid" name="billbookingid">
+                    <input type="hidden" name="userid" value={{user.user_id}}>
+                    <input type="hidden" id="totalamountinput" name="totalamountinput">
                     <table class="billtable" id="billtable">
                         <thead>
                             <th>Description</th>
@@ -573,7 +582,7 @@ button {
                         </tbody>
                     </table>
                 </form>
-                </div>
+            </div>
             <script>
                 function viewbill(billbid,event){
                     event.preventDefault()
@@ -630,7 +639,6 @@ button {
                 }
             </script>
         </div>
-
         {% else %}
             <a href="{% url 'Userlogin' %}">Login to show details</a>
         {% endif %}
@@ -652,35 +660,7 @@ button {
 </div>
 
 <div class="bottom">
-    <h4>Contact us: akashkr971@gmail.com</h4>
+    <h4>Contact us: askashkr971@gmail.com</h4>
 </div>
 </body>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script> -->
-<script>
-    var options = {
-      "key": "{{ razorpay_key }}",  
-      "amount": "{{ amount }}", 
-      "currency": "INR",
-      "name": "{{ business_name }}",  
-      "description": "Payment Transaction",
-      "order_id": "{{ order_id }}",  
-      "callback_url": "{{ callback_url }}", 
-      "prefill": {
-        "name": "{{ user.full_name }}",  
-        "email": "{{ user.email }}",  
-        "contact": "{{ user.phone }}" 
-      },
-      "notes": {
-        "address": "Razorpay Corporate Office"
-      },
-      "theme": {
-        "color": "#3399cc"
-      }
-    };
-    var rzp1 = new Razorpay(options);
-    document.getElementById('rzp-button1').onclick = function(e) {
-      rzp1.open();
-      e.preventDefault();
-    }
-  </script>
 </html>

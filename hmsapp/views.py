@@ -5,10 +5,13 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
 from django.contrib import messages
 from .models import User, Homeowner ,Service , ServiceProvider ,Booking ,Cancellation , Update ,Billing
+from .models import Payment
 from django.http import HttpResponseBadRequest
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
 import json
 import random
 import razorpay
@@ -395,11 +398,7 @@ def publishbill(request):
         billdatajson = request.POST.get('billData')
         totalamount = request.POST.get('totalfinalamount')
         bookingid = request.POST.get('bookingid')
-        print('the booking id is : ',bookingid)
-        print('total amont = ',totalamount)
-        print('bill json is ',billdatajson)
-        
-        
+    
         booking = Booking.objects.get(booking_id=bookingid)
         homeowner = booking.homeowner
         service_provider = booking.service_provider
@@ -430,10 +429,8 @@ def publishbill(request):
     return render(request, 'serviceproviderhome.html')
 
 def getbill(request,booking_id):
-    print('the bill id is : ',booking_id)
     bookings = Booking.objects.get(booking_id = booking_id)
     bill = Billing.objects.get(booking=bookings)
-    print('got booking')
     bill_data = {
         'total_amount': bill.total_amount,
         'items': list(bill.items)
@@ -447,21 +444,80 @@ def initiate_payment(request):
         amount = float(amount) * 100
         amount = int(amount)
         userid = request.POST.get('userid')
-        print(amount)
-        print(userid)
-        order = client.order.create(dict(amount=amount, currency="INR", payment_capture='0'))
+        bookingid = request.POST.get('billbookingid')
+
         user = User.objects.get(user_id = userid)
+        booking = Booking.objects.get(booking_id = bookingid)
+        homeowner  = booking.homeowner
+        service_provider  = booking.service_provider
+
+        order = client.order.create(dict(amount=amount, currency="INR", payment_capture='0'))
+        payment = Payment(
+            order_id=order['id'],
+            booking=booking,
+            homeowner=homeowner,
+            service_provider=service_provider,
+            amount=amount/100,  
+            method='Online payment',
+            payment_status='Pending'
+        )
+        payment.save()
+        
         context = {
             'razorpay_key': settings.RAZOR_PAY_KEY_ID,
             'amount': amount,
             'business_name': 'Household management system',
             'order_id': order['id'],
-            'callback_url': 'home.html',
+            'callback_url': 'http://127.0.0.1:8000/capture_payment/',
             'user': user,
         }
-        return render(request, 'home.html', context)
+        return render(request, 'payment_page.html',context)
 
     return render(request, 'home.html')
 
-def capture_payment():
-    return redirect('home.html')
+def rate_service_provider(request):
+    if request.method =='POST':
+        providerid = request.POST.get('service_provider_id')
+    return render(request, 'orderhistory.html')
+
+@csrf_exempt
+def capture_payment(request):
+    if request.method == "POST":
+        client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_SECRET))
+        try:
+            payment_id = request.POST.get('razorpay_payment_id')
+            order_id = request.POST.get('razorpay_order_id')
+            signature = request.POST.get('razorpay_signature')
+            params_dict = {
+                'razorpay_order_id': order_id,
+                'razorpay_payment_id': payment_id,
+                'razorpay_signature': signature
+            }
+            result = client.utility.verify_payment_signature(params_dict)
+            if result is not None:
+                transaction = client.payment.fetch(payment_id)
+                payment_method = transaction.get('method')
+                payment = Payment.objects.get(order_id=order_id)
+                payment.payment_status = 'Success'
+                payment.razorpay_payment_id = payment_id
+                payment.payment_method = payment_method
+                payment.save()
+
+                booking = payment.booking
+                booking.status = 'Paid'
+                booking.totalrate = payment.amount
+                booking.save()
+
+                user_id = payment.homeowner.user.user_id
+                authorized_amount = payment.amount
+                amount_in_paise = int(authorized_amount * 100)
+                captured_payment = client.payment.capture(payment_id, amount_in_paise)
+                return render(request, 'payment_status.html', {'status': 'success','razorpay_payment_id': payment_id,'user_id': user_id})
+            else:
+                return render(request, 'payment_status.html', {'status': 'failed'})
+        except (razorpay.errors.SignatureVerificationError, ValueError, KeyError) as e:
+            print('Error:', e)
+            return render(request, 'home.html', {'status': 'failed'})
+    return HttpResponseBadRequest()
+
+    
