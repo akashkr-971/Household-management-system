@@ -1,11 +1,12 @@
-from datetime import date
+from datetime import date 
+from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
 from django.contrib import messages
 from .models import User, Homeowner ,Service , ServiceProvider ,Booking ,Cancellation , Update ,Billing
-from .models import Payment
+from .models import Payment ,Reviews
 from django.http import HttpResponseBadRequest
 from django.core.mail import send_mail
 from django.conf import settings
@@ -477,9 +478,59 @@ def initiate_payment(request):
 
 def rate_service_provider(request):
     if request.method =='POST':
-        providerid = request.POST.get('service_provider_id')
-    return render(request, 'orderhistory.html')
+        stars = request.POST.get('stars')
+        comment = request.POST.get('comment')
+        bookingid = request.POST.get('bookingid')
+        booking = Booking.objects.get(booking_id=bookingid)
+        provider = booking.service_provider
+        review = Reviews(
+            service_provider=provider,
+            booking=booking,
+            rating=stars,
+            review=comment,
+        )
+        review.save()
+        booking.israted='Yes'
+        booking.save()
+        average_rating = provider.calculate_average_rating()
+        provider.average_rating = average_rating
+        provider.save()
+        userid = booking.homeowner.user.user_id
+        print('the userid is ',userid)
+        request.session['user_id'] = userid
+        return redirect(reverse('orderhistory'))
 
+def fetchreview(request,booking_id):
+    booking = Booking.objects.get(booking_id=booking_id)
+    review = Reviews.objects.get(booking=booking)
+    reviews_data = {
+        'rating':review.rating,
+        'comment':review.review
+    }
+    print(reviews_data)
+    return JsonResponse({'review': reviews_data})
+    
+def update_rate_service_provider(request):
+    if request.method =='POST':
+        stars = request.POST.get('stars')
+        comment = request.POST.get('comment')
+        bookingid = request.POST.get('bookingid')
+        booking = Booking.objects.get(booking_id=bookingid)
+        provider = booking.service_provider
+
+        review = Reviews.objects.get(booking=booking)
+        review.rating = stars
+        review.review = comment
+        review.review_date = timezone.now()
+        review.save()
+        average_rating = provider.calculate_average_rating()
+        provider.average_rating = average_rating
+        provider.save()
+        userid = booking.homeowner.user.user_id
+        request.session['user_id'] = userid
+        return redirect(reverse('orderhistory'))
+
+    
 @csrf_exempt
 def capture_payment(request):
     if request.method == "POST":
@@ -514,7 +565,7 @@ def capture_payment(request):
                 captured_payment = client.payment.capture(payment_id, amount_in_paise)
                 return render(request, 'payment_status.html', {'status': 'success','razorpay_payment_id': payment_id,'user_id': user_id})
             else:
-                return render(request, 'payment_status.html', {'status': 'failed'})
+                return render(request, 'payment_status.html', {'status': 'failed','user_id': user_id})
         except (razorpay.errors.SignatureVerificationError, ValueError, KeyError) as e:
             print('Error:', e)
             return render(request, 'home.html', {'status': 'failed'})

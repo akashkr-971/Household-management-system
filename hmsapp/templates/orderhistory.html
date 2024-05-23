@@ -143,7 +143,8 @@
                 background-color: greenyellow;
                 color: black;
             }
-            .ratingform{
+            .ratingform,.viewrating{
+                display: none;
                 position: absolute;
                 top: 0;
                 transform: translate(-50%, -50%); 
@@ -151,17 +152,35 @@
                 left: 50%;
                 top: 50%;
                 width: 500px;
-                height: 200px;
+                height: 230px;
+                font-size: 24px;
+                padding: 20px;
+                text-align: center;
             }
             .buttons{
                 display: flex;
                 justify-content: space-evenly;
                 align-items: center;
             }
-            .ratingform button{
-                margin-top: 20px;
+            .ratingform button,.viewrating button{
+                margin-top: 10px;
                 width: 130px;
                 height: 30px;
+                font-size: 20px;
+            }
+            .viewrating button{
+                width: 150px;
+            }
+            .star,.upstar{
+                color: white;
+                font-size: 32px;
+                cursor: pointer;
+            }
+            .star.selected,.upstar.selected {
+                color: gold;
+            }
+            .comment{
+                margin-top: 10px;
             }
             @media only screen and (max-width:500px){
                 table ,th, td {
@@ -264,7 +283,11 @@
                                     <td>{{ booking.totalrate }}</td>
                                     {% if booking.israted == 'No' %}
                                     <td>
-                                        <button onclick="addrating(booking.service_provider.id)" class="ratebutton">Rate</button>
+                                        <button onclick="addrating('{{ booking.service_provider.service_provider_id }}','{{booking.booking_id}}')" class="ratebutton">Rate</button>
+                                    </td>
+                                    {% else %}
+                                    <td>
+                                        <button onclick="viewrating('{{ booking.service_provider.service_provider_id }}','{{booking.booking_id}}')" class="ratebutton">View rating</button>
                                     </td>
                                     {% endif %}
                                 </tr>                  
@@ -276,34 +299,161 @@
                         {% endif %}
                     </tbody>
                 </table>
-                <div class="ratingform" id="ratingform">
+                <div class="ratingform" id="ratingform"> 
                     <form method="post" action="{% url 'rate_service_provider' %}">
-                        <!-- {% csrf_token %} -->
-                        <input type="hidden" name="service_provider_id" value="{{ booking.service_provider.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="serviceprovider_id" id="serviceprovider_id">
+                        <input type="hidden" name="stars" id="starvalue"> 
+                        <input type="hidden" name="bookingid" id="bookingid"> 
                         <div class="staring">
-                            <Label>Rating</Label>
+                            <Label>Rating*</Label>
                             <div class="star-rating">
-                                <span class="star" data-value="1">&#9733;</span>
-                                <span class="star" data-value="2">&#9733;</span>
-                                <span class="star" data-value="3">&#9733;</span>
-                                <span class="star" data-value="4">&#9733;</span>
-                                <span class="star" data-value="5">&#9733;</span>
+                                <span class="star" data-value="1" onclick="getrating(1)">&#9733;</span>
+                                <span class="star" data-value="2" onclick="getrating(2)">&#9733;</span>
+                                <span class="star" data-value="3" onclick="getrating(3)">&#9733;</span>
+                                <span class="star" data-value="4" onclick="getrating(4)">&#9733;</span>
+                                <span class="star" data-value="5" onclick="getrating(5)">&#9733;</span>
                             </div>
                         </div>
                         <div class="comment">
-                            <label>Comments</label>
-                            <textarea name="" id="" rows="3" cols="30"></textarea>    
+                            <label>Comments</label><br>
+                            <textarea name="comment" id="" rows="3" cols="30" style="font-size: 20px;font-weight: 500;"></textarea>    
                         </div> 
                         <div class="buttons">
-                            <button class="closebutton" onclick="closerateform()" style="background-color: red;color: white;">Close</button>
+                            <button class="closebutton" onclick="closerateform(event)" style="background-color: red;color: white;">Close</button>
                             <button type="submit" class="ratebutton">Rate</button>
                         </div>                       
                     </form>
                     <script>
-                        function closerateform(){
+                        function addrating(id,bid){
+                            document.getElementById('serviceprovider_id').value = id
+                            document.getElementById('bookingid').value = bid
+                            document.getElementById('ratingform').style.display='block'
+                        }
+                        function closerateform(event){
+                            event.preventDefault();
                             document.getElementById('ratingform').style.display='none'
                         }
+                        function getrating(val){
+                            console.log(val)
+                            var stars = document.querySelectorAll('.star');
+                            stars.forEach(function(star) {
+                                if (star.getAttribute('data-value') <= val) {
+                                    star.classList.add('selected');
+                                } else {
+                                    star.classList.remove('selected');
+                                }
+                            });
+                            document.getElementById('starvalue').value=val
+                        }
+                        document.getElementById('ratingform').addEventListener('submit', function(event) {
+                            var rating = document.querySelector('.star.selected');
+                            if (!rating) {
+                                alert('Please select a star rating before submitting.');
+                                event.preventDefault();
+                                return;
+                            }
+                        });
                     </script>
+                </div>
+                <div class="viewrating" id="viewratingform">
+                    <form method="post" action="{% url 'update_rate_service_provider' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="serviceprovider_id" id="viewserviceprovider_id">
+                        <input type="hidden" name="stars" id="viewstarvalue"> 
+                        <input type="hidden" name="bookingid" id="viewbookingid"> 
+                        <div class="staring">
+                            <Label>Rating*</Label>
+                            <div class="star-rating">
+                                <span class="upstar" data-value="1">&#9733;</span>
+                                <span class="upstar" data-value="2">&#9733;</span>
+                                <span class="upstar" data-value="3">&#9733;</span>
+                                <span class="upstar" data-value="4">&#9733;</span>
+                                <span class="upstar" data-value="5">&#9733;</span>
+                            </div>
+                        </div>
+                        <div class="comment">
+                            <label>Comments</label><br>
+                            <textarea name="comment" id="viewcomment" rows="3" cols="30" style="font-size: 20px;font-weight: 500;" readonly></textarea>    
+                        </div> 
+                        <div class="buttons">
+                            <button class="closebutton" onclick="closeviewrateform(event)" style="background-color: red;color: white;">Close</button>
+                            <button class="ratebutton" id="updatebutton" onclick="updaterating()">Update rating</button>
+                            <button type="submit" class="ratebutton" id="updatesubmit" style="display: none;">Submit Update</button>
+                        </div>    
+                    </form>
+                    <script>
+                        function viewrating(id,bid) {
+                            console.log('the booking id is : ',bid)
+                            document.getElementById('viewserviceprovider_id').value = id;
+                            document.getElementById('viewbookingid').value = bid
+                            document.getElementById('viewratingform').style.display = 'block';
+                            fetch(`/fetchreview/${bid}/`).then(response => response.json())
+                            .then(data => {
+                                const review = data.review;
+                                stars = review.rating;
+                                comment = review.comment; 
+                                document.getElementById('viewcomment').value = comment;
+                                highlightstar(stars);
+                            });
+                        }
+                        function closeviewrateform(event){
+                            event.preventDefault();
+                            document.getElementById('viewratingform').style.display='none'
+                            document.getElementById('viewcomment').setAttribute('readonly', '');
+                            document.getElementById('updatebutton').style.display='block'
+                            document.getElementById('updatesubmit').style.display='none'
+                            const starElements = document.querySelectorAll('.star-rating .upstar');
+                            starElements.forEach((star, index) => {
+                                star.removeEventListener('click', null);
+                            });
+                        }
+                        function highlightstar(stars) {
+                            const star = document.querySelectorAll('.upstar');
+                            star.forEach(function(star) {
+                                if (star.getAttribute('data-value') <= stars) {
+                                    star.classList.add('selected');
+                                } else {
+                                    star.classList.remove('selected');
+                                }
+                            });
+                        }
+                        function updaterating(){
+                            event.preventDefault();
+                            document.getElementById('updatebutton').style.display='none'
+                            document.getElementById('updatesubmit').style.display='block'
+                            const starElements = document.querySelectorAll('.star-rating .upstar');
+                            const textarea = document.getElementById('viewcomment');
+                            starElements.forEach((star, index) => {
+                                console.log('the index is ',index)
+                                star.addEventListener('click', () => {
+                                    getupdaterating(index+1);
+                                });
+                                star.classList.remove('selected')
+                            });
+                            textarea.removeAttribute('readonly');
+                        }
+                        function getupdaterating(val){
+                            console.log('the recieved val is ',val)
+                            var stars = document.querySelectorAll('.upstar');
+                            stars.forEach(function(star) {
+                                if (star.getAttribute('data-value') <= val) {
+                                    star.classList.add('selected');
+                                } else {
+                                    star.classList.remove('selected');
+                                }
+                            });
+                            document.getElementById('viewstarvalue').value=val
+                        }
+                        document.getElementById('viewratingform').addEventListener('submit', function(event) {
+                            var rating = document.querySelector('.upstar.selected');
+                            if (!rating) {
+                                alert('Please select a star rating before submitting.');
+                                event.preventDefault();
+                                return;
+                            }
+                        });
+                    </script>                   
                 </div>
                 {% endif %}
             </div>

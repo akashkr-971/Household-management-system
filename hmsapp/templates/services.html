@@ -116,7 +116,7 @@
             border-collapse: collapse;
             
         }
-        th, td {
+        th, td ,.errormsg {
             padding: 8px;
             text-align: center;
             border-bottom: 1px solid #ddd;
@@ -296,6 +296,12 @@
                             }
                             tr[i].style.display = matchfound ? "" : "none";
                         }
+                        if(matchfound==false){
+                            document.getElementById('errormsg').style.display='block'
+                        }
+                        else{
+                            document.getElementById('errormsg').style.display='none'
+                        }
                     }
                 </script>
             </form>    
@@ -320,13 +326,14 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{ provider.user.full_name }}</td>
                 <td>{{ provider.rate }}Rs/{{provider.unit}}</td>
-                <td>{{ provider.average_rating }}</td>
+                <td>{{ provider.average_rating }}/5&#9733;</td>
                 <td>{{ provider.user.location }}</td>
                 <td>{{ provider.availability }}</td>
-              </tr>
+            </tr>
               {% endfor %}
             </tbody>
         </table>
+        <div class="errormsg" id="errormsg" style="display: none;">No service provider matching the search query</div>
         <div id="bookingFormModal"  class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close" onclick="closeform()">&times;</span>
