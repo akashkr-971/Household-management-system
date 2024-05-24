@@ -277,6 +277,31 @@ button {
     background-color: rgba(0, 0, 0, 0.5); 
     display: none;
 }
+.services button{
+    padding: 0;
+}
+.services button a{
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+.loginalert{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 190px;
+    word-wrap:break-word;
+}
+.loginalert p,.loginalert a{
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    height: 190px;
+    padding: 0%;
+}
 
 @media only screen and (max-width:500px){
     table ,th, td {
@@ -445,13 +470,30 @@ button {
                             </tr>
                         {% endif %}                    
                     {% endfor %}
+                    <tr id="msgbox" style="display: none;"><td colspan="5">No upcoming bookings available</td></tr>
                 {% else %}
                 <tr>
                     <td colspan="6">No upcoming bookings available</td>
                 </tr>
                 {% endif %}
             </tbody>
-        </table>       
+            <script>
+                window.onload = function(){
+                    console.log('called')
+                    maintable = document.getElementById('detailstable')
+                    tbody = maintable.getElementsByTagName('tbody')[0]
+                    msgbox = document.getElementById('msgbox')
+                    console.log(tbody.rows.length)
+                    if(tbody.rows.length === 1){
+                        msgbox.style.display='table-row'
+                    }
+                    else{
+                        msgbox.style.display='none'
+                    }
+                }
+
+            </script>
+        </table>     
         <div class="cancellationform" style="display: none;" id="cancellationform">
             <form method="post" action="{% url 'cancelbooking' %}">
                 {% csrf_token %}
@@ -640,7 +682,10 @@ button {
             </script>
         </div>
         {% else %}
-            <a href="{% url 'Userlogin' %}">Login to show details</a>
+        <div class="loginalert">
+            <p>Unlock the full potential of our service management platform with a simple login</p>
+            <a href="{% url 'Userlogin' %}" class="loginalertmsg">Login to show upcoming booking details</a>
+        </div>
         {% endif %}
     </div>
     <div class="services-tab">

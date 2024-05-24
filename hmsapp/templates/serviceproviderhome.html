@@ -361,7 +361,7 @@ table button{
                 <tbody>
                     {% if user.serviceprovider.bookings.all%}
                         {% for booking in user.serviceprovider.bookings.all %}
-                            {% if booking.status != 'Cancelled' and booking.status != 'Finished' %}
+                            {% if booking.status != 'Cancelled' and booking.status != 'Paid' %}
                             {% if booking.isupdated == 'No' %}
                             <tr onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}')">
                             {% else %}
@@ -384,7 +384,6 @@ table button{
                                             <button class="complete-btn" data-booking-id="{{ booking.booking_id }}" onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Completed</button>
                                         {% elif booking.status == 'Completed' %}
                                             <button class="createbillbtn" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
-                                            <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
                                         {% elif booking.status == 'Bill created' %}
                                             <button class="updatebillbtn" data-booking-id="{{ booking.booking_id }}" onclick="updatebill('{{ booking.booking_id }}'); event.stopPropagation();">Update bill</button>
                                             <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
@@ -511,7 +510,7 @@ table button{
                 <form method="post" action="{% url 'finishbooking' %}" id="finishbookingform">
                     {% csrf_token %}
                     <input type="hidden" name="booking_id" id="finishbookingid">
-                    <input type="hidden" name="new_status" value="Finished">
+                    <input type="hidden" name="new_status" value="Paid">
                     <input type="submit" value="Accept" style="display: none;">
                 </form>
                 <script>

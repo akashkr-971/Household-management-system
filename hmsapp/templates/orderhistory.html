@@ -11,7 +11,6 @@
                 height:100%;
                 font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
             }
-
             .top-bar {
                 display: flex;
                 align-items: center;
@@ -23,7 +22,6 @@
                 color: #fff;
                 padding: 0 0px;
             }
-
             .name {
                 font-weight: 600;
                 flex:3;
@@ -43,7 +41,6 @@
                 position:relative;
                 top:10px;
             }
-
             .dropdown-content {
                 display: none;
                 position: absolute;
@@ -62,18 +59,15 @@
             .dropdown-content:hover{
                 display:block;
             }
-
             .dropdown-content a {
                 color: white;
                 padding: 12px 16px;
                 text-decoration: none;
                 display: block;
             }
-
             .dropdown-content a:hover {
                 background-color:black;
             }
-
             .mid-bar {
                 margin-top: 40px;
                 margin-bottom: 40px;
@@ -128,7 +122,7 @@
                 color: #000;
             }
             .bottom {
-                position: absolute;
+                position: fixed;
                 bottom: 0;
                 width: 100%;
                 height: 80px;
@@ -143,7 +137,7 @@
                 background-color: greenyellow;
                 color: black;
             }
-            .ratingform,.viewrating{
+            .ratingform{
                 display: none;
                 position: absolute;
                 top: 0;
@@ -156,6 +150,26 @@
                 font-size: 24px;
                 padding: 20px;
                 text-align: center;
+            }
+            .viewdetails{
+                display: none;
+                position: relative;
+                transform: translate(-50%, -50%); 
+                background-color: #77dd77;
+                left: 50%;
+                height: auto;
+                width:70%;
+                background-color: burlywood;
+                margin: 80px 0px;
+                font-size: 20px;
+                padding: 20px;
+                text-align: center;
+            }
+            .viewdetails td{
+                width: 50%;
+            }
+            .orderdetails{
+                height: 600px;
             }
             .buttons{
                 display: flex;
@@ -233,7 +247,7 @@
         </div>
         <div class="mid-bar">
             <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
-            <div class="orderdetails">
+            <div class="orderdetails" id="orderdetails">
                 {% if user %}
                 <div class="search-bar">
                     <form id="searchForm" action="{% url 'search' %}" method="GET">
@@ -281,15 +295,13 @@
                                     <td>{{ booking.job }}</td>
                                     <td>{{ booking.status }}</td>
                                     <td>{{ booking.totalrate }}</td>
-                                    {% if booking.israted == 'No' %}
                                     <td>
-                                        <button onclick="addrating('{{ booking.service_provider.service_provider_id }}','{{booking.booking_id}}')" class="ratebutton">Rate</button>
+                                        {% if booking.status == 'Paid' and booking.israted == 'No' %}
+                                            <button onclick="addrating('{{ booking.service_provider.service_provider_id }}','{{booking.booking_id}}')" class="ratebutton">Rate</button>
+                                        {% elif booking.israted == 'Yes' or booking.status != 'Paid' %}
+                                            <button onclick="viewmore('{{booking.booking_id}}','{{booking.service_provider.user.full_name}}','{{booking.job}}','{{booking.jobdescription}}','{{booking.bookingdate}}','{{booking.servicedate}}','{{booking.totalrate}}','{{booking.service_provider.service_provider_id}}')" class="ratebutton">View more</button>
+                                        {% endif %}
                                     </td>
-                                    {% else %}
-                                    <td>
-                                        <button onclick="viewrating('{{ booking.service_provider.service_provider_id }}','{{booking.booking_id}}')" class="ratebutton">View rating</button>
-                                    </td>
-                                    {% endif %}
                                 </tr>                  
                                 {% endfor %}
                                 {% else %}
@@ -356,109 +368,222 @@
                         });
                     </script>
                 </div>
-                <div class="viewrating" id="viewratingform">
-                    <form method="post" action="{% url 'update_rate_service_provider' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="serviceprovider_id" id="viewserviceprovider_id">
-                        <input type="hidden" name="stars" id="viewstarvalue"> 
-                        <input type="hidden" name="bookingid" id="viewbookingid"> 
-                        <div class="staring">
-                            <Label>Rating*</Label>
-                            <div class="star-rating">
-                                <span class="upstar" data-value="1">&#9733;</span>
-                                <span class="upstar" data-value="2">&#9733;</span>
-                                <span class="upstar" data-value="3">&#9733;</span>
-                                <span class="upstar" data-value="4">&#9733;</span>
-                                <span class="upstar" data-value="5">&#9733;</span>
+                <div class="viewdetails" id="viewdetails">
+                    <div class="fullform">
+                        <table class="vbdetails">
+                            <label>Booking Details</label><br>
+                            <tr><td>Booking id</td><td><label id="vbkngid"></label></td></tr>
+                            <tr><td>Provider name</td><td><label id="vname"></label></td></tr>
+                            <tr><td>Job</td><td><label id="vjob"></label></td></tr>
+                            <tr><td>Job description</td><td><label id="vdesc"></label></td></tr>
+                            <tr><td>Booking date</td><td><label id="vbdate"></label></td></tr>
+                            <tr><td>Service date</td><td><label id="vsdate"></label></td></tr>
+                            <tr><td>Completion date</td><td><label id="vcdate"></label></td></tr>
+                        </table><br>
+                        <div class="vbill">
+                            <div class="billcontainer" id="billcontainer">
+                                <div>
+                                    <br>
+                                    <label>Bill Details</label>
+                                    <input type="hidden" id="vbillbookingid">
+                                    <table class="billtable" id="billtable">
+                                        <thead>
+                                            <th>Description</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Amount</th>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
+                            <script>
+                                function viewbill(billbid){
+                                    console.log('the recieved value is : ',billbid)
+                                    document.getElementById('vbillbookingid').value=billbid
+                                    fetchbill();
+                                }
+                                function closebill(event){
+                                    event.preventDefault()
+                                    event.stopPropagation();
+                                    document.getElementById('billcontainer').style.display='none'
+                                    const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
+                                    billtable.innerHTML=''
+                                }
+                                function fetchbill(){
+                                    const bid=document.getElementById('vbillbookingid').value
+                                    console.log('button clicked the value is : ',bid)
+                                    const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
+                
+                                    fetch(`/getbill/${bid}/`).then(response => response.json())
+                                    .then(data => {
+                                        const bill = data.bill;
+                                        bill.items.forEach(item=>{
+                                            const row = document.createElement('tr');
+                                            row.innerHTML=`
+                                            <td>${item.description}</td>
+                                            <td>${item.price}</td>
+                                            <td>${item.quantity}</td>
+                                            <td>${item.amount}</td>
+                                            `;
+                                            billtable.appendChild(row)
+                                        })
+                                    });
+                                }
+                            </script>
+                        </div><br>
+                        <div class="paymentdetails">
+                            <label>Payment detiails</label>
+                            <table>
+                                <div>
+                                    <tr><td>Payment ID</td><td><label id="vpid"></label></td></tr>
+                                    <tr><td>Transaction ID</td><td><label id="vtid"></label></td></tr>
+                                    <tr><td>Amount</td><td><label id="vtotal"></label></td></tr>
+                                    <tr><td>Date</td><td><label id="vpdate"></label></td></tr>
+                                    <tr><td>Method</td><td><label id="vpmethod"></label></td></tr>
+                                    <tr><td>Status</td><td><label id="vpstatus"></label></td></tr>
+                                </div>
+                            </table>
                         </div>
-                        <div class="comment">
-                            <label>Comments</label><br>
-                            <textarea name="comment" id="viewcomment" rows="3" cols="30" style="font-size: 20px;font-weight: 500;" readonly></textarea>    
-                        </div> 
-                        <div class="buttons">
-                            <button class="closebutton" onclick="closeviewrateform(event)" style="background-color: red;color: white;">Close</button>
-                            <button class="ratebutton" id="updatebutton" onclick="updaterating()">Update rating</button>
-                            <button type="submit" class="ratebutton" id="updatesubmit" style="display: none;">Submit Update</button>
-                        </div>    
-                    </form>
-                    <script>
-                        function viewrating(id,bid) {
-                            console.log('the booking id is : ',bid)
-                            document.getElementById('viewserviceprovider_id').value = id;
-                            document.getElementById('viewbookingid').value = bid
-                            document.getElementById('viewratingform').style.display = 'block';
-                            fetch(`/fetchreview/${bid}/`).then(response => response.json())
-                            .then(data => {
-                                const review = data.review;
-                                stars = review.rating;
-                                comment = review.comment; 
-                                document.getElementById('viewcomment').value = comment;
-                                highlightstar(stars);
-                            });
-                        }
-                        function closeviewrateform(event){
-                            event.preventDefault();
-                            document.getElementById('viewratingform').style.display='none'
-                            document.getElementById('viewcomment').setAttribute('readonly', '');
-                            document.getElementById('updatebutton').style.display='block'
-                            document.getElementById('updatesubmit').style.display='none'
-                            const starElements = document.querySelectorAll('.star-rating .upstar');
-                            starElements.forEach((star, index) => {
-                                star.removeEventListener('click', null);
-                            });
-                        }
-                        function highlightstar(stars) {
-                            const star = document.querySelectorAll('.upstar');
-                            star.forEach(function(star) {
-                                if (star.getAttribute('data-value') <= stars) {
-                                    star.classList.add('selected');
-                                } else {
-                                    star.classList.remove('selected');
+                        <div class="viewrating" id="viewratingform" style="display: block;">
+                            <form method="post" action="{% url 'update_rate_service_provider' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="serviceprovider_id" id="viewserviceprovider_id">
+                                <input type="hidden" name="stars" id="viewstarvalue"> 
+                                <input type="hidden" name="bookingid" id="viewbookingid"> 
+                                <div class="staring">
+                                    <Label>Rating*</Label>
+                                    <div class="star-rating">
+                                        <span class="upstar" data-value="1">&#9733;</span>
+                                        <span class="upstar" data-value="2">&#9733;</span>
+                                        <span class="upstar" data-value="3">&#9733;</span>
+                                        <span class="upstar" data-value="4">&#9733;</span>
+                                        <span class="upstar" data-value="5">&#9733;</span>
+                                    </div>
+                                </div>
+                                <div class="comment">
+                                    <label>Comments</label><br>
+                                    <textarea name="comment" id="viewcomment" rows="3" cols="30" style="font-size: 20px;font-weight: 500;" readonly></textarea>    
+                                </div> 
+                                <div class="buttons">
+                                    <button class="closebutton" onclick="closeviewrateform(event)" style="background-color: red;color: white;">Close</button>
+                                    <button class="ratebutton" id="updatebutton" onclick="updaterating()">Update rating</button>
+                                    <button type="submit" class="ratebutton" id="updatesubmit" style="display: none;">Submit Update</button>
+                                </div>    
+                            </form>
+                            <script>
+                                function viewrating(id,bid) {
+                                    console.log('the booking id is : ',bid)
+                                    document.getElementById('viewserviceprovider_id').value = id;
+                                    document.getElementById('viewbookingid').value = bid
+                                    document.getElementById('viewratingform').style.display = 'block';
+                                    fetch(`/fetchreview/${bid}/`).then(response => response.json())
+                                    .then(data => {
+                                        const review = data.review;
+                                        stars = review.rating;
+                                        comment = review.comment; 
+                                        document.getElementById('viewcomment').value = comment;
+                                        highlightstar(stars);
+                                    });
                                 }
-                            });
-                        }
-                        function updaterating(){
-                            event.preventDefault();
-                            document.getElementById('updatebutton').style.display='none'
-                            document.getElementById('updatesubmit').style.display='block'
-                            const starElements = document.querySelectorAll('.star-rating .upstar');
-                            const textarea = document.getElementById('viewcomment');
-                            starElements.forEach((star, index) => {
-                                console.log('the index is ',index)
-                                star.addEventListener('click', () => {
-                                    getupdaterating(index+1);
+                                function closeviewrateform(event){
+                                    event.preventDefault();
+                                    document.getElementById('viewdetails').style.display='none'
+                                    document.getElementById('viewcomment').setAttribute('readonly', '');
+                                    document.getElementById('updatebutton').style.display='block'
+                                    document.getElementById('updatesubmit').style.display='none'
+                                    document.getElementById('bottom').style.display='block';
+                                    const starElements = document.querySelectorAll('.star-rating .upstar');
+                                    starElements.forEach((star, index) => {
+                                        star.removeEventListener('click', null);
+                                    });
+                                    const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
+                                    billtable.innerHTML=''
+                                }
+                                function highlightstar(stars) {
+                                    const star = document.querySelectorAll('.upstar');
+                                    star.forEach(function(star) {
+                                        if (star.getAttribute('data-value') <= stars) {
+                                            star.classList.add('selected');
+                                        } else {
+                                            star.classList.remove('selected');
+                                        }
+                                    });
+                                }
+                                function updaterating(){
+                                    event.preventDefault();
+                                    document.getElementById('updatebutton').style.display='none'
+                                    document.getElementById('updatesubmit').style.display='block'
+                                    const starElements = document.querySelectorAll('.star-rating .upstar');
+                                    const textarea = document.getElementById('viewcomment');
+                                    starElements.forEach((star, index) => {
+                                        console.log('the index is ',index)
+                                        star.addEventListener('click', () => {
+                                            getupdaterating(index+1);
+                                        });
+                                        star.classList.remove('selected')
+                                    });
+                                    textarea.removeAttribute('readonly');
+                                }
+                                function getupdaterating(val){
+                                    console.log('the recieved val is ',val)
+                                    var stars = document.querySelectorAll('.upstar');
+                                    stars.forEach(function(star) {
+                                        if (star.getAttribute('data-value') <= val) {
+                                            star.classList.add('selected');
+                                        } else {
+                                            star.classList.remove('selected');
+                                        }
+                                    });
+                                    document.getElementById('viewstarvalue').value=val
+                                }
+                                document.getElementById('viewratingform').addEventListener('submit', function(event) {
+                                    var rating = document.querySelector('.upstar.selected');
+                                    if (!rating) {
+                                        alert('Please select a star rating before submitting.');
+                                        event.preventDefault();
+                                        return;
+                                    }
                                 });
-                                star.classList.remove('selected')
-                            });
-                            textarea.removeAttribute('readonly');
+                            </script>                   
+                        </div>
+                    </div>
+                    <script>
+                        function viewmore(bkngid,sname,job,desc,bdate,sdate,total,sid){
+                            document.getElementById('bottom').style.display='none';
+                            document.getElementById('viewdetails').style.display='block';
+                            
+                            document.getElementById('vbkngid').textContent=bkngid;
+                            document.getElementById('vname').textContent=sname;
+                            document.getElementById('vjob').textContent=job;
+                            document.getElementById('vdesc').textContent=desc;
+                            document.getElementById('vbdate').textContent=bdate;
+                            document.getElementById('vsdate').textContent=sdate;
+                            document.getElementById('vtotal').textContent=total;
+                            
+                            fetch(`/viewdetails/${bkngid}/`).then(response => response.json())
+                                    .then(data => {
+                                        const view  = data.view
+                                        billid = view.bill_id
+                                        document.getElementById('vpid').textContent=view.pid
+                                        document.getElementById('vtid').textContent=view.ptid
+                                        document.getElementById('vpdate').textContent=view.pdate
+                                        document.getElementById('vpstatus').textContent=view.pstatus
+                                        document.getElementById('vpmethod').textContent=view.prmethod
+                                        document.getElementById('vcdate').textContent=view.bcomplete
+                                        viewbill(billid)
+                                    });                          
+                            
+                            viewrating(sid,bkngid)
                         }
-                        function getupdaterating(val){
-                            console.log('the recieved val is ',val)
-                            var stars = document.querySelectorAll('.upstar');
-                            stars.forEach(function(star) {
-                                if (star.getAttribute('data-value') <= val) {
-                                    star.classList.add('selected');
-                                } else {
-                                    star.classList.remove('selected');
-                                }
-                            });
-                            document.getElementById('viewstarvalue').value=val
-                        }
-                        document.getElementById('viewratingform').addEventListener('submit', function(event) {
-                            var rating = document.querySelector('.upstar.selected');
-                            if (!rating) {
-                                alert('Please select a star rating before submitting.');
-                                event.preventDefault();
-                                return;
-                            }
-                        });
-                    </script>                   
+                    </script>
                 </div>
                 {% endif %}
             </div>
+            <div class="spacer" style="margin-top: 20px; display: flex;"></div>
         </div>
-        <div class="bottom">
+        <div class="bottom" id="bottom">
             <h4>Contact us: akashkr971@gmail.com</h4>
         </div>
     </body>

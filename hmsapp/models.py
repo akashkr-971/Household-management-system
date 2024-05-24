@@ -55,8 +55,7 @@ class Booking(models.Model):
         ('Cancelled', 'Cancelled'),
         ('Completed','Completed'),
         ('Bill created','Bill created'),
-        ('Paid','Paid'),
-        ('Finished','Finished')
+        ('Paid','Paid')
     ]
     booking_id = models.AutoField(primary_key=True)
     name = models.TextField()
@@ -88,13 +87,12 @@ class Reviews(models.Model):
 
 class Payment(models.Model):
     payment_id = models.AutoField(primary_key=True)
-    order_id = models.CharField(max_length=100, unique=True,null=True)
+    order_id = models.CharField(max_length=100,null=True)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     homeowner = models.ForeignKey(Homeowner, on_delete=models.CASCADE, default=1)
     service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, default=1) 
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField(auto_now_add=True)
-    method = models.CharField(max_length=100)
     payment_status = models.CharField(max_length=100,default='Pending')
     razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
     payment_method = models.CharField(max_length=100,default='card')

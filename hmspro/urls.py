@@ -20,6 +20,7 @@ from hmsapp.views import home,Userlogin,Clientsignup,forgetpassword,Resetpasswor
 from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,updatebooking,orderhistory,accountdetails
 from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory,publishbill,getbill
 from hmsapp.views import initiate_payment,capture_payment,rate_service_provider,fetchreview,update_rate_service_provider
+from hmsapp.views import viewdetails
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -50,6 +51,7 @@ urlpatterns = [
     path('rate_service_provider/', rate_service_provider, name='rate_service_provider'),
     path('fetchreview/<int:booking_id>/', fetchreview, name='fetchreview'),
     path('update_rate_service_provider/', update_rate_service_provider, name='update_rate_service_provider'),
+    path('viewdetails/<int:booking_id>/', viewdetails, name='viewdetails'),
 ]
 
 

@@ -390,8 +390,21 @@ def finishbooking(request):
         new_status = request.POST.get('new_status')
 
         booking=Booking.objects.get(booking_id=booking_id)
-        booking.status = new_status
+        booking.status = new_status 
         booking.save()
+        homeowner = booking.homeowner
+        service_provider=booking.service_provider
+        amount = booking.totalrate
+        payment = Payment.objects.create(
+            order_id = 'none',
+            booking = booking,
+            homeowner = homeowner,
+            service_provider=service_provider,
+            amount=amount,
+            payment_status='Paid',
+            razorpay_payment_id = 'none',
+            payment_method = 'cash on hand'
+        )
     return redirect('serviceproviderhome')
 
 def publishbill(request):
@@ -425,6 +438,7 @@ def publishbill(request):
         )
         billing.save()
         booking.status='Bill created'
+        booking.totalrate=totalamount
         booking.save()
         return redirect(serviceproviderhome)
     return render(request, 'serviceproviderhome.html')
@@ -529,6 +543,22 @@ def update_rate_service_provider(request):
         userid = booking.homeowner.user.user_id
         request.session['user_id'] = userid
         return redirect(reverse('orderhistory'))
+
+def viewdetails(request,booking_id):
+    booking = Booking.objects.get(booking_id=booking_id) 
+    bill = Billing.objects.get(booking=booking)
+    payment = Payment.objects.get(booking=booking)
+    view_data = {
+        'bill_id' : bill.bill_id,
+        'pdate' : payment.date,
+        'pid' : payment.payment_id, 
+        'ptid' : payment.razorpay_payment_id, 
+        'prmethod' : payment.payment_method,
+        'pstatus' : payment.payment_status,
+        'bcomplete' : bill.date
+    }
+    print(view_data)
+    return JsonResponse({'view': view_data})
 
     
 @csrf_exempt
