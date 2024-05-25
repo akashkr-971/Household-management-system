@@ -20,7 +20,7 @@ from hmsapp.views import home,Userlogin,Clientsignup,forgetpassword,Resetpasswor
 from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,updatebooking,orderhistory,accountdetails
 from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory,publishbill,getbill
 from hmsapp.views import initiate_payment,capture_payment,rate_service_provider,fetchreview,update_rate_service_provider
-from hmsapp.views import viewdetails
+from hmsapp.views import viewdetails,update_bill,delete_bill
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -45,6 +45,8 @@ urlpatterns = [
     path('verifyotp/', verifyotp, name='verifyotp'),
     path('jobhistory/', jobhistory, name='jobhistory'),
     path('publishbill/', publishbill, name='publishbill'),
+    path('update_bill/', update_bill, name='update_bill'),
+    path('delete_bill/', delete_bill, name='delete_bill'),
     path('getbill/<int:booking_id>/', getbill, name='getbill'),
     path('initiate_payment', initiate_payment, name='initiate_payment'),
     path('capture_payment/', capture_payment, name='capture_payment'),

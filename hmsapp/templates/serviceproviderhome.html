@@ -266,6 +266,41 @@ table button{
     font-size: 20px;
     font-weight: 600;
 }
+.viewbuttons button{
+    width: 30%;
+}
+.billcontainer{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 600px;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #77dd77;
+    padding: 5px;
+    padding-top: 20px;
+    border-radius:10px;
+}
+.billcontainer table{
+    margin-top: 10px;
+}
+.updatebutton {
+    background-color: #f38d20;
+    color: white;
+    width: 100%;
+}
+.updateinput{
+    border: none;
+    height: 100%;
+    width: 80%;
+    background:transparent;
+    font-size: 18px;
+    text-align: center;
+    font-weight: 600;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
 
 @media only screen and (max-width: 600px) {
     .bottom{
@@ -385,7 +420,7 @@ table button{
                                         {% elif booking.status == 'Completed' %}
                                             <button class="createbillbtn" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
                                         {% elif booking.status == 'Bill created' %}
-                                            <button class="updatebillbtn" data-booking-id="{{ booking.booking_id }}" onclick="updatebill('{{ booking.booking_id }}'); event.stopPropagation();">Update bill</button>
+                                            <button class="viewbill-btn" data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
                                             <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
                                         {% else %}
                                             <p>Cancelled</p>
@@ -521,7 +556,7 @@ table button{
                 </script>
             </div>
             <div class="createbill" id="createbill" style="display: none;">
-                <form class="billform" method="post" action="{% url 'publishbill' %}">
+                <form class="billform" id="billform" method="post" action="{% url 'publishbill' %}">
                     {% csrf_token %}
                     <label class="billlabel">Create Bill</label>                
                     <table id="billtable">
@@ -536,7 +571,7 @@ table button{
                                 <td><input type="text" readonly value="Service" ></td>
                                 <td><input id="raterow" value="{{ user.serviceprovider.rate }}/{{ user.serviceprovider.unit }}"></td>
                                 <td><input type="number" id="serviceQuantity" onkeyup="calculatefirstAmount()"></td>
-                                <td><label id="serviceamount"></label></td>
+                                <td><input type="number" id="serviceamount"></td>
                             </tr>
                             <tr id="lastrow">
                                 <td colspan="2"><input type="button" value="Delete row" onclick="deleterow()"></td>
@@ -554,7 +589,7 @@ table button{
                     <div class="buttonlast">
                         <button style="background-color: red;color: white;" onclick="closebillform(event)">Close</button>
                         <button style="background-color: rgb(21, 0, 255);color: white; width: 200px;" onclick="calculatetotal(event)" >Calculate Total</button>
-                        <button style="background-color: green; color: white;" onclick="gatherdata()">Publish</button>
+                        <button style="background-color: green; color: white;" onclick="gatherdata(event)">Publish</button>
                     </div>
                 </form>
                 <script>
@@ -562,8 +597,6 @@ table button{
                     function createbill(createbid){
                         document.getElementById('createbill').style.display='block'
                         document.getElementById('createbookingid').value = createbid
-                        console.log(createbid)
-                        console.log(document.getElementById('createbookingid').value)
                     }
                     function deleterow(){
                         const maintable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
@@ -606,8 +639,9 @@ table button{
                         thirdField.id='serviceQuantity'+rowcount
                         thirdField.type = 'number';
                         
-                        const fourthField = document.createElement('label');
+                        const fourthField = document.createElement('input');
                         fourthField.id='serviceamount'+rowcount
+                        fourthField.type = 'number';
 
                         firstCol.appendChild(firstField);
                         secondCol.appendChild(secondField);
@@ -635,7 +669,8 @@ table button{
                         rate = document.getElementById(rate).value
                         total=quantity*rate;
                         amount=document.getElementById(amount)
-                        amount.textContent=total
+                        amount.value=total
+                        console.log('the amount is ',total)
                     }
                     function calculatefirstAmount(){
                         quantity = document.getElementById('serviceQuantity').value;
@@ -644,7 +679,7 @@ table button{
                         ratevalue = rate.substring(0, slash);
                         total=quantity*ratevalue;
                         amount=document.getElementById('serviceamount')
-                        amount.textContent=total
+                        amount.value=total
                     }
                     function calculatetotal(event){
                         event.preventDefault();
@@ -653,8 +688,11 @@ table button{
                         const rowCount = maintable.rows.length;
                         let total=0;
                         for (let i = 1; i < rowCount-2; i++) {
-                            const cellValue = parseFloat(maintable.rows[i].cells[3].textContent.trim());
-                            total+=cellValue
+                            const cellValue = parseFloat(maintable.rows[i].cells[3].children[0].value);
+                            if(!isNaN(cellValue)){
+                                total+=cellValue
+                                console.log('the value is ',cellValue)
+                            }
                         }
                         document.getElementById('totallabel').textContent=total
                         document.getElementById('totalfinalamount').value=total
@@ -664,20 +702,16 @@ table button{
                         event.stopPropagation(); 
                         document.getElementById('createbill').style.display='none'
                     }
-                    function gatherdata(){
-                        
-                        const maintable = document.getElementById('billtable')
-                        const rowCount = maintable.rows.length;
-                        let total=0;
-                        for (let i = 1; i < rowCount-2; i++) {
-                            const cellValue = parseFloat(maintable.rows[i].cells[3].textContent.trim());
-                            total+=cellValue
-                        }
-                        document.getElementById('totallabel').textContent=total
-                        document.getElementById('totalfinalamount').value=total
+                    function gatherdata(event){
+                        event.preventDefault();
+                        event.stopPropagation();
+                        calculatetotal(event);
 
                         const data = [];
                         const tableRows = document.querySelectorAll('#billtable tbody tr');
+
+                        let descriptionMissing = false;
+                        let amountMissing = false;
 
                         tableRows.forEach((row) => {
                             const cells = row.cells;
@@ -685,21 +719,164 @@ table button{
                             const [descriptionCell, priceCell, quantityCell, amountCell] = cells;
 
                             const description = descriptionCell.querySelector('input')?.value || '';
-                            const price = priceCell.querySelector('input')?.value || '';
-                            const quantity = quantityCell.querySelector('input')?.value || '';
-                            const amount = amountCell.querySelector('label')?.textContent || '';
+                            const price = priceCell.querySelector('input')?.value || '-';
+                            const quantity = quantityCell.querySelector('input')?.value || '-';
+                            const amount = amountCell.querySelector('input')?.value || '';
 
-                            if (description && price && quantity && amount) {
+                            if (description && amount) {
                                 data.push({ description, price, quantity, amount });
                             }
+                            else {
+                                if (!description) {
+                                    descriptionMissing = true;
+                                }
+                                if (!amount) {
+                                    amountMissing = true;
+                                }
                             }
+                        }
                         });
-                        document.getElementById('billData').value = JSON.stringify(data);
-                        console.log(data);
+                        if (descriptionMissing || amountMissing) {
+                            let errorMessage = '';
+                            if (descriptionMissing) {
+                                errorMessage += 'Please enter a description.\n';
+                            }
+                            if (amountMissing) {
+                                errorMessage += 'Please enter an amount.';
+                            }
+                            alert(errorMessage);
+                        } else {
+                            document.getElementById('billData').value = JSON.stringify(data);
+                            console.log(data);
+                            const confirmSubmit = confirm('Are you sure you want to submit the form?');
+                            if (confirmSubmit) {
+                                document.getElementById('billform').submit();
+                            }
+                        }
                     }
                 </script>
             </div>
+            <div class="viewbill">
+                <div class="billcontainer" id="billcontainer" style="display: none;" >
+                    <form action="{% url 'update_bill' %}" method="post">
+                        {%csrf_token%}
+                        <label>Service Bill</label>
+                        <input type="hidden" id="billbookingid" name="billbookingid">
+                        <input type="hidden" id="totalamountinput" name="totalamountinput">
+                        <table class="billtable" id="viewbilltable">
+                            <thead>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Amount</th>
+                            </thead>
+                            <tbody>
+                                <tr id="viewtotalrow">
+                                    <td colspan="2">The Total price is</td>
+                                    <td colspan="2"><label id="totalbilllabel"></label></td>
+                                </tr>
+                                <tr id="viewbuttons" class="viewbuttons">
+                                    <td colspan="4"><button onclick="closebill(event)" style="background-color: red;color: white;">Close</button>
+                                    <button onclick="deletebill(event)" style="background-color: red;color: white;">Delete Bill</button>
+                                    <button class="updatebutton" onclick="updatebill(event)">Update</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                    <form action="{% url 'delete_bill' %}" method="post" id="delete-bill-form" style="display: none;">
+                        {% csrf_token %}
+                        <input type="hidden" name="deletebillbookingid" id="deletebillbookingid">
+                        <input type="hidden" name="user_id" value="{{ user.user_id }}">
+                    </form>
+                </div>
+                <script>
+                    function viewbill(billbid,event){
+                        event.preventDefault();
+                        event.stopPropagation();
+                        document.getElementById('billbookingid').value=billbid
+                        document.getElementById('deletebillbookingid').value = billbid
+                        document.getElementById('billcontainer').style.display='block';
+                        fetchbill();
+                    }
+                    function closebill(event){
+                        event.preventDefault()
+                        event.stopPropagation();
+                        document.getElementById('billcontainer').style.display='none'
+                        const billtable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
+                        billtable.innerHTML=''
+                        totalrow = document.getElementById('viewtotalrow')
+                        billtable.appendChild(totalrow)
+                        buttons = document.getElementById('viewbuttons')
+                        billtable.appendChild(buttons)
+                    }
+                    function fetchbill(){
+                        const bid=document.getElementById('billbookingid').value
+                        console.log('button clicked the value is : ',bid)
+                        const viewbilltable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
+    
+                        fetch(`/getbill/${bid}/`).then(response => response.json())
+                        .then(data => {
+                            const totalamount = document.getElementById('totalbilllabel')
+                            const totalamountinput = document.getElementById('totalamountinput')
+                            const bill = data.bill;
+                            totalamount.textContent = bill.total_amount
+                            totalamountinput.value = bill.total_amount
+    
+    
+                            bill.items.forEach(item=>{
+                                const row = document.createElement('tr');
+                                row.innerHTML=`
+                                <td>${item.description}</td>
+                                <td>${item.price}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.amount}</td>
+                                `;
+                                viewbilltable.appendChild(row)
+                            })
+                        });
+                        populatetable()
+                    }
+                    function populatetable(){
+                        viewbilltable = document.getElementById('viewbilltable')
+                        totalrow = document.getElementById('viewtotalrow')
+                        viewbilltable.appendChild(totalrow)
+                        buttons = document.getElementById('viewbuttons')
+                        viewbilltable.appendChild(buttons)
+                    }
+                    function deletebill(event){
+                        event.preventDefault();
+                        event.stopPropagation();
+                        document.getElementById('deletebillbookingid').value= document.getElementById('billbookingid').value
+                        const confirmdeleteSubmit = confirm('Are you sure you want to delete the bill?');
+                        if (confirmdeleteSubmit) {
+                            document.getElementById('delete-bill-form').submit();
+                        }
+                    }
+                    function updatebill(){
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const billTable = document.getElementById('viewbilltable')
+                        document.getElementById('viewbuttons').style.display="none"
+                        document.getElementById('updatebuttons').style.display="table-row"
+                        for (let i = 1; i < billTable.rows.length; i++) {
+                            const row = billTable.rows[i];
+                            if (row.cells.length > 1) {
+                                for (let j = 0; j < row.cells.length; j++) {
+                                    const cell = row.cells[j];
+                                    const inputValue = cell.textContent.trim();
+                                    const inputField = document.createElement('input');
+                                    inputField.setAttribute('type', 'text');
+                                    inputField.setAttribute('value', inputValue);
+                                    inputField.classList.add('updateinput')
+                                    cell.innerHTML = '';
+                                    cell.appendChild(inputField);
+                                }
+                            }
+                        }
+                    }
 
+                </script>
+            </div>
             {% endif %}
         </div>
     </div>

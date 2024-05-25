@@ -443,6 +443,24 @@ def publishbill(request):
         return redirect(serviceproviderhome)
     return render(request, 'serviceproviderhome.html')
 
+def update_bill(request):
+    return render(request, 'home.html')
+
+def delete_bill(request):
+    if request.method == 'POST':
+        bookingid = request.POST.get('deletebillbookingid')
+        user_id = request.POST.get('user_id')
+        booking = Booking.objects.get(booking_id=bookingid)
+        bill = Billing.objects.get(booking=booking)
+        bill.delete()
+        booking.status = 'Completed'
+        booking.save()
+        request.session['user_id'] = user_id
+        return redirect('home')
+    else:
+        request.session['user_id'] = user_id
+        return render(request, 'home.html')
+
 def getbill(request,booking_id):
     bookings = Booking.objects.get(booking_id = booking_id)
     bill = Billing.objects.get(booking=bookings)
@@ -450,6 +468,7 @@ def getbill(request,booking_id):
         'total_amount': bill.total_amount,
         'items': list(bill.items)
     }
+    print(bill_data)
     return JsonResponse({'bill': bill_data})
 
 def initiate_payment(request):
