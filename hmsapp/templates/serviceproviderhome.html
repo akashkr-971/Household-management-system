@@ -269,6 +269,9 @@ table button{
 .viewbuttons button{
     width: 30%;
 }
+.updatebuttons button{
+    width: 24%;
+}
 .billcontainer{
     position: absolute;
     display: flex;
@@ -403,9 +406,7 @@ table button{
                             {% for update in booking.update_set.all %}
                                 <tr onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}','{{ update.description }}')">
                             {% endfor %}
-                            {% endif %}    
-                            
-                            
+                            {% endif %}   
                                     <td>{{ booking.booking_id }}</td>
                                     <td>{{ booking.homeowner.user.full_name }}</td>
                                     <td>{{ booking.location }}</td>
@@ -780,6 +781,16 @@ table button{
                                     <button onclick="deletebill(event)" style="background-color: red;color: white;">Delete Bill</button>
                                     <button class="updatebutton" onclick="updatebill(event)">Update</button></td>
                                 </tr>
+                                <tr id="updatetotalrow" style="display: none;">
+                                    <td colspan="2"><label>The Total price is</label></td>
+                                    <td colspan="2"><label id="updatetotalbilllabel">0.00</label></td>
+                                </tr>
+                                <tr id="updatebuttons" class="updatebuttons" style="display: none;">
+                                    <td colspan="4"><button onclick="cancelupdate(event)" style="background-color: red;color: white;">Cancel</button>
+                                    <button onclick="deleteupdaterow(event)" style="background-color: red;color: white;">Delete row</button>
+                                    <button class="updatebutton" onclick="addupdaterow(event)">Add row</button>
+                                    <button class="updatebutton" onclick="submitupdate(event)">Submit</button></td>
+                                </tr>
                             </tbody>
                         </table>
                     </form>
@@ -804,10 +815,18 @@ table button{
                         document.getElementById('billcontainer').style.display='none'
                         const billtable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
                         billtable.innerHTML=''
+
                         totalrow = document.getElementById('viewtotalrow')
                         billtable.appendChild(totalrow)
                         buttons = document.getElementById('viewbuttons')
                         billtable.appendChild(buttons)
+                        
+                        updatevaluerow = document.getElementById('updatetotalrow')
+                        updatevaluerow.style.display='none'
+                        billtable.appendChild(updatevaluerow)
+                        last_row = document.getElementById('updatebuttons')
+                        last_row.style.display='none'
+                        billtable.appendChild(last_row)
                     }
                     function fetchbill(){
                         const bid=document.getElementById('billbookingid').value
@@ -851,16 +870,15 @@ table button{
                         if (confirmdeleteSubmit) {
                             document.getElementById('delete-bill-form').submit();
                         }
-                    }
+                    }                   
                     function updatebill(){
                         event.preventDefault();
-                        event.stopPropagation();
-                        const billTable = document.getElementById('viewbilltable')
+                        document.getElementById('viewtotalrow').style.display='none'
                         document.getElementById('viewbuttons').style.display="none"
-                        document.getElementById('updatebuttons').style.display="table-row"
-                        for (let i = 1; i < billTable.rows.length; i++) {
+                        const billTable = document.getElementById('viewbilltable')
+                        for (let i = 1; i < billTable.rows.length-2; i++) {
                             const row = billTable.rows[i];
-                            if (row.cells.length > 1) {
+                            if (row.cells.length > 2) {
                                 for (let j = 0; j < row.cells.length; j++) {
                                     const cell = row.cells[j];
                                     const inputValue = cell.textContent.trim();
@@ -868,13 +886,155 @@ table button{
                                     inputField.setAttribute('type', 'text');
                                     inputField.setAttribute('value', inputValue);
                                     inputField.classList.add('updateinput')
+                                    inputField.setAttribute('data-original-value', inputValue);
                                     cell.innerHTML = '';
                                     cell.appendChild(inputField);
                                 }
+                                console.log('yes')
+                            }
+                        }
+                        document.getElementById('updatetotalbilllabel').textContent='0.00'
+                        populateupdateview();
+                    }
+                    function populateupdateview(){
+                        const billTable = document.getElementById('viewbilltable')
+                        updatevaluerow = document.getElementById('updatetotalrow')
+                        updatevaluerow.style.display ='table-row'
+                        last_row = document.getElementById('updatebuttons')
+                        last_row.style.display='table-row'
+                        billTable.appendChild(updatevaluerow)
+                        billTable.appendChild(last_row)
+                    }
+                    function cancelupdate(event) {
+                        console.log('clicked cancelupdate')
+                        event.preventDefault();
+                        document.getElementById('updatebuttons').style.display = 'none';
+                        document.getElementById('updatetotalrow').style.display = 'none';
+
+                        document.getElementById('viewtotalrow').style.display = 'table-row';
+                        document.getElementById('viewbuttons').style.display = 'table-row';
+
+                        const billTable = document.getElementById('viewbilltable');
+                        for (let i = 1; i < billTable.rows.length-2; i++) {
+                            const row = billTable.rows[i];
+                            const deletableAttribute = row.getAttribute('data-deletable');
+                            if (deletableAttribute === 'true') {
+                                billTable.deleteRow(i);
+                                i--;
+                            }
+                            else if (row.cells.length > 2) {
+                                for (let j = 0; j < row.cells.length; j++) {
+                                    const cell = row.cells[j];
+                                    const inputField = cell.firstChild;
+                                    if (inputField && inputField.tagName.toLowerCase() === 'input') {
+                                        const originalValue  = inputField.getAttribute('data-original-value');
+                                        const label = document.createElement('label');
+                                        label.textContent = originalValue ;
+                                        cell.innerHTML = '';
+                                        cell.appendChild(label);
+                                    }
+                                }
+                            }
+                        }
+                    }                 
+                    function deleteupdaterow(event){
+                        event.preventDefault();
+                        const maintable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
+                        const rowCount = maintable.rows.length;
+                        console.log('nuber of row counted = '+rowcount)
+                        rowscannotdelete = [0,rowCount-1,rowCount-2];
+                        if (rowCount > 3) {
+                            firstdeleteablerow=rowCount-3;
+                            while(rowscannotdelete.includes(firstdeleteablerow)){
+                                firstdeleteablerow++
+                            }
+                            const rowToDelete = maintable.rows[firstdeleteablerow];
+                            const isDeletable = rowToDelete.getAttribute('data-deletable') === 'true';
+                            console.log('this is',isDeletable)
+
+                            if (isDeletable) {
+                                maintable.deleteRow(firstdeleteablerow);
+                            }
+                            else {
+                                console.log('Row is not deletable');
+                                }
+                            } 
+                        else {
+                            console.log('not enough rows');
+                        }
+                    }
+                    function addupdaterow(event){
+                        event.preventDefault();
+                        const lastrow = document.getElementById('updatebuttons');
+                        const maintable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
+                        const newRow = document.createElement('tr');
+                        newRow.setAttribute('data-deletable', 'true');
+
+                        const firstCol = document.createElement('td');
+                        const secondCol = document.createElement('td');
+                        const thirdCol = document.createElement('td');
+                        const fourthCol = document.createElement('td');
+
+                        const firstField = document.createElement('input');
+                        firstField.classList.add('updateinput')
+
+                        const secondField = document.createElement('input');
+                        secondField.type = 'number';
+                        secondField.classList.add('updateinput')
+                        
+                        const thirdField = document.createElement('input');
+                        thirdField.type = 'number';
+                        thirdField.classList.add('updateinput')
+                        
+                        const fourthField = document.createElement('input');
+                        fourthField.type = 'number';
+                        fourthField.classList.add('updateinput')
+
+                        firstCol.appendChild(firstField);
+                        secondCol.appendChild(secondField);
+                        thirdCol.appendChild(thirdField);
+                        fourthCol.appendChild(fourthField);
+
+                        newRow.appendChild(firstCol);
+                        newRow.appendChild(secondCol);
+                        newRow.appendChild(thirdCol);
+                        newRow.appendChild(fourthCol);
+
+                        maintable.appendChild(newRow);
+                    }
+                    function submitupdate(event){
+                        event.preventDefault()
+                        let hasvalues=true
+                        const billTable = document.getElementById('viewbilltable');
+                        for (let i = 1; i < billTable.rows.length-2; i++) {
+                            let firstcellValue = billTable.rows[i].cells[0].querySelector('input').value;
+                            let lastcellValue = billTable.rows[i].cells[3].querySelector('input').value;
+                            if(firstcellValue !='' && lastcellValue !=''){
+                                console.log('first value is : ',firstcellValue)
+                                console.log('last value is : ',lastcellValue)
+                                console.log('it has values')
+                                calculateupdatetotal();
+                            }
+                            else if(firstcellValue =='' && lastcellValue ==''){
+
                             }
                         }
                     }
-
+                    function calculateupdatetotal(){
+                        const maintable = document.getElementById('viewbilltable')
+                        const rowCount = maintable.rows.length;
+                        console.log(rowCount)
+                        let total=0;
+                        for (let i = 1; i < rowCount-4; i++) {
+                            console.log(i)
+                            let cellValue = maintable.rows[i].cells[3].querySelector('input').value;
+                            console.log('the cellvaluse is : ',cellValue)
+                            cellValue=parseFloat(cellValue)
+                            total+=cellValue
+                            console.log('the total id s' , total)
+                        }
+                        document.getElementById('updatetotalbilllabel').textContent=total
+                    }
                 </script>
             </div>
             {% endif %}

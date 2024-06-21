@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Household Management System</title>
+<style>
+*{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+body {
+    margin: 0;
+    padding: 0;
+    height:100%;
+    background-color: rgb(199, 240, 226);
+}
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 80px;
+    background-color: #333;
+    color: #fff;
+    padding: 0 0px;
+}
+.name {
+    font-size: 20px;
+    font-weight: 600;
+    flex:4;
+    text-align:center;
+    display:flex;
+    margin-left: 5%;
+}
+.acc {
+    font-weight: 600;
+    flex:2;
+    text-align:center;
+    display:flex;
+    justify-content:center;
+    height:80px;
+}
+span h3{
+    position:relative;
+    top:10px;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 3;
+}
+.acc:hover .dropdown-content {
+    display: block;
+    top:80px;
+    border-radius: 0 0 10px 10px;
+    background-color: #333;
+}
+.dropdown-content:hover{
+    display:block;
+}
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown-content a:hover {
+    background-color:black;
+}
+.mid-bar {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding: 20px;
+    margin: 0;
+}
+.greet{
+    font-size: 30px;
+    margin: 10px 0 ;
+    font-weight: 800;
+}
+.ad {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    overflow: hidden;
+    border-radius: 10px;
+}
+.overlay {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 2;
+}
+.img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center 30%;
+    display: none;
+    z-index: 1;
+}
+.img1 { background-image: url("{% static 'images/adimage1.webp' %}"); display: block; }
+.img2 { background-image: url("{% static 'images/adservice2.png' %}"); }
+.img3 { background-image: url("{% static 'images/adservice3.png' %}"); }
+.content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 3;
+    width: 80%;
+    display: none;
+}
+.content1 { display: block; }
+.content h4 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.content h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+.content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+.content button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #FFA500;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+.services-tab{
+    background-color: rgb(127, 240, 153);
+    border-radius: 10px;
+    margin:20px;
+}
+.services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    grid-gap: 20px;
+    padding: 30px;
+    margin: 0;
+    height:auto;
+    border-radius: 10px;
+}
+a{
+    text-decoration: none;
+    font-size: 20px;
+}
+button {
+    height: auto;
+    width: 100%;
+    border: none;
+    background-color: #ddd;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.footer {
+    width: 100%;
+    height: 80px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding-top: 20px;
+    font-size: 14px;
+}
+.services button{
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #ffffff;
+    padding: 0px;
+}
+.serviceitem{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 10px;
+    background-size: cover;
+}
+.servicetext{
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+}
+.servicetext h3{
+    margin-top: 10%;
+}
+.servicetext p{
+    font-weight: 800;
+}
+.service1{
+    background-image: url("{% static 'images/plumberimg.png' %}");
+
+}
+.service2{
+    background-image: url("{% static 'images/electricianimg.png' %}");
+}
+.service3{
+    background-image: url("{% static 'images/carpenterimg.png' %}");
+}
+.service4{
+    background-image: url("{% static 'images/interiordesigner.png' %}");
+}
+.service5{
+    background-image: url("{% static 'images/painterimg.png' %}");
+}
+.service6{
+    background-image: url("{% static 'images/landscaperimg.png' %}");
+}
+.loginalert{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: #333;
+    height: 30%;
+    width: 60%;
+    z-index: 4;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-image: url('{% static "images/bkngimg.png" %}');
+}
+.actionbutton{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+@media only screen and (max-width:1000px){
+    .ad {
+        height: 50vh;
+    }
+}
+</style>
+</head>
+<body>
+<div class="top-bar">
+    <div class="name">
+        <p onclick="redirecttohome()">Household Management System</p>
+        <script>
+            function redirecttohome(){
+                window.location.href="{% url 'landingpage' %}"
+            }
+        </script>
+    </div>
+    <div class="acc">
+        <span>
+            <h3>Account</h3>
+        </span>
+        <div class="dropdown-content">
+            <a href="{% url 'Userlogin' %}">Login</a>
+            <a href="{% url 'Clientsignup' %}">Signup</a>
+        </div>
+        
+    </div>
+</div>
+
+<div class="mid-bar" id="mid-bar">
+    <div class="greet">Welcome Guest</div>
+    <div class="ad">
+        <div class="overlay"></div>
+        <div class="img img1"></div>
+        <div class="content content1">
+            <h4>WELCOME TO APEX</h4>
+            <h1>A Construction & Renovation Company</h1>
+            <p>Commercial • Residential • Industrial</p>
+        </div>
+        <div class="img img2"></div>
+        <div class="content content2">
+            <h4>QUALITY ASSURED</h4>
+            <h1>Building Dreams, Delivering Excellence</h1>
+            <p>Innovative • Reliable • Sustainable</p>
+        </div>
+        <div class="img img3"></div>
+        <div class="content content3">
+            <h4>EXPERT TEAM</h4>
+            <h1>Transforming Visions into <br>Reality</h1>
+            <p>Professional • Skilled • Dedicated</p>
+        </div>
+        </div>
+        <script>
+            let currentIndex = 1;
+            const totalimg = 3;
+
+            function nextImg() {
+                document.querySelector('.img' + currentIndex).style.display = 'none';
+                document.querySelector('.content' + currentIndex).style.display = 'none';
+                currentIndex++;
+                if (currentIndex > totalimg) {
+                    currentIndex = 1;
+                }
+                document.querySelector('.img' + currentIndex).style.display = 'block';
+                document.querySelector('.content' + currentIndex).style.display = 'block';
+            }
+            setInterval(nextImg, 3000);
+        </script>
+    </div>
+    <div class="services-tab">
+        <div>
+            <h1 style="text-align: center;padding-top: 20px;margin: 0;">Services We Provide</h1><br>
+        </div>
+        <div class="services" id="servicescontainer">
+            <button onclick="showloginalert()">
+                <div class="serviceitem service1">
+                    <div class="servicetext">
+                        <h2>Plumbing</h2>
+                        <h3>Fix leaks, unclog drains, and handle all your plumbing needs.</h3>    
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+            <button onclick="showloginalert()">
+                <div class="serviceitem service2">
+                    <div class="servicetext">
+                        <h2>Electrician</h2>
+                        <h3>Install, maintain, and repair electrical systems in your home.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+            <button onclick="showloginalert()">
+                <div class="serviceitem service3">
+                    <div class="servicetext">
+                        <h2>Carpenter</h2>
+                        <h3>Custom woodwork, repairs, and installations for your living spaces.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+            <button onclick="showloginalert()">
+                <div class="serviceitem service4">
+                    <div class="servicetext">
+                        <h2>Interior Designer</h2>
+                        <h3>Custom woodwork, repairs, and installations for your living spaces.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div> 
+            </button>
+            <button onclick="showloginalert()">
+                <div class="serviceitem service5">
+                    <div class="servicetext">
+                        <h2>Painting</h2>
+                        <h3>Refresh your home with expert interior and exterior painting services.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+            <button onclick="showloginalert()">
+                <div class="serviceitem service6">
+                    <div class="servicetext">
+                        <h2>Landscaping</h2>
+                        <h3>Create and maintain beautiful outdoor spaces for your property.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
+    <script>
+        function loginalert(){
+
+        }
+    </script>
+</div>
+<div class="loginalert">
+    <h2>Login or Signup</h2>
+    <h3>To continue Booking</h3>
+    <div class="actionbutton">
+        <button>login</button>
+        <button>Signup</button>
+    </div>
+</div>
+
+<div class="footer">
+    <h4>Contact us: askashkr971@gmail.com</h4>
+</div>
+</body>
+</html>

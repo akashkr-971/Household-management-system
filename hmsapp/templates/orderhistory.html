@@ -153,14 +153,14 @@
             }
             .viewdetails{
                 display: none;
-                position: relative;
+                position: absolute;
                 transform: translate(-50%, -50%); 
                 background-color: #77dd77;
                 left: 50%;
                 height: auto;
                 width:70%;
+                top: 65%;
                 background-color: burlywood;
-                margin: 80px 0px;
                 font-size: 20px;
                 padding: 20px;
                 text-align: center;
@@ -289,6 +289,7 @@
                     <tbody>
                         {% if user.homeowner.bookings.all%}
                             {% for booking in user.homeowner.bookings.all %}
+                            {% if booking.status != 'Pending' %}
                                 <tr>
                                     <td>{{ booking.booking_id }}</td>
                                     <td>{{ booking.service_provider.user.full_name }}</td>
@@ -299,12 +300,13 @@
                                         {% if booking.status == 'Paid' and booking.israted == 'No' %}
                                             <button onclick="addrating('{{ booking.service_provider.service_provider_id }}','{{booking.booking_id}}')" class="ratebutton">Rate</button>
                                         {% elif booking.israted == 'Yes' or booking.status != 'Paid' %}
-                                            <button onclick="viewmore('{{booking.booking_id}}','{{booking.service_provider.user.full_name}}','{{booking.job}}','{{booking.jobdescription}}','{{booking.bookingdate}}','{{booking.servicedate}}','{{booking.totalrate}}','{{booking.service_provider.service_provider_id}}')" class="ratebutton">View more</button>
+                                            <button onclick="viewmore('{{booking.booking_id}}','{{booking.service_provider.user.full_name}}','{{booking.job}}','{{booking.jobdescription}}','{{booking.bookingdate}}','{{booking.servicedate}}','{{booking.totalrate}}','{{booking.service_provider.service_provider_id}}','{{booking.status}}')" class="ratebutton">View more</button>
                                         {% endif %}
                                     </td>
                                 </tr>                  
-                                {% endfor %}
-                                {% else %}
+                                {% endif %}
+                            {% endfor %}
+                            {% else %}
                         <tr>
                             <td colspan="6">No bookings available</td>
                         </tr>
@@ -370,6 +372,7 @@
                 </div>
                 <div class="viewdetails" id="viewdetails">
                     <div class="fullform">
+                        
                         <table class="vbdetails">
                             <label>Booking Details</label><br>
                             <tr><td>Booking id</td><td><label id="vbkngid"></label></td></tr>
@@ -380,7 +383,7 @@
                             <tr><td>Service date</td><td><label id="vsdate"></label></td></tr>
                             <tr><td>Completion date</td><td><label id="vcdate"></label></td></tr>
                         </table><br>
-                        <div class="vbill">
+                        <div class="vbill" id="vbill">
                             <div class="billcontainer" id="billcontainer">
                                 <div>
                                     <br>
@@ -413,7 +416,7 @@
                                 }
                                 function fetchbill(){
                                     const bid=document.getElementById('vbillbookingid').value
-                                    console.log('button clicked the value is : ',bid)
+                                    console.log('button clicked the booking value is : ',bid)
                                     const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
                 
                                     fetch(`/getbill/${bid}/`).then(response => response.json())
@@ -433,7 +436,7 @@
                                 }
                             </script>
                         </div><br>
-                        <div class="paymentdetails">
+                        <div class="paymentdetails" id="vpayment">
                             <label>Payment detiails</label>
                             <table>
                                 <div>
@@ -445,8 +448,8 @@
                                     <tr><td>Status</td><td><label id="vpstatus"></label></td></tr>
                                 </div>
                             </table>
-                        </div>
-                        <div class="viewrating" id="viewratingform" style="display: block;">
+                        </div><br>
+                        <div class="viewrating" id="viewratingform">
                             <form method="post" action="{% url 'update_rate_service_provider' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="serviceprovider_id" id="viewserviceprovider_id">
@@ -546,23 +549,39 @@
                                         return;
                                     }
                                 });
-                            </script>                   
+                            </script>    
+                        </div>
+                        <div class="closeviewdiv" id="closeviewdiv">
+                            <button class="closebutton" onclick="closeviewdiv()" style="background-color: red;color: white;height: 60px;width:50%;">Close</button>
                         </div>
                     </div>
                     <script>
-                        function viewmore(bkngid,sname,job,desc,bdate,sdate,total,sid){
+                        function viewmore(bkngid,sname,job,desc,bdate,sdate,total,sid,status){
                             document.getElementById('bottom').style.display='none';
                             document.getElementById('viewdetails').style.display='block';
                             
-                            document.getElementById('vbkngid').textContent=bkngid;
-                            document.getElementById('vname').textContent=sname;
-                            document.getElementById('vjob').textContent=job;
-                            document.getElementById('vdesc').textContent=desc;
-                            document.getElementById('vbdate').textContent=bdate;
-                            document.getElementById('vsdate').textContent=sdate;
-                            document.getElementById('vtotal').textContent=total;
-                            
-                            fetch(`/viewdetails/${bkngid}/`).then(response => response.json())
+                            console.log(status)
+
+                            if(status == 'Confirmed' || status == 'Completed' || status == 'Cancelled' || status == 'Completed'){
+                                asssignvalue(bkngid,sname,job,desc,bdate,sdate)
+                                document.getElementById('vbill').style.display='none';
+                                document.getElementById('vpayment').style.display='none';
+                                document.getElementById('viewratingform').style.display='none';
+                                document.getElementById('viewdetails').style.top = '50%'
+                                document.getElementById('closeviewdiv').style.display='block'
+                            }
+                            else if(status== 'Bill created'){
+                                asssignvalue(bkngid,sname,job,desc,bdate,sdate)
+                                viewbill(bkngid)
+                                document.getElementById('viewdetails').style.top = '50%'
+                                document.getElementById('vpayment').style.display='none';
+                                document.getElementById('viewratingform').style.display='none';
+                                document.getElementById('closeviewdiv').style.display='block'
+                            }
+                            else if(status=='Paid'){
+                                asssignvalue(bkngid,sname,job,desc,bdate,sdate)
+                                viewbill(bkngid)
+                                fetch(`/viewdetails/${bkngid}/`).then(response => response.json())
                                     .then(data => {
                                         const view  = data.view
                                         billid = view.bill_id
@@ -572,10 +591,30 @@
                                         document.getElementById('vpstatus').textContent=view.pstatus
                                         document.getElementById('vpmethod').textContent=view.prmethod
                                         document.getElementById('vcdate').textContent=view.bcomplete
-                                        viewbill(billid)
-                                    });                          
+                                        viewbill(bkngid)
+                                        document.getElementById('closeviewdiv').style.display='none'
+                                    }
+                                ); 
+                                document.getElementById('vtotal').textContent=total;
+                                document.getElementById('viewratingform').style.display='none';
+                                viewrating(sid,bkngid)
+                            }
+                            else{
+                                
+                            }
                             
-                            viewrating(sid,bkngid)
+                        }
+                        function asssignvalue(bkngid,sname,job,desc,bdate,sdate){
+                            document.getElementById('vbkngid').textContent=bkngid;
+                            document.getElementById('vname').textContent=sname;
+                            document.getElementById('vjob').textContent=job;
+                            document.getElementById('vdesc').textContent=desc;
+                            document.getElementById('vbdate').textContent=bdate;
+                            document.getElementById('vsdate').textContent=sdate;
+                            document.getElementById('vcdate').textContent='-';
+                        }
+                        function closeviewdiv(){
+                            document.getElementById('viewdetails').style.display='none'
                         }
                     </script>
                 </div>

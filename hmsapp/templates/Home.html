@@ -24,24 +24,10 @@ body {
 }
 .name {
     font-weight: 600;
-    flex:2;
+    flex:4;
     text-align:center;
     display:flex;
-    justify-content:center;
-}
-.searchbar{
-    height: 80px;
-    display:flex;
-    align-items:center;
-    flex:5;
-    justify-content:center;
-}
-#search {
-    width: 100%;
-    height: 30px;
-    border-radius: 15px;
-    padding: 5px 10px;
-    font-size: 14px;
+    margin-left: 10%;
 }
 .acc {
     font-weight: 600;
@@ -60,7 +46,7 @@ span h3{
     position: absolute;
     background-color: #f9f9f9;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-    z-index: 1;
+    z-index: 2;
 }
 .acc:hover .dropdown-content {
     display: block;
@@ -92,12 +78,66 @@ span h3{
     margin: 10px 0 ;
     font-weight: 800;
 }
-.ad img{
-    width: 100%;
-    overflow: hidden;
-    height: 250px;
-    border-radius: 10px;
-}
+.ad {
+        position: relative;
+        width: 100%;
+        height: 50vh;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+    .overlay {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.5); /* Light black overlay */
+        z-index: 2;
+    }
+    .img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        display: none;
+        z-index: 1;
+    }
+    .img1 { background-image: url("{% static 'images/adimage1.webp' %}"); display: block; }
+    .img2 { background-image: url("{% static 'images/adservice2.png' %}"); }
+    .img3 { background-image: url("{% static 'images/adservice3.png' %}"); }
+    .content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        z-index: 3;
+        width: 80%;
+        display: none;
+    }
+    .content1 { display: block; }
+    .content h4 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .content h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    .content p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+    .content button {
+        padding: 10px 20px;
+        font-size: 1rem;
+        background-color: #FFA500;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
 .uptask{
     text-align: center;
     width: 98%;
@@ -321,7 +361,9 @@ button {
         padding: 0;
     }
     .acc{
+        display: flex;
         font-size: 15px;
+        float: right;
     }
     .acc .dropdown-content a{
         font-size: 15px;
@@ -363,28 +405,14 @@ button {
 </style>
 </head>
 <body>
-<div id="overlay" class="overlay"></div>
 <div class="top-bar">
     <div class="name">
-        <button onclick="redirecttohome()" style="background:transparent;color: white;">Household Management System</button>
+        <p onclick="redirecttohome()">Household Management System</p>
         <script>
             function redirecttohome(){
                 window.location.href="{% url 'home' %}"
             }
         </script>
-    </div>
-    <div class="searchbar">
-        <form id="searchForm" action="{% url 'search' %}" method="GET">
-            <input type="text" name="search" id="search" placeholder="Search...">
-            <script>
-                document.getElementById("searchInput").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    document.getElementById("searchForm").submit(); // Submit the form
-                }
-            });
-            </script>
-        </form>    
     </div>
     <div class="acc">
         <span>
@@ -408,22 +436,46 @@ button {
 <div class="mid-bar" id="mid-bar">
     <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
     <div class="ad">
-        <img class="img1" src="{% static 'images/adimage1.jpg' %}" alt="fun" border="0">
-        <img class="img2" src="{% static 'images/adimage2.jpg' %}" alt="fun2" border="0" style="display: none;">
-        <img class="img3" src="{% static 'images/adimage3.jpg' %}" alt="fun3" border="0" style="display: none;">
+        <div class="overlay"></div>
+        <div class="img img1">
+            <div class="content content1">
+                <h4>WELCOME TO APEX</h4>
+                <h1>A Construction & Renovation Company</h1>
+                <p>Commercial • Residential • Industrial</p>
+                <button>Book Now</button>
+            </div>
+        </div>
+        <div class="img img2">
+            <div class="content content2">
+                <h4>QUALITY ASSURED</h4>
+                <h1>Building Dreams, Delivering Excellence</h1>
+                <p>Innovative • Reliable • Sustainable</p>
+                <button>Book Now</button>
+            </div>
+        </div>
+        <div class="img img3">
+            <div class="content content3">
+                <h4>EXPERT TEAM</h4>
+                <h1>Transforming Visions into Reality</h1>
+                <p>Professional • Skilled • Dedicated</p>
+                <button>Book Now</button>
+            </div>
+        </div>
         <script>
-            let currentIndex=1;
-            const totalimg=3;
+            let currentIndex = 1;
+        const totalimg = 3;
 
-            function nextImg(){
-                document.querySelector('.img' + currentIndex).style.display = 'none';
-                currentIndex++;
-                if (currentIndex > totalimg) {
-                    currentIndex = 1;
-                }
-                document.querySelector('.img' + currentIndex).style.display = 'block';
+        function nextImg() {
+            document.querySelector('.img' + currentIndex).style.display = 'none';
+            document.querySelector('.content' + currentIndex).style.display = 'none';
+            currentIndex++;
+            if (currentIndex > totalimg) {
+                currentIndex = 1;
             }
-            setInterval(nextImg,5000)
+            document.querySelector('.img' + currentIndex).style.display = 'block';
+            document.querySelector('.content' + currentIndex).style.display = 'block';
+        }
+        setInterval(nextImg, 3000);
         </script>
     </div>
     <div class="uptask">

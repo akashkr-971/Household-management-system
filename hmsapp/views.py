@@ -18,6 +18,9 @@ import random
 import razorpay
 # Create your views here.
 
+def landingpage(request):
+    return render(request,'index.html')
+
 def home(request):
     user=None;
     if 'user_id' in request.session:
@@ -312,6 +315,7 @@ def verifyotp(request):
 
 def Resetpassword(request):
     error_message= None
+    action=request.session.get('action')
     if 'user_id' in request.session:
         if request.method == 'POST':
             user_id = request.session['user_id']
@@ -325,19 +329,30 @@ def Resetpassword(request):
                         'user_id' : user_id,
                         'newpass' : newpass
                     }
-                    otp = ''.join(random.choices('0123456789',k=6))
-                    action = "resetpassword"
-                    send_mail(
-                        'Reset password OTP',
-                        f'Your OTP for Resetting password is: {otp}',
-                        settings.DEFAULT_FROM_EMAIL,
-                        [email],
-                        fail_silently=False,
-                    )
-                    request.session['resetotp'] = otp
-                    request.session['action'] = action
-                    request.session['reset_email'] = email
-                    return redirect(verifyotp)
+                    if action == '':
+                        otp = ''.join(random.choices('0123456789',k=6))
+                        action = "resetpassword"
+                        send_mail(
+                            'Reset password OTP',
+                            f'Your OTP for Resetting password is: {otp}',
+                            settings.DEFAULT_FROM_EMAIL,
+                            [email],
+                            fail_silently=False,
+                        )
+                        request.session['resetotp'] = otp
+                        request.session['action'] = action
+                        request.session['reset_email'] = email
+                        return redirect(verifyotp)
+                    elif action == 'forgetpassword':
+                        hashedpassword = make_password(newpass)
+                        user.password=hashedpassword
+                        user.save()
+                        if user.role=='client':
+                            return redirect('home')
+                        if user.role=='Service-provider':
+                            return redirect('serviceproviderhome')
+
+                    
                 else:
                     error_message='Password does not match'
             except:
@@ -468,7 +483,6 @@ def getbill(request,booking_id):
         'total_amount': bill.total_amount,
         'items': list(bill.items)
     }
-    print(bill_data)
     return JsonResponse({'bill': bill_data})
 
 def initiate_payment(request):
@@ -492,7 +506,7 @@ def initiate_payment(request):
             homeowner=homeowner,
             service_provider=service_provider,
             amount=amount/100,  
-            method='Online payment',
+            payment_method='Online payment',
             payment_status='Pending'
         )
         payment.save()
@@ -564,8 +578,11 @@ def update_rate_service_provider(request):
         return redirect(reverse('orderhistory'))
 
 def viewdetails(request,booking_id):
+    print('the booking id is : ',booking_id)
     booking = Booking.objects.get(booking_id=booking_id) 
+    print('the booking is ',booking)
     bill = Billing.objects.get(booking=booking)
+    print('bill is ',bill)
     payment = Payment.objects.get(booking=booking)
     view_data = {
         'bill_id' : bill.bill_id,
@@ -576,7 +593,6 @@ def viewdetails(request,booking_id):
         'pstatus' : payment.payment_status,
         'bcomplete' : bill.date
     }
-    print(view_data)
     return JsonResponse({'view': view_data})
 
     

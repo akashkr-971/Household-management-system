@@ -3,53 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Household Management System</title>
     <style>
-        body{
-            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-            transform: translate(-50%, -50%); 
-            background-color: #77dd77;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .top-bar {
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            align-items: center;
+        }
+
+        .top-bar .name h1 {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .acc {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .acc:hover .dropdown-content {
+            display: block;
+        }
+
+        .mid-bar {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .greet h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .ad img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .uptask h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .services-tab {
+            margin-top: 30px;
+        }
+
+        .services button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px 2px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .services a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .bottom {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .taglines {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        .taglines h2 {
+            font-size: 22px;
+            margin: 10px 0;
+        }
+
+        .taglines p {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <table class="cancelform">
-        <tr><th colspan="2">Cancellation Reason</th></tr>
-        <tr>
-            <td colspan="2"><input type="text" name="cancellation_reason" required></td>
-            <td><input type="hidden" id="cancel_booking_id" name="booking_id"></td>
-            <td><input type="hidden" id="cancel_homeownerid" name="homeownerid"></td>
-            <td><input type="hidden" id="cancel_serviceproviderid" name="serviceproviderid"></td>
-        </tr>
-        <tr><td><input type="submit" value="Submit" name="submit"></td><td><input type="button" value="Cancel" onclick="closecancelform()"></td></tr>
-    </table>
+    <div class="top-bar">
+        <div class="name">
+            <button onclick="redirecttohome()" style="background:transparent;color: white;">
+                <h1>Household Management System</h1>
+            </button>
+            <script>
+                function redirecttohome() {
+                    window.location.href = "{% url 'home' %}";
+                }
+            </script>
+        </div>
 
-    <label for="cancellationReason{{ booking.booking_id }}">Cancellation Reason</label>
-                <input type="text" name="cancellation_reason" required>
-                <input type="hidden" id="cancel_booking_id" name="booking_id">
-                <input type="hidden" id="cancel_homeownerid" name="homeownerid">
-                <input type="hidden" id="cancel_serviceproviderid" name="serviceproviderid">
-                <input type="submit" value="Submit" name="submit">
-                <input type="button" value="Cancel" onclick="closecancelform()">
-                
+        <div class="acc">
+            <span>
+                <h3>Account</h3>
+            </span>
+            <div class="dropdown-content">
+                {% if user %}
+                <a href="{% url 'accountdetails' %}">Account Details</a>
+                <a href="{% url 'orderhistory' %}">Order History</a>
+                <a href="{% url 'resetpassword' %}">Reset Password</a>
+                <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                <a href="{% url 'Userlogin' %}">Login</a>
+                <a href="{% url 'Clientsignup' %}">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="mid-bar" id="mid-bar">
+        <div class="greet">
+            <h2>Welcome Guest</h2>
+        </div>
+        <div class="ad">
+            <img class="img1" src="..\static\images\adimage1.webp" alt="Advertisement" border="0">
+            <img class="img2" src="..\static\images\adimage2.webp" alt="Advertisement" border="0" style="display: none;">
+            <img class="img3" src="..\static\images\adimage3.webp" alt="Advertisement" border="0" style="display: none;">
+        </div>
+        <div class="uptask">
+            <h2>Upcoming Tasks</h2>
+            <table id="detailstable">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Name</th>
+                        <th>Job</th>
+                        <th>Booking Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="services-tab">
+                <div>
+                    <h1 style="text-align: center;padding-top: 20px;margin: 0;">Services Available</h1>
+                    <br>
+                </div>
+                <div class="services">
+                    <button><a href="{% url 'services' service_name='Plumber' %}">Plumber</a></button>
+                    <button><a href="{% url 'services' service_name='Electrician' %}">Electrician</a></button>
+                    <button><a href="{% url 'services' service_name='Carpenter' %}">Carpenter</a></button>
+                    <button><a href="{% url 'services' service_name='InteriorDesigner' %}">Interior Designer</a></button>
+                    <button><a href="{% url 'services' service_name='Painting' %}">Painting</a></button>
+                    <button><a href="{% url 'services' service_name='Landscaping' %}">Landscaping</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom">
+        <h4>Contact us: askashkr971@gmail.com</h4>
+    </div>
+
+    <div class="taglines">
+        <h2>Your Home, Our Priority</h2>
+        <p>We provide top-notch services to make your home a comfortable haven.</p>
+        <h2>Trusted Professionals, Reliable Solutions</h2>
+        <p>Our team of skilled professionals is dedicated to delivering reliable solutions for all your household needs.</p>
+        <h2>Quality Service, Anytime</h2>
+        <p>We are committed to providing quality services whenever you need them.</p>
+    </div>
 </body>
 </html>
-
-def initiate_payment(request):
-    if request.method == 'POST':
-        client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_SECRET))
-        amount = request.POST.get('totalamountinput')
-        user_id = request.POST.get('totalamountinput')
-        order = client.order.create(dict(amount=amount, currency="INR", payment_capture='0'))
-        user = User.objects.get(user_id = user_id)
-        context = {
-            'razorpay_key': settings.RAZOR_PAY_KEY_ID,
-            'amount': amount,
-            'business_name': 'Household management system',
-            'order_id': order['id'],
-            'callback_url': 'https://your-django-site.com/payment/callback/',
-            'user': user,
-        }
-        return render(request, 'home.html', context)
-
-    return render(request, 'home.html')
