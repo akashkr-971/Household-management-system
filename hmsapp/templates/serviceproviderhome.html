@@ -95,24 +95,16 @@ span h3{
     margin: 10px 0 ;
     font-weight: 800;
 }
-.ad img{
-    width: 100%;
-    overflow: hidden;
-    height: 250px;
-    border-radius: 10px;
-}
 .pentask{
     text-align: center;
-    height: 380px;
+    height: 650px;
     font-size: 20px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-weight: 600;
     background-color: blanchedalmond;
     border-radius: 10px;
     padding: 10px;
-}
-.ad{
-    margin-bottom:20px;
+    overflow:scroll;
 }
 button {
     height: 80px;
@@ -208,9 +200,11 @@ table button{
 }
 .viewcontainer{
     position: absolute;
-    left: 33%;
+    left: 50%;
     top: 50%;
     height: 100px;
+    z-index: 3;
+    transform: translate(-50%,-50%);
 }
 .complete-btn{
     background-color: rgb(52, 245, 52);
@@ -220,12 +214,13 @@ table button{
 .createbill{
     height: 70%;
     width: 70%;
-    background-color: #333;
+    background-color: #2cd0a1;
     color: white;
     position:absolute;
     top: 13%;
     left: 18%;
     overflow: auto;
+    z-index: 3;
 }
 .billlabel{
     display: flex;
@@ -278,13 +273,14 @@ table button{
     flex-direction: column;
     height: auto;
     width: 600px;
-    top: 60%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #77dd77;
     padding: 5px;
     padding-top: 20px;
     border-radius:10px;
+    z-index: 3;
 }
 .billcontainer table{
     margin-top: 10px;
@@ -303,6 +299,16 @@ table button{
     text-align: center;
     font-weight: 600;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.fullbodyoverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); 
+    display: none;
+    z-index: 2;
 }
 
 @media only screen and (max-width: 600px) {
@@ -335,7 +341,7 @@ table button{
 </style>
 </head>
     <body>
-
+    <div class="fullbodyoverlay" id="fullbodyoverlay"></div>
     <div class="top-bar">
         <div class="name">Household Management System</div>
         <div class="searchbar">
@@ -363,26 +369,6 @@ table button{
     </div>
     <div class="mid-bar">
         <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
-        <div class="ad">
-            <img class="img1" src="https://i.ibb.co/s6LQh9m/fun.jpg" alt="fun" border="0">
-            <img class="img2" src="https://i.ibb.co/KwtjX8W/fun2.jpg" alt="fun2" border="0" style="display: none;">
-            <img class="img3" src="https://i.ibb.co/xGL3PmV/fun3.jpg" alt="fun3" border="0" style="display: none;">
-            
-            <script>
-                let currentIndex=1;
-                const totalimg=3;
-
-                function nextImg(){
-                    document.querySelector('.img' + currentIndex).style.display = 'none';
-                    currentIndex++;
-                    if (currentIndex > totalimg) {
-                        currentIndex = 1;
-                    }
-                    document.querySelector('.img' + currentIndex).style.display = 'block';
-                }
-                setInterval(nextImg,5000)
-            </script>
-        </div>
         <div class="pentask">
             <p>Pending Tasks</p>
             {% if user %}
@@ -458,14 +444,14 @@ table button{
                         document.getElementById('cancel_booking_id').value=bid;
                         document.getElementById('cancel_homeownerid').value=uid;
                         document.getElementById('cancel_serviceproviderid').value=sid;
-    
+                        
+                        document.getElementById('fullbodyoverlay').style.display=='block'
                         document.getElementById('cancellationform').style.display='block';
-                        document.getElementById('detailstable').style.opacity = "0";
                     }
                     function closecancelform(){
                         var cancellationform = document.getElementById('cancellationform')
                         cancellationform.style.display = 'none';
-                        document.getElementById('detailstable').style.opacity = "1";
+                        document.getElementById('fullbodyoverlay').style.display=='none'
                     }
                 </script>
             </div>
@@ -493,7 +479,7 @@ table button{
                         document.getElementById('phonelabel').textContent=phone;
                         document.getElementById('datelabel').textContent=date;
                         document.getElementById('timelabel').textContent=time;
-                        
+                        document.getElementById('fullbodyoverlay').style.display='block'
                         if(updated=='yes'){
                         document.getElementById('updated-data').style.display='table-row'
                         document.getElementById('updatedisc').textContent=desc;
@@ -505,12 +491,11 @@ table button{
     
                         viewtable=document.getElementById('viewtable')
                         viewtable.style.display='block'
-                        document.getElementById('detailstable').style.opacity = "0";
                     }
                     function closeviewform(){
                         var viewtable = document.getElementById('viewtable')
                         viewtable.style.display = 'none';
-                        document.getElementById('detailstable').style.opacity = "1";
+                        document.getElementById('fullbodyoverlay').style.display='none'
                     }
                 </script>
             </div>
@@ -596,6 +581,7 @@ table button{
                 <script>
                     let rowcount=0;
                     function createbill(createbid){
+                        document.getElementById('fullbodyoverlay').style.display='block'
                         document.getElementById('createbill').style.display='block'
                         document.getElementById('createbookingid').value = createbid
                     }
@@ -702,6 +688,7 @@ table button{
                         event.preventDefault();
                         event.stopPropagation(); 
                         document.getElementById('createbill').style.display='none'
+                        document.getElementById('fullbodyoverlay').style.display='none'
                     }
                     function gatherdata(event){
                         event.preventDefault();
@@ -807,11 +794,13 @@ table button{
                         document.getElementById('billbookingid').value=billbid
                         document.getElementById('deletebillbookingid').value = billbid
                         document.getElementById('billcontainer').style.display='block';
+                        document.getElementById('fullbodyoverlay').style.display='block'
                         fetchbill();
                     }
                     function closebill(event){
                         event.preventDefault()
                         event.stopPropagation();
+                        document.getElementById('fullbodyoverlay').style.display='none'
                         document.getElementById('billcontainer').style.display='none'
                         const billtable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
                         billtable.innerHTML=''
@@ -827,6 +816,7 @@ table button{
                         last_row = document.getElementById('updatebuttons')
                         last_row.style.display='none'
                         billtable.appendChild(last_row)
+                        
                     }
                     function fetchbill(){
                         const bid=document.getElementById('billbookingid').value

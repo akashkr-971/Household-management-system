@@ -13,6 +13,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
+from django.db.models import Q
 import json
 import random
 import razorpay
@@ -28,6 +29,17 @@ def home(request):
         if user.role=='Service-provider':
             return redirect('serviceproviderhome')
     return render(request,'home.html',{'user': user})
+
+def adminpage(request):
+    user = None
+    if 'user_id' in request.session:
+        user = User.objects.get(user_id=request.session['user_id'])
+        if user.role == "admin":
+            no_eligibility_providers = ServiceProvider.objects.filter(eligible='No')
+            print(no_eligibility_providers)
+            return render(request, 'adminpage.html', {'providers': no_eligibility_providers,'user':user})
+        
+    return render(request,'adminpage.html')
 
 def serviceproviderhome(request):
     user = None
@@ -60,7 +72,8 @@ def clientsignupwithoutotp(request):
             profession = request.POST.get('Profession')
             rate = request.POST.get('rate')
             unit = request.POST.get('unit')
-            service_provider = ServiceProvider.objects.create(user=user, profession=profession, rate=rate , unit=unit)
+            eligible = 'No'
+            service_provider = ServiceProvider.objects.create(user=user, profession=profession, rate=rate , unit=unit , eligible=eligible)
             return redirect('serviceproviderhome')
     
     return render(request, 'Clientsignup.html')
@@ -111,15 +124,19 @@ def Userlogin(request):
         try:
             user = User.objects.get(user_name=username)
             print(user.password)
-            print(check_password(password,user.password))
-            if check_password(password, user.password) and user.role=='client':
+            if user.role=='admin' and check_password(password, user.password):
                 request.session['user_id'] = user.user_id
-                return redirect('home')
-            elif check_password(password, user.password) and user.role=='Service-provider':
-                request.session['user_id'] = user.user_id
-                return redirect('serviceproviderhome')
+                return redirect('adminpage')
             else:
-                print('authetication failed')
+                print(check_password(password,user.password))
+                if check_password(password, user.password) and user.role=='client':
+                    request.session['user_id'] = user.user_id
+                    return redirect('home')
+                elif check_password(password, user.password) and user.role=='Service-provider':
+                    request.session['user_id'] = user.user_id
+                    return redirect('serviceproviderhome')
+                else:
+                    print('authetication failed')
         except User.DoesNotExist:
             pass
         error_message = "Invalid username or password."
@@ -129,7 +146,7 @@ def Userlogin(request):
 
 def Userlogout(request):
         logout(request)
-        return redirect ('home')
+        return redirect ('landingpage')
         
 def search(request):
     query = request.get('search')
@@ -149,14 +166,13 @@ def bookings(request):
             time = request.POST.get('time')
             location = request.POST.get('location')
             landmark = request.POST.get('LandMark')
-            service_provider_id = request.POST.get('provider_id')
 
-            if service_provider_id:
-                service_provider_id = int(service_provider_id)
-                print('Service Provider ID:', service_provider_id)  # Debugging statement
-                user_id = request.session.get('user_id')
-                service_provider = ServiceProvider.objects.get(service_provider_id=service_provider_id)
-                homeowner = Homeowner.objects.get(user_id=user_id)  # Get the Homeowner instance
+            user_id = request.session.get('user_id')
+            homeowner = Homeowner.objects.get(user_id=user_id)
+            available_providers = getavailableproviders(job, date)
+
+            if available_providers:
+                service_provider = random.choice(available_providers)
                 rate = service_provider.rate 
 
                 booking = Booking.objects.create(
@@ -172,14 +188,36 @@ def bookings(request):
                     landmark=landmark,
                     status='Pending'
                 )
-                messages.success(request, 'Booking successful!')
+                bookingdetails = {
+                    'providername' : service_provider.user.full_name,
+                    'providernumber' : service_provider.user.phone,
+                    'servicedate' : date,
+                    'servicerate' : float(rate),
+                    'rateunit' : service_provider.unit,
+                    'providerrating' : int(service_provider.average_rating),
+                    'booked' : 'yes'
+                }
+                bookingdetails_json = json.dumps(bookingdetails)
+                messages.success(request,bookingdetails_json)
                 return redirect('home')
             else:
-                return HttpResponseBadRequest("Service Provider ID is missing")
+                print('no providers')
+                messages.error(request,'No service provider available')
+                return redirect('home')
         except Exception as e:
             return HttpResponseBadRequest("Error processing booking: " + str(e))
     else:
         return HttpResponseBadRequest("POST")
+    
+def getavailableproviders(job,date):
+    providers = ServiceProvider.objects.filter(
+        profession=job,
+        eligible = 'Yes'
+        )
+    available_providers = providers.exclude(
+        Q(bookings__servicedate=date) & Q(bookings__status__in=['Pending', 'Confirmed'])
+    )
+    return available_providers
 
 def cancelbooking(request):
     if request.method == 'POST':
@@ -308,12 +346,14 @@ def verifyotp(request):
                         return redirect('home')
                     if user.role=='Service-provider':
                         return redirect('serviceproviderhome')
+                    if user.role=='admin':
+                        return redirect('adminpage')
         else:
             error_message = "Incorrect OTP try again."
             return render(request, 'verifyotp.html', {'error': error_message})
     return render(request,'verifyotp.html')
 
-def Resetpassword(request):
+def resetpassword(request):
     error_message= None
     action=request.session.get('action')
     if 'user_id' in request.session:
@@ -329,9 +369,19 @@ def Resetpassword(request):
                         'user_id' : user_id,
                         'newpass' : newpass
                     }
-                    if action == '':
+                    if action == 'forgetpassword':
+                        hashedpassword = make_password(newpass)
+                        user.password=hashedpassword
+                        user.save()
+                        if user.role=='client':
+                            return redirect('home')
+                        if user.role=='Service-provider':
+                            return redirect('serviceproviderhome')
+                    else:
+                        print('entered')
                         otp = ''.join(random.choices('0123456789',k=6))
                         action = "resetpassword"
+                        print(otp)
                         send_mail(
                             'Reset password OTP',
                             f'Your OTP for Resetting password is: {otp}',
@@ -343,16 +393,6 @@ def Resetpassword(request):
                         request.session['action'] = action
                         request.session['reset_email'] = email
                         return redirect(verifyotp)
-                    elif action == 'forgetpassword':
-                        hashedpassword = make_password(newpass)
-                        user.password=hashedpassword
-                        user.save()
-                        if user.role=='client':
-                            return redirect('home')
-                        if user.role=='Service-provider':
-                            return redirect('serviceproviderhome')
-
-                    
                 else:
                     error_message='Password does not match'
             except:
@@ -595,6 +635,24 @@ def viewdetails(request,booking_id):
     }
     return JsonResponse({'view': view_data})
 
+def changeeligibility(request):
+    if request.method=='POST':
+        try:
+            provider_id = request.POST.get('providerid')
+            eligibility = request.POST.get('eligibility')
+            print(provider_id,eligibility)
+            user_id = request.session.get('user_id')
+            user = User.objects.get(user_id = user_id)
+            print(user_id)
+            provider = ServiceProvider.objects.get(service_provider_id = provider_id)
+            print(provider)
+            # provider.eligible = eligibility
+            # provider.save()
+            return redirect('adminpage')
+        except Exception as e:
+            return JsonResponse({'the error error': str(e)}, status=400)
+    return render(request ,'adminpage')
+
     
 @csrf_exempt
 def capture_payment(request):
@@ -635,5 +693,6 @@ def capture_payment(request):
             print('Error:', e)
             return render(request, 'home.html', {'status': 'failed'})
     return HttpResponseBadRequest()
+
 
     

@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Household Management System</title>
 <style>
+*{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
 body {
     margin: 0;
     padding: 0;
@@ -78,66 +81,59 @@ span h3{
     margin: 10px 0 ;
     font-weight: 800;
 }
-.ad {
-        position: relative;
-        width: 100%;
-        height: 50vh;
-        overflow: hidden;
-        border-radius: 10px;
-    }
-    .overlay {
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.5); /* Light black overlay */
-        z-index: 2;
-    }
-    .img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        display: none;
-        z-index: 1;
-    }
-    .img1 { background-image: url("{% static 'images/adimage1.webp' %}"); display: block; }
-    .img2 { background-image: url("{% static 'images/adservice2.png' %}"); }
-    .img3 { background-image: url("{% static 'images/adservice3.png' %}"); }
-    .content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: white;
-        z-index: 3;
-        width: 80%;
-        display: none;
-    }
-    .content1 { display: block; }
-    .content h4 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-    }
-    .content h1 {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-    .content p {
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-    }
-    .content button {
-        padding: 10px 20px;
-        font-size: 1rem;
-        background-color: #FFA500;
-        border: none;
-        color: white;
-        cursor: pointer;
-    }
+.overlay {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+.img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    display: none;
+    z-index: 1;
+}
+.img1 { background-image: url("{% static 'images/adimage1.webp' %}"); display: block; }
+.img2 { background-image: url("{% static 'images/adservice2.png' %}"); }
+.img3 { background-image: url("{% static 'images/adservice3.png' %}"); }
+.content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 3;
+    width: 80%;
+    display: none;
+}
+.content1 { display: block; }
+.content h4 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.content h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+.content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+.content button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #FFA500;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
 .uptask{
     text-align: center;
     width: 98%;
@@ -180,21 +176,71 @@ table button{
     cursor: pointer;
     font-size: 16px;
 }
-.ad, .uptask, .services {
+.uptask, .services {
     margin-bottom:20px;
 }
 .services-tab{
     background-color: rgb(127, 240, 153);
     border-radius: 10px;
+    margin:0px;
 }
 .services {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
     grid-gap: 20px;
     padding: 30px;
     margin: 0;
     height:auto;
     border-radius: 10px;
+}
+.services button{
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #ffffff;
+    padding: 0px;
+}
+.serviceitem{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 10px;
+    background-size: cover;
+}
+.servicetext{
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+}
+.servicetext h3{
+    margin-top: 10%;
+}
+.servicetext p{
+    font-weight: 800;
+}
+.service1{
+    background-image: url("{% static 'images/plumberimg.png' %}");
+
+}
+.service2{
+    background-image: url("{% static 'images/electricianimg.png' %}");
+}
+.service3{
+    background-image: url("{% static 'images/carpenterimg.png' %}");
+}
+.service4{
+    background-image: url("{% static 'images/interiordesigner.png' %}");
+}
+.service5{
+    background-image: url("{% static 'images/painterimg.png' %}");
+}
+.service6{
+    background-image: url("{% static 'images/landscaperimg.png' %}");
 }
 a{
     text-decoration: none;
@@ -228,7 +274,7 @@ button {
     background-color: #6495ed;
     color: white;
 }
-.bottom {
+footer {
     width: 100%;
     height: 80px;
     background-color: #333;
@@ -236,6 +282,8 @@ button {
     text-align: center;
     padding-top: 20px;
     font-size: 14px;
+    position: absolute;
+    bottom: 0;
 }
 .cancellationform , .updateform{
     display: flex;
@@ -243,15 +291,15 @@ button {
     background-color: rgb(243, 193, 193);
     padding: 20px;
     border-radius: 5px;
-    z-index: 10;
+    z-index: 2;
     transform: translate(-50%, -50%);
 }
 .cancellationform{
-    top: 60%;
+    top: 50%;
     left: 50%;
 }
 .updateform{
-    top: 59.5%;
+    top: 50%;
     left: 50%;
     width:260px;
     height: 210px;
@@ -286,36 +334,48 @@ button {
     width: 200px;
 }
 .viewcontainer{
-    position: absolute;
-    top: 59.5%;
+    position: fixed;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 2;
 }
 .billcontainer{
-    position: absolute;
+    position: fixed;
     display: flex;
     flex-direction: column;
     height: auto;
     width: 600px;
-    top: 60%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #77dd77;
     padding: 5px;
     padding-top: 20px;
     border-radius:10px;
+    z-index: 2;
 }
 .billcontainer table{
     margin-top: 10px;
 }
-.overlay {
+.fullbodyoverlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); 
+    background-color: rgba(0, 0, 0, 0.8); 
     display: none;
+    z-index: 1;
+}
+.bookingfulloverlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); 
+    display: flex;
 }
 .services button{
     padding: 0;
@@ -327,84 +387,99 @@ button {
     justify-content: center;
     border-radius: 10px;
 }
-.loginalert{
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); 
+    overflow: hidden;
+}
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+    height: 70%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    background-image: url('{% static "images/bkngimg.png" %}');
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+label, input{
+    font-size: 18px;
+    height: 25px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+input{
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+.bkgdetail{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.bkngformbutton{
+    display: flex;
+    justify-content: space-evenly;
+    font-size: 20px;
+    padding: 10px 30px;
+}
+.bkngformbutton button{
+    height: 70px;
+    width: 100px;
+}
+.bookingdetails{
+    height: 200px;
+    width: 500px;
+    background-color: white;
+    z-index: 10;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 190px;
-    word-wrap:break-word;
+    text-align: center;
 }
-.loginalert p,.loginalert a{
-    display: flex;
-    flex: 1;
-    align-items: center;
-    justify-content: center;
-    height: 190px;
-    padding: 0%;
+.bookingdetails tr{
+    font-size: 20px;
 }
-
-@media only screen and (max-width:500px){
-    table ,th, td {
-        font-size: 8px;
-        font-weight: 300;
-    }
-    #search{
-        width:80%;
-    }
-    table button{
-        height: 20px;
-        width: 50px;
-        font-size: 10px;
-    }
-    .uptask{
-        width: 100%;
-        padding: 0;
-    }
-    .acc{
-        display: flex;
-        font-size: 15px;
-        float: right;
-    }
-    .acc .dropdown-content a{
-        font-size: 15px;
-        padding: 10px 3px;
-        border: 1px solid black;
-    }
-    .cancellationform{
-        left:13%
-    }
-    .updateform{
-        left:2%;
-    }
+.bookingdetails tr td{
+    width: 50%;
 }
-@media only screen and (min-width:500px) and  (max-width: 650px) {
-    table ,th, td {
-        font-size: 14px;
-        font-weight: 500;
-        height: 20px;
+@media only screen and (max-width: 1400px) {
+    footer{
+        position: relative;
     }
-    tr{
-        height: 30px;
-    }
-    #search{
-        width:90%;
-        margin-left:10px ;
-    }
-    table button{
-        height: 20px;
-        width: 50px;
-        font-size: 10px;
-    }
-    .uptask{
-        width:97%;
-    }
-    .cancellationform{
-        left:25%;
+    .modal-content{
+        width: 70%;
+        height: 70%;
     }
 }
 </style>
 </head>
 <body>
+<div class="fullbodyoverlay" id="fullbodyoverlay"></div>
 <div class="top-bar">
     <div class="name">
         <p onclick="redirecttohome()">Household Management System</p>
@@ -419,65 +494,17 @@ button {
             <h3>Account</h3>
         </span>
         <div class="dropdown-content">
-            {% if user %}
-                <a href="{% url 'accountdetails' %}">Account Details</a>
-                <a href="{% url 'orderhistory' %}">Order History</a>
-                <a href="{% url 'resetpassword' %}">Reset password</a>
-                <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'Userlogin' %}">Login</a>
-                <a href="{% url 'Clientsignup' %}">Signup</a>
-            {% endif %}
+            <a href="{% url 'accountdetails' %}">Account Details</a>
+            <a href="{% url 'orderhistory' %}">Order History</a>
+            <a href="{% url 'resetpassword' %}">Reset password</a>
+            <a href="{% url 'logout' %}">Logout</a>
         </div>
         
     </div>
 </div>
 
 <div class="mid-bar" id="mid-bar">
-    <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
-    <div class="ad">
-        <div class="overlay"></div>
-        <div class="img img1">
-            <div class="content content1">
-                <h4>WELCOME TO APEX</h4>
-                <h1>A Construction & Renovation Company</h1>
-                <p>Commercial • Residential • Industrial</p>
-                <button>Book Now</button>
-            </div>
-        </div>
-        <div class="img img2">
-            <div class="content content2">
-                <h4>QUALITY ASSURED</h4>
-                <h1>Building Dreams, Delivering Excellence</h1>
-                <p>Innovative • Reliable • Sustainable</p>
-                <button>Book Now</button>
-            </div>
-        </div>
-        <div class="img img3">
-            <div class="content content3">
-                <h4>EXPERT TEAM</h4>
-                <h1>Transforming Visions into Reality</h1>
-                <p>Professional • Skilled • Dedicated</p>
-                <button>Book Now</button>
-            </div>
-        </div>
-        <script>
-            let currentIndex = 1;
-        const totalimg = 3;
-
-        function nextImg() {
-            document.querySelector('.img' + currentIndex).style.display = 'none';
-            document.querySelector('.content' + currentIndex).style.display = 'none';
-            currentIndex++;
-            if (currentIndex > totalimg) {
-                currentIndex = 1;
-            }
-            document.querySelector('.img' + currentIndex).style.display = 'block';
-            document.querySelector('.content' + currentIndex).style.display = 'block';
-        }
-        setInterval(nextImg, 3000);
-        </script>
-    </div>
+    <div class="greet">Welcome {{ user.user_name }}</div>
     <div class="uptask">
         <p>Upcoming Tasks</p>
         {% if user %}
@@ -531,7 +558,6 @@ button {
             </tbody>
             <script>
                 window.onload = function(){
-                    console.log('called')
                     maintable = document.getElementById('detailstable')
                     tbody = maintable.getElementsByTagName('tbody')[0]
                     msgbox = document.getElementById('msgbox')
@@ -559,7 +585,10 @@ button {
                         <input type="hidden" id="cancel_homeownerid" name="homeownerid">
                         <input type="hidden" id="cancel_serviceproviderid" name="serviceproviderid"></td>
                     </tr>
-                    <tr><td><input type="submit" value="Submit" name="submit"></td><td><input type="button" value="Cancel" onclick="closecancelform()"></td></tr>
+                    <tr>
+                        <td><input type="button" value="Cancel" onclick="closecancelform()"></td>
+                        <td><input type="submit" value="Submit" name="submit"></td>
+                    </tr>
                 </table>
             </form>
             <script>
@@ -567,14 +596,13 @@ button {
                     document.getElementById('cancel_booking_id').value=bid;
                     document.getElementById('cancel_homeownerid').value=uid;
                     document.getElementById('cancel_serviceproviderid').value=sid;
-
+                    document.getElementById('fullbodyoverlay').style.display='block'
                     document.getElementById('cancellationform').style.display='block';
-                    document.getElementById('detailstable').style.opacity = "0";
                 }
                 function closecancelform(){
                     var cancellationform = document.getElementById('cancellationform')
                     cancellationform.style.display = 'none';
-                    document.getElementById('detailstable').style.opacity = "1";
+                    document.getElementById('fullbodyoverlay').style.display='none'
                 }
             </script>
         </div>
@@ -590,8 +618,8 @@ button {
                 <input type="hidden" name="booking_id" id="update_booking_id">
                 <input type="hidden" name="homeowner_id" id="update_homeownerid">
                 <input type="hidden" name="service_provider_id" id="update_serviceproviderid">
-                <input type="submit" value="submit" name="submit">
                 <input type="button" value="cancel" onclick="closeupdateform()">
+                <input type="submit" value="submit" name="submit">
             </form>
             <script>
                 function updatebooking(bid,uid,sid){
@@ -600,12 +628,12 @@ button {
                     document.getElementById('update_serviceproviderid').value=sid;
 
                     document.getElementById('Updateform').style.display='block';
-                    document.getElementById('detailstable').style.opacity = "0";
+                    document.getElementById('fullbodyoverlay').style.display='block'
                 }
                 function closeupdateform(){
                     var cancellationform = document.getElementById('Updateform')
                     Updateform.style.display = 'none';
-                    document.getElementById('detailstable').style.opacity = "1";
+                    document.getElementById('fullbodyoverlay').style.display='none'
                 }
             </script>
         </div>
@@ -629,6 +657,7 @@ button {
                     document.getElementById('phonelabel').textContent=phone;
                     document.getElementById('datelabel').textContent=date;
                     document.getElementById('timelabel').textContent=time;
+                    document.getElementById('fullbodyoverlay').style.display='block'
                     if(updated=='yes'){
                         document.getElementById('updated-data').style.display='table-row'
                         document.getElementById('updatedisc').textContent=desc;
@@ -640,12 +669,12 @@ button {
 
                     viewtable=document.getElementById('viewtable')
                     viewtable.style.display='block'
-                    document.getElementById('detailstable').style.opacity = "0";
                 }
                 function closeviewform(){
                     var viewtable = document.getElementById('viewtable')
                     viewtable.style.display = 'none';
                     document.getElementById('detailstable').style.opacity = "1";
+                    document.getElementById('fullbodyoverlay').style.display='none'
                 }
             </script>
         </div>
@@ -681,13 +710,15 @@ button {
                 function viewbill(billbid,event){
                     event.preventDefault()
                     event.stopPropagation(); 
-                    document.getElementById('billbookingid').value=billbid
+                    document.getElementById('billbookingid').value=billbid;
+                    document.getElementById('fullbodyoverlay').style.display='block';
                     document.getElementById('billcontainer').style.display='block';
                     fetchbill();
                 }
                 function closebill(event){
                     event.preventDefault()
                     event.stopPropagation();
+                    document.getElementById('fullbodyoverlay').style.display='none';
                     document.getElementById('billcontainer').style.display='none'
                     const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
                     billtable.innerHTML=''
@@ -742,22 +773,166 @@ button {
     </div>
     <div class="services-tab">
         <div>
-            <h1 style="text-align: center;padding-top: 20px;margin: 0;">Services Available</h1><br>
+            <h1 style="text-align: center;padding-top: 20px;margin: 0;">Services We Provide</h1><br>
         </div>
-        <div class="services">
-            <button><a href="{% url 'services' service_name='Plumber' %}">Plumber</a></button>
-            <button><a href="{% url 'services' service_name='Electrician' %}">Electrician</a></button>
-            <button><a href="{% url 'services' service_name='Carpenter' %}">Carpenter</a></button>
-            <button><a href="{% url 'services' service_name='InteriorDesigner' %}">Interior Designer</a></button>
-            <button><a href="{% url 'services' service_name='Painting' %}">Painting</a></button>
-            <button><a href="{% url 'services' service_name='Landscaping' %}">Landscaping</a></button>
-            <!--<button><a href="#">+</a></button> -->
+        <div class="services" id="servicescontainer">
+            <button onclick="showbookingform('Plumber')">
+                <div class="serviceitem service1">
+                    <div class="servicetext">
+                        <h2>Plumbing</h2>
+                        <h3>Fix leaks, unclog drains, and handle all your plumbing needs.</h3>    
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+            <button onclick="showbookingform('Electrician')">
+                <div class="serviceitem service2">
+                    <div class="servicetext">
+                        <h2>Electrician</h2>
+                        <h3>Install, maintain, and repair electrical systems in your home.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+            <button onclick="showbookingform('Carpenter')">
+                <div class="serviceitem service3">
+                    <div class="servicetext">
+                        <h2>Carpenter</h2>
+                        <h3>Custom woodwork, repairs, and installations for your living spaces.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+            <button onclick="showbookingform('InteriorDesigner')">
+                <div class="serviceitem service4">
+                    <div class="servicetext">
+                        <h2>Interior Designer</h2>
+                        <h3>Custom woodwork, repairs, and installations for your living spaces.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div> 
+            </button>
+            <button onclick="showbookingform('Painting')">
+                <div class="serviceitem service5">
+                    <div class="servicetext">
+                        <h2>Painting</h2>
+                        <h3>Refresh your home with expert interior and exterior painting services.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+            <button onclick="showbookingform('Landscaping')">
+                <div class="serviceitem service6">
+                    <div class="servicetext">
+                        <h2>Landscaping</h2>
+                        <h3>Create and maintain beautiful outdoor spaces for your property.</h3>
+                        <p>Click to book</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+        <script>
+            function showbookingform(job){
+                document.getElementById('bookingFormModal').style.display='flex';
+                document.getElementById('job').value=job;
+            }
+        </script>
+        <div id="bookingFormModal"  class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeform()">&times;</span>
+                <h1 style="text-align: center;">Booking Form</h1>
+                {% if request.session.user_id %}
+                    <form id="bookingForm" method='post' action="{% url 'bookings' %}">
+                        {% csrf_token %}
+                        <div class="bkgdetail">
+                            <label for="username">User name : </label>
+                            <input type="text" name="username" required>
+
+                            <label for="jobdesc">Job Description : </label>
+                            <input type="text" name="jobdesc">
+
+                            <label for="date">Date : </label>
+                            <input type="date" name="date" required>
+
+                            <label for="time">Time : </label>
+                            <input type="time" name="time" required>
+
+                            <label for="location">location : </label>
+                            <input type="text" name="location" required>
+
+                            <label for="LandMark">LandMark : </label>
+                            <input type="text" name="LandMark" required>
+
+                            <input type="hidden" id="job" name="job">
+                        </div>
+                        
+                        <div class="bkngformbutton">
+                            <button type="button" onclick="closeform()" id="cancelBtn" style="background-color: rgb(247, 77, 77);"><label>Cancel</label></button>
+                            <button type="submit" id="submitBtn" style="background-color: #20ed6b;"><label>Submit</label></button>
+                        </div>
+                    </form>
+                {% else %}
+                    <h3 style="text-align: center;padding: 30px;"><a href="{% url 'Userlogin'%}">Login to continue booking</a></h3>
+                {% endif %}
+            </div>
+            <script>
+                function closeform(){
+                    var bookingFormModal = document.getElementById('bookingFormModal')
+                    bookingFormModal.style.display = 'none';
+                }
+                window.addEventListener('click', function(event) {
+                var bookingFormModal = document.getElementById('bookingFormModal');
+                if (event.target == bookingFormModal) {
+                    closeform();
+                }
+            });
+            </script>
         </div>
     </div>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="bookingfulloverlay" id="bookingfulloverlay"></div>
+                <div class="bookingdetails" id="bookingdetails">
+                    <table>
+                        <th colspan="2">Booking Details</th>
+                        <tr><td>Name</td><td id="providerName"></td></tr>
+                        <tr><td>Phone</td><td id="providerNumber"></td></tr>
+                        <tr><td>Date</td><td id="serviceDate"></td></tr>
+                        <tr><td>Rate/unit</td><td id="serviceRate"></td></tr>
+                        <tr><td>Rating</td><td id="providerRating"></td></tr>
+                        <tr><td colspan="2"><button onclick="closedetailsform()" style="background-color: rgb(250, 34, 34); color: white; width: 60%;">close</button></td></tr>
+                    </table>
+                </div>
+                <script>
+                    var bookingData = JSON.parse('{{ message.message|escapejs }}');
+                    document.getElementById('providerName').textContent = bookingData.providername;
+                    document.getElementById('providerNumber').textContent = bookingData.providernumber;
+                    document.getElementById('serviceDate').textContent = bookingData.servicedate;
+                    document.getElementById('serviceRate').textContent = bookingData.servicerate + '/' + bookingData.rateunit;
+                    document.getElementById('providerRating').textContent = bookingData.providerrating+'★';
+                </script>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="bookingfulloverlay" id="bookingfulloverlay"></div>
+                <div class="bookingdetails" id="bookingdetails">
+                    <div>
+                        <h2>Sorry for the inconvenience</h2>
+                        <h3>{{ message }}</h3>
+                        <button onclick="closedetailsform()" style="background-color: rgb(250, 34, 34); color: white; width: 40%;height:30px;">close</button>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <script>
+            function closedetailsform(){
+                document.getElementById('bookingdetails').style.display='none';
+                document.getElementById('bookingfulloverlay').style.display='none';
+            }
+        </script>
+    {% endif %}
 </div>
-
-<div class="bottom">
+<footer>
     <h4>Contact us: askashkr971@gmail.com</h4>
-</div>
+</footer>
 </body>
 </html>

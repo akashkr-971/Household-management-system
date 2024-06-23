@@ -37,6 +37,7 @@ class ServiceProvider(models.Model):
     unit = models.CharField(max_length=20,default='Hour')
     availability=models.CharField(max_length=100,default='Available')
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
+    eligible = models.CharField(max_length=20,default='No')
 
     def __str__(self):
         return self.user.user_name + ' - ' + self.profession

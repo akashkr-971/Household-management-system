@@ -156,6 +156,7 @@ span h3{
 a{
     text-decoration: none;
     font-size: 20px;
+    color: white;
 }
 button {
     height: auto;
@@ -226,15 +227,15 @@ button {
     background-image: url("{% static 'images/landscaperimg.png' %}");
 }
 .loginalert{
-    position: absolute;
+    display: none;
+    position: fixed;
     top: 50%;
     left: 50%;
+    transform: translate(-50%, -50%);
     background-color: #333;
     height: 30%;
     width: 60%;
-    z-index: 4;
-    transform: translate(-50%, -50%);
-    display: flex;
+    z-index: 5;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -242,17 +243,32 @@ button {
 }
 .actionbutton{
     display: flex;
-    flex-direction: row;
     width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
 }
-@media only screen and (max-width:1000px){
-    .ad {
-        height: 50vh;
-    }
+.actionbutton button{
+    margin-top: 20px;
+    width: 20%;
+    height: 30px;
+    padding: 0%;
+    font-size: 20px;
+}
+.fullbodyoverlay{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 4;
 }
 </style>
 </head>
 <body>
+<div class="fullbodyoverlay" id="fullbodyoverlay"></div>
 <div class="top-bar">
     <div class="name">
         <p onclick="redirecttohome()">Household Management System</p>
@@ -376,18 +392,34 @@ button {
         </div>
     </div>
     <script>
-        function loginalert(){
-
+        function showloginalert(){
+            document.getElementById('fullbodyoverlay').style.display='flex';
+            document.getElementById('loginalert').style.display='flex';
         }
     </script>
 </div>
-<div class="loginalert">
+<div class="loginalert" id="loginalert">
     <h2>Login or Signup</h2>
     <h3>To continue Booking</h3>
     <div class="actionbutton">
-        <button>login</button>
-        <button>Signup</button>
+        <button style="background-color: rgb(246, 8, 8);" onclick="alertbuttonclick('cancel')">Cancel</button>
+        <button style="background-color: green;" onclick="alertbuttonclick('login')">login</button>
+        <button style="background-color: rgb(3, 153, 43);" onclick="alertbuttonclick('signup')">Signup</button>
     </div>
+    <script>
+        function alertbuttonclick(action){
+            if(action == 'cancel'){
+                document.getElementById('fullbodyoverlay').style.display='none';
+                document.getElementById('loginalert').style.display='none';
+            }
+            if(action=='login'){
+                window.location.href="{% url 'Userlogin' %}";
+            }
+            if(action=='signup'){
+                window.location.href="{% url 'Clientsignup' %}";
+            }
+        }
+    </script>
 </div>
 
 <div class="footer">

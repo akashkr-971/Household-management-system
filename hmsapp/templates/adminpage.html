@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        *{
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            height:100%;
+            background-color: rgb(199, 240, 226);
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 80px;
+            background-color: #333;
+            color: #fff;
+            padding: 0 0px;
+        }
+        .name {
+            font-weight: 600;
+            flex:4;
+            text-align:center;
+            display:flex;
+            margin-left: 10%;
+        }
+        .acc {
+            font-weight: 600;
+            flex:2;
+            text-align:center;
+            display:flex;
+            justify-content:center;
+            height:80px;
+        }
+        span h3{
+            position:relative;
+            top:10px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+        .acc:hover .dropdown-content {
+            display: block;
+            top:80px;
+            border-radius: 0 0 10px 10px;
+            background-color: #333;
+        }
+        .dropdown-content:hover{
+            display:block;
+        }
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {
+            background-color:black;
+        }
+        .greet{
+            font-size: 30px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            margin: 10px 10px ;
+            font-weight: 800;
+        }
+        .providerrequest{
+            height: auto;
+            width: 98%;
+            background-color: #333;
+            margin: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        .requesttable{
+            width: 95%;
+            height: 20px;
+            overflow: scroll;
+            margin-bottom: 30px;
+        }
+        table {
+            margin-top: 30px;
+            border-collapse:collapse;
+            border: 1px solid wheat;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ffcdcd;
+            word-wrap: break-word;
+        }
+        th,tr {
+            background-color: aliceblue;
+            height: 10px;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        table button{
+            height: 30px;
+            width: 100%;
+            border: none;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+        .requestreply{
+            background-color: #66ed66;
+            border-radius: 10px;
+            height: 200px;
+            width: 400px;
+            position: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            z-index: 3;
+        }
+        .fullbodyoverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); 
+            display: flex;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="name">
+            <p onclick="redirecttohome()">Household Management System</p>
+            <script>
+                function redirecttohome(){
+                    window.location.href="{% url 'adminpage' %}"
+                }
+            </script>
+        </div>
+        <div class="acc">
+            <span>
+                <h3>Account</h3>
+            </span>
+            <div class="dropdown-content">
+                <a href="{% url 'resetpassword' %}">Reset password</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="midbar">
+        <div class="greet">Welcome {{ user.user_name }}</div>
+        <div class="providerrequest">
+            <table class="requesttable">
+                <th  colspan="7">New Requests</th>
+                <tr>
+                    <th>Provider Id</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Profession</th>
+                    <th>Rate/Unit</th>
+                    <th>location</th>
+                    <th>Action</th>
+                </tr>
+                {% for provider in providers %}
+                <tr>
+                    <td>{{ provider.service_provider_id }}</td>
+                    <td>{{ provider.user.full_name }}</td>
+                    <td>{{ provider.user.phone }}</td>
+                    <td>{{ provider.profession }}</td>
+                    <td>{{ provider.rate }}/{{ provider.unit }}</td>
+                    <td>{{ provider.user.location }}</td>
+                    <td>
+                        <button onclick="changeeligibility('yes','{{ provider.service_provider_id }}')" style="background-color: green;color: white;">Accept</button>
+                        <button onclick="changeeligibility('no')" style="background-color: red;color: white;">Reject</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+            <form action="{% url 'changeeligibility' %}" method="post">
+                {%csrf_token%}
+                <input type="hidden" name="providerid" id="providerid">
+                <input type="hidden" name="eligibility" id="eligibility">
+                <input type="submit" id="submitbutton">
+            </form>
+            <script>
+                function changeeligibility(ans,providerid){
+                    document.getElementById('providerid').value=providerid;
+                    document.getElementById('eligibility').value=ans;    
+                    document.getElementById('submitbutton').click();  
+                }
+            </script>
+        </div>
+        {% if message %}
+        <div class="fullbodyoverlay" id="fullbodyoverlay"></div>
+        <div class="requestreply" id="requestreply">
+            <p>{{message}}</p>
+            <button onclick="closerequestreply()" style="background-color: red;color: white;border: 1px;height: 30px;width: 100px;border-radius: 10px;font-size: 16px;margin-top: 10px;">Close</button>
+        </div>
+        <script>
+            function closerequestreply(){
+                document.getElementById('fullbodyoverlay').style.display='none'
+                document.getElementById('requestreply').style.display='none'
+            }
+        </script>
+        {% endif %}
+    </div>
+
+</body>
+</html>

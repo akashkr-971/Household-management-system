@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from hmsapp.views import home,landingpage,Userlogin,Clientsignup,forgetpassword,Resetpassword,Userlogout,search,acceptbooking
+from hmsapp.views import home,landingpage,Userlogin,Clientsignup,forgetpassword,resetpassword,Userlogout,search,acceptbooking
 from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,updatebooking,orderhistory,accountdetails
 from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory,publishbill,getbill
 from hmsapp.views import initiate_payment,capture_payment,rate_service_provider,fetchreview,update_rate_service_provider
-from hmsapp.views import viewdetails,update_bill,delete_bill
+from hmsapp.views import viewdetails,update_bill,delete_bill,adminpage,changeeligibility
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,7 +30,7 @@ urlpatterns = [
     path('Userlogin/forgetpassword/', forgetpassword, name='forgetpassword'),
     path('Clientsignup/', Clientsignup, name='Clientsignup'),
     path('clientsignupwithoutotp/', clientsignupwithoutotp, name='clientsignupwithoutotp'),
-    path('resetpassword/', Resetpassword, name='resetpassword'), 
+    path('resetpassword/', resetpassword, name='resetpassword'), 
     path('logout/', Userlogout, name='logout'),
     path('search/', search, name='search'),
     path('services/<str:service_name>/', services, name='services'),
@@ -55,6 +55,8 @@ urlpatterns = [
     path('fetchreview/<int:booking_id>/', fetchreview, name='fetchreview'),
     path('update_rate_service_provider/', update_rate_service_provider, name='update_rate_service_provider'),
     path('viewdetails/<int:booking_id>/', viewdetails, name='viewdetails'),
+    path('adminpage/', adminpage, name='adminpage'),
+    path('changeeligibility/', changeeligibility, name='changeeligibility'),
 ]
 
 

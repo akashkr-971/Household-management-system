@@ -5,6 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Order history</title>
         <style>
+            *{
+                font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            }
             body {
                 margin: 0;
                 padding: 0;
@@ -150,6 +153,7 @@
                 font-size: 24px;
                 padding: 20px;
                 text-align: center;
+                z-index: 2;
             }
             .viewdetails{
                 display: none;
@@ -157,19 +161,21 @@
                 transform: translate(-50%, -50%); 
                 background-color: #77dd77;
                 left: 50%;
+                top: 70%;
                 height: auto;
                 width:70%;
-                top: 65%;
                 background-color: burlywood;
                 font-size: 20px;
                 padding: 20px;
                 text-align: center;
+                z-index: 2;
             }
             .viewdetails td{
                 width: 50%;
             }
             .orderdetails{
-                height: 600px;
+                height: 680px;
+                overflow: auto;
             }
             .buttons{
                 display: flex;
@@ -196,6 +202,16 @@
             .comment{
                 margin-top: 10px;
             }
+            .fullbodyoverlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8); 
+                display: none;
+                z-index: 1;
+            }
             @media only screen and (max-width:500px){
                 table ,th, td {
                     font-size: 8px;
@@ -219,6 +235,7 @@
         </style>
     </head>
     <body>
+        <div class="fullbodyoverlay" id="fullbodyoverlay"></div>
         <div class="top-bar">
             <div class="name">
                 <button onclick="redirecttohome()" style="background:transparent;color: white;">Household Management System</button>
@@ -343,10 +360,12 @@
                             document.getElementById('serviceprovider_id').value = id
                             document.getElementById('bookingid').value = bid
                             document.getElementById('ratingform').style.display='block'
+                            document.getElementById('fullbodyoverlay').style.display='block'
                         }
                         function closerateform(event){
                             event.preventDefault();
                             document.getElementById('ratingform').style.display='none'
+                            document.getElementById('fullbodyoverlay').style.display='none'
                         }
                         function getrating(val){
                             console.log(val)
@@ -503,6 +522,7 @@
                                     });
                                     const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
                                     billtable.innerHTML=''
+                                    document.getElementById('fullbodyoverlay').style.display='none'
                                 }
                                 function highlightstar(stars) {
                                     const star = document.querySelectorAll('.upstar');
@@ -559,6 +579,7 @@
                         function viewmore(bkngid,sname,job,desc,bdate,sdate,total,sid,status){
                             document.getElementById('bottom').style.display='none';
                             document.getElementById('viewdetails').style.display='block';
+                            document.getElementById('fullbodyoverlay').style.display='block'
                             
                             console.log(status)
 
@@ -599,10 +620,6 @@
                                 document.getElementById('viewratingform').style.display='none';
                                 viewrating(sid,bkngid)
                             }
-                            else{
-                                
-                            }
-                            
                         }
                         function asssignvalue(bkngid,sname,job,desc,bdate,sdate){
                             document.getElementById('vbkngid').textContent=bkngid;
@@ -615,6 +632,7 @@
                         }
                         function closeviewdiv(){
                             document.getElementById('viewdetails').style.display='none'
+                            document.getElementById('fullbodyoverlay').style.display='none'
                         }
                     </script>
                 </div>
