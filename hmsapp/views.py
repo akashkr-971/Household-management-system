@@ -1,4 +1,6 @@
-from datetime import date 
+from datetime import date
+from decimal import Decimal 
+from django.db.models import Sum
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -36,8 +38,36 @@ def adminpage(request):
         user = User.objects.get(user_id=request.session['user_id'])
         if user.role == "admin":
             no_eligibility_providers = ServiceProvider.objects.filter(eligible='No')
-            print(no_eligibility_providers)
-            return render(request, 'adminpage.html', {'providers': no_eligibility_providers,'user':user})
+            users = User.objects.filter(role='client')
+            providers = ServiceProvider.objects.all()
+            paymentinfo = Payment.objects.all().order_by('-payment_id')
+            bookinginfo = Booking.objects.all().order_by('-booking_id')
+            message_list = list(messages.get_messages(request))
+
+            total_employee = ServiceProvider.objects.count()
+            total_users = Homeowner.objects.count()
+            total_revenue = Payment.objects.filter(payment_status='Paid').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
+            total_bookings = Booking.objects.count()
+            Completed_bookings = Booking.objects.filter(status='Paid').count()
+            pending_bookings = Booking.objects.filter(status='Pending').count()
+            cancelled_bookings = Booking.objects.filter(status='Cancelled').count()
+
+            return render(request, 'adminpage.html', {
+                'providers': no_eligibility_providers,
+                'user':user,
+                'messages':message_list,
+                'users' : users,
+                'providersdetail' : providers,
+                'paymentinfo':paymentinfo,
+                'total_employees': total_employee,
+                'total_users': total_users,
+                'total_revenue': total_revenue,
+                'total_bookings': total_bookings,
+                'pending_bookings': pending_bookings,
+                'cancelled_bookings': cancelled_bookings,
+                'completed_bookings' : Completed_bookings,
+                'booking_info':bookinginfo,
+                })
         
     return render(request,'adminpage.html')
 
@@ -46,7 +76,22 @@ def serviceproviderhome(request):
     if 'user_id' in request.session:
         user = User.objects.get(user_id=request.session['user_id'])
         if user.role == "Service-provider":
-            return render(request, 'serviceproviderhome.html', {'user': user})
+            provider = ServiceProvider.objects.get(user=user)
+            
+            if provider.has_new_message:
+                messages.info(request, provider.new_message)
+                provider.has_new_message = False
+                provider.new_message = ''
+                provider.save()
+
+            if provider.eligible == 'yes' : 
+                return render(request, 'serviceproviderhome.html', {'user': user})
+            elif provider.eligible == 'No':
+                messages.warning(request, "Your application is pending approval.")
+                return render(request, 'serviceproviderhome.html', {'user': user})
+            else:
+                messages.error(request, "There was an issue with your application. Please contact support.")
+                return render(request, 'serviceproviderhome.html', {'user': user})
     return render(request, 'Userlogin.html')
 
 def clientsignupwithoutotp(request):
@@ -640,18 +685,29 @@ def changeeligibility(request):
         try:
             provider_id = request.POST.get('providerid')
             eligibility = request.POST.get('eligibility')
-            print(provider_id,eligibility)
             user_id = request.session.get('user_id')
             user = User.objects.get(user_id = user_id)
-            print(user_id)
             provider = ServiceProvider.objects.get(service_provider_id = provider_id)
-            print(provider)
-            # provider.eligible = eligibility
-            # provider.save()
+            if eligibility == 'yes':
+                provider.eligible = eligibility
+                provider.save()
+                admin_message = f"{provider.user.full_name} has been accepted."
+                provider_message = "Congratulations! Your application has been accepted." 
+            else:
+                provider.eligible = 'Not accepted'
+                provider.save()
+                admin_message = f"Provider {provider.user.full_name} has been rejected."
+                provider_message = "We're sorry, but your application has been rejected."
+            
+            messages.success(request, admin_message)
+            provider.has_new_message = True
+            provider.new_message = provider_message
+            provider.save()
             return redirect('adminpage')
         except Exception as e:
-            return JsonResponse({'the error error': str(e)}, status=400)
-    return render(request ,'adminpage')
+            messages.error(request, f"An error occurred: {str(e)}")
+            return redirect('adminpage')
+    return render(request, 'adminpage')
 
     
 @csrf_exempt

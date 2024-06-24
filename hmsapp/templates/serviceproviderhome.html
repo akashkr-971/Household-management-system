@@ -310,6 +310,21 @@ table button{
     display: none;
     z-index: 2;
 }
+.requestreply{
+    background-color: #66ed66;
+    border-radius: 10px;
+    height: 150px;
+    width: 400px;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 3;
+}
 
 @media only screen and (max-width: 600px) {
     .bottom{
@@ -1034,6 +1049,21 @@ table button{
     <div class="bottom">
         <h4>Contact us: akashkr971@gmail.com</h4>
     </div>
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+            <div class="requestreply" id="requestreply">
+                <strong>{{message}}</strong>
+                <button onclick="closerequestreply()" style="background-color: red;color: white;border: 1px;height: 30px;width: 100px;border-radius: 10px;font-size: 16px;margin-top: 10px;">Close</button>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <script>
+        function closerequestreply(){
+            document.getElementById('requestreply').style.display='none';
+        }
 
+    </script>
     </body>
 </html>

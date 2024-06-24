@@ -76,17 +76,17 @@
         }
         .providerrequest{
             height: auto;
-            width: 98%;
+            max-height: 500px;
+            width: 97%;
             background-color: #333;
             margin: 10px;
             border-radius: 10px;
             display: flex;
             justify-content: center;
+            overflow: scroll;
         }
         .requesttable{
             width: 95%;
-            height: 20px;
-            overflow: scroll;
             margin-bottom: 30px;
         }
         table {
@@ -95,6 +95,7 @@
             border: 1px solid wheat;
             border-radius: 10px;
             font-size: 18px;
+            overflow: scroll;
         }
         th, td {
             padding: 8px;
@@ -121,7 +122,7 @@
         .requestreply{
             background-color: #66ed66;
             border-radius: 10px;
-            height: 200px;
+            height: 150px;
             width: 400px;
             position: fixed;
             display: flex;
@@ -142,6 +143,42 @@
             background-color: rgba(0, 0, 0, 0.8); 
             display: flex;
             z-index: 1;
+        }
+        .reports{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); 
+            background-color: #66ed66;
+            height: 100%;
+            width: 97%;
+            margin: 10px;
+            border-radius: 10px;
+        }
+        .reporttab{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: aqua;
+            margin: 20px;
+            border-radius: 10px;
+        }
+        .reporttab h1,.reporttab h3{
+            margin: 10px;
+        }
+        .userdetails{
+            display: flex;
+            justify-content: center;
+            width: 97%;
+            background-color: #66ed66;
+            margin: 13px;
+            border-radius: 10px;
+            max-height: 400px;
+            overflow: scroll;
+        }
+        .userdetails table{
+            width: 95%;
+            overflow: scroll;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -179,6 +216,7 @@
                     <th>location</th>
                     <th>Action</th>
                 </tr>
+                {% if providers %}
                 {% for provider in providers %}
                 <tr>
                     <td>{{ provider.service_provider_id }}</td>
@@ -189,16 +227,21 @@
                     <td>{{ provider.user.location }}</td>
                     <td>
                         <button onclick="changeeligibility('yes','{{ provider.service_provider_id }}')" style="background-color: green;color: white;">Accept</button>
-                        <button onclick="changeeligibility('no')" style="background-color: red;color: white;">Reject</button>
+                        <button onclick="changeeligibility('no','{{ provider.service_provider_id }}')" style="background-color: red;color: white;">Reject</button>
                     </td>
                 </tr>
             {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">No new provider requests at the moment.</td>
+                </tr>
+            {% endif %}
             </table>
             <form action="{% url 'changeeligibility' %}" method="post">
                 {%csrf_token%}
                 <input type="hidden" name="providerid" id="providerid">
                 <input type="hidden" name="eligibility" id="eligibility">
-                <input type="submit" id="submitbutton">
+                <input type="submit" id="submitbutton" style="display: none;">
             </form>
             <script>
                 function changeeligibility(ans,providerid){
@@ -208,10 +251,154 @@
                 }
             </script>
         </div>
-        {% if message %}
+        <div class="reports">
+            <div class="reporttab">
+                <h3>Number of employees</h3>
+                <h1>{{total_employees}}</h1>
+            </div>
+            <div class="reporttab">
+                <h3>Number of Users</h3>
+                <h1>{{total_users}}</h1>
+            </div>
+            <div class="reporttab">
+                <h3>Number of Bookings</h3>
+                <h1>{{total_bookings}}</h1>
+            </div>
+            <div class="reporttab">
+                <h3>Completed Bookings</h3>
+                <h1>{{completed_bookings}}</h1>
+            </div>
+            <div class="reporttab">
+                <h3>Pending Bookings</h3>
+                <h1>{{pending_bookings}}</h1>
+            </div>
+            <div class="reporttab">
+                <h3>Cancelled Bookings</h3>
+                <h1>{{cancelled_bookings}}</h1>
+            </div>
+            <div class="reporttab">
+                <h3>Total Revenue</h3>
+                <h1>{{total_revenue}} Rs</h1>
+            </div>
+        </div>
+        <div class="userdetails userlist">
+            <table>
+                <th colspan="5">User List</th>
+                <tr><td>ID</td><td>Name</td><td>Phone</td><td>Email</td><td>Location</td></tr>
+                {% if users %}
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.user_id }}</td>
+                        <td>{{ user.full_name }}</td>
+                        <td>{{ user.phone}}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.location}}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No Users.</td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+        <div class="userdetails providerlist">
+            <table>
+                <th colspan="6">Service provider List</th>
+                <tr>
+                    <td>ID</td>
+                    <td>Name</td>
+                    <td>Phone</td>
+                    <td>Location</td>
+                    <td>Profession</td>
+                    <td>Rate/Unit</td>
+                </tr>
+                {% if providersdetail %}
+                    {% for provider in providersdetail %}
+                    <tr>
+                        <td>{{ provider.service_provider_id }}</td>
+                        <td>{{ provider.user.full_name }}</td>
+                        <td>{{ provider.user.phone}}</td>
+                        <td>{{ provider.user.location }}</td>
+                        <td>{{ provider.profession }}</td>
+                        <td>{{ provider.rate }}/{{ provider.unit }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No Service provider.</td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+        <div class="userdetails bookingdetails">
+            <table>
+                <th colspan="7">Booking details</th>
+                <tr>
+                    <td>ID</td>
+                    <td>Client ID</td>
+                    <td>Provider ID</td>
+                    <td>Work</td>
+                    <td>Status</td>
+                    <td>Amount</td>
+                    <td>Service date</td>
+                </tr>
+                {% if booking_info %}
+                {% for booking in booking_info %}
+                    <tr>
+                        <td>{{booking.booking_id}}</td>
+                        <td>{{booking.homeowner.user.user_id}}</td>
+                        <td>{{booking.service_provider.user.user_id}}</td>
+                        <td>{{booking.job}}</td>
+                        <td>{{booking.status}}</td>
+                        <td>{{booking.totalrate}}</td>
+                        <td>{{booking.servicedate}}</td>
+                    </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">No Booking Details.</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        <div class="userdetails paymentdetails">
+            <table>
+                <th colspan="6">Payment Transaction</th>
+                <tr>
+                    <td>ID</td>
+                    <td>Client ID</td>
+                    <td>Provider ID</td>
+                    <td>Transaction ID</td>
+                    <td>Amount</td>
+                    <td>Paymeent Method</td>
+                </tr>
+                {% if paymentinfo %}
+                    {% for payment in paymentinfo %}
+                    <tr>
+                        <td>{{payment.payment_id}}</td>
+                        <td>{{payment.booking.homeowner.user.user_id}}</td>
+                        <td>{{payment.booking.service_provider.user.user_id}}</td>
+                        <td>{{payment.razorpay_payment_id}}</td>
+                        <td>{{payment.amount}}</td>
+                        <td>{{payment.payment_method}}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">No Payment Details.</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+
+
+
+        {% if messages %}
         <div class="fullbodyoverlay" id="fullbodyoverlay"></div>
+        {% for message in messages %}
         <div class="requestreply" id="requestreply">
-            <p>{{message}}</p>
+            <strong>{{message}}</strong>
             <button onclick="closerequestreply()" style="background-color: red;color: white;border: 1px;height: 30px;width: 100px;border-radius: 10px;font-size: 16px;margin-top: 10px;">Close</button>
         </div>
         <script>
@@ -220,6 +407,7 @@
                 document.getElementById('requestreply').style.display='none'
             }
         </script>
+        {% endfor %}
         {% endif %}
     </div>
 

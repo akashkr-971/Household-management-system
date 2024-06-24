@@ -38,6 +38,9 @@ class ServiceProvider(models.Model):
     availability=models.CharField(max_length=100,default='Available')
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
     eligible = models.CharField(max_length=20,default='No')
+    has_new_message = models.BooleanField(default=False)
+    new_message = models.TextField(blank=True ,default='')
+
 
     def __str__(self):
         return self.user.user_name + ' - ' + self.profession
