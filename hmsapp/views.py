@@ -1,7 +1,9 @@
+import base64
 from datetime import date
 from decimal import Decimal 
 from django.db.models import Sum
 from django.utils import timezone
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.hashers import make_password, check_password
@@ -46,7 +48,7 @@ def adminpage(request):
 
             total_employee = ServiceProvider.objects.count()
             total_users = Homeowner.objects.count()
-            total_revenue = Payment.objects.filter(payment_status='Paid').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
+            total_revenue = Payment.objects.filter(payment_status='Success').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
             total_bookings = Booking.objects.count()
             Completed_bookings = Booking.objects.filter(status='Paid').count()
             pending_bookings = Booking.objects.filter(status='Pending').count()
@@ -90,7 +92,6 @@ def serviceproviderhome(request):
                 messages.warning(request, "Your application is pending approval.")
                 return render(request, 'serviceproviderhome.html', {'user': user})
             else:
-                messages.error(request, "There was an issue with your application. Please contact support.")
                 return render(request, 'serviceproviderhome.html', {'user': user})
     return render(request, 'Userlogin.html')
 
@@ -120,7 +121,6 @@ def clientsignupwithoutotp(request):
             eligible = 'No'
             service_provider = ServiceProvider.objects.create(user=user, profession=profession, rate=rate , unit=unit , eligible=eligible)
             return redirect('serviceproviderhome')
-    
     return render(request, 'Clientsignup.html')
 
 def Clientsignup(request):
@@ -516,7 +516,7 @@ def publishbill(request):
         booking = Booking.objects.get(booking_id=bookingid)
         homeowner = booking.homeowner
         service_provider = booking.service_provider
-
+        billimagefile = request.FILES.get('billimage')
         try:
             if billdatajson:
                 billdata = json.loads(billdatajson)
@@ -526,7 +526,6 @@ def publishbill(request):
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
 
-
         billing = Billing(
             booking=booking,
             homeowner=homeowner,
@@ -534,8 +533,11 @@ def publishbill(request):
             items=billdata,
             total_amount=totalamount,
             date=date.today(),
-            payment_status='Pending'
+            payment_status='Pending',
+            bill_image_data = billimagefile,
         )
+
+
         billing.save()
         booking.status='Bill created'
         booking.totalrate=totalamount
@@ -564,9 +566,11 @@ def delete_bill(request):
 def getbill(request,booking_id):
     bookings = Booking.objects.get(booking_id = booking_id)
     bill = Billing.objects.get(booking=bookings)
+
     bill_data = {
         'total_amount': bill.total_amount,
-        'items': list(bill.items)
+        'items': list(bill.items),
+        'bill_image_url': bill.bill_image_data.url if bill.bill_image_data else None,
     }
     return JsonResponse({'bill': bill_data})
 
@@ -680,6 +684,40 @@ def viewdetails(request,booking_id):
     }
     return JsonResponse({'view': view_data})
 
+def update_account(request):
+    if request.method == 'POST':
+        user_id = request.POST['user_id']
+        full_name = request.POST['full_name']
+        new_user_name = request.POST['user_name']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        location = request.POST['location']
+        user = User.objects.get(user_id = user_id)
+
+        if new_user_name == user.user_name and User.objects.filter(user_name=new_user_name).exists():
+            messages.error(request, 'User name already exists.')
+        else:
+            user.full_name = full_name
+            user.user_name = new_user_name
+            user.email = email
+            user.phone = phone
+            user.location = location
+            user.save()
+            messages.success(request, 'Your account has been updated successfully.')
+        return render(request, 'accountdetails.html', {'user': user})
+    return render(request, 'accountdetails.html', {'user': user})
+
+def delete_account(request):
+    if request.method == 'POST':
+        user_id = request.POST['user_id']
+        user = User.objects.get(user_id = user_id)
+        user.delete()
+        logout(request)
+        messages.success(request, 'Your account has been deleted successfully.')
+        return redirect('landingpage')
+    
+    return redirect('accountdetails')
+
 def changeeligibility(request):
     if request.method=='POST':
         try:
@@ -709,7 +747,6 @@ def changeeligibility(request):
             return redirect('adminpage')
     return render(request, 'adminpage')
 
-    
 @csrf_exempt
 def capture_payment(request):
     if request.method == "POST":
@@ -751,4 +788,3 @@ def capture_payment(request):
     return HttpResponseBadRequest()
 
 
-    

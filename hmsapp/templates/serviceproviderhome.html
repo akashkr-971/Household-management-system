@@ -159,8 +159,9 @@ table button{
 }
 .accept-btn,.recievedbtn{
     background-color: rgba(37, 254, 88, 0.813);
-    color: white;
+    color: rgb(14, 4, 4);
     margin-bottom: 1px;
+    height: auto;
 }
 .cancellationform{
     display: flex;
@@ -359,11 +360,6 @@ table button{
     <div class="fullbodyoverlay" id="fullbodyoverlay"></div>
     <div class="top-bar">
         <div class="name">Household Management System</div>
-        <div class="searchbar">
-            <form id="searchForm" action="{% url 'search' %}" method="GET">
-                <input type="text" name="search" id="search" placeholder="Search...">
-            </form>    
-        </div>
         <div class="acc">
             <span>
                 <h3>Account</h3>
@@ -420,9 +416,9 @@ table button{
                                             <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
                                             <button class="complete-btn" data-booking-id="{{ booking.booking_id }}" onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Completed</button>
                                         {% elif booking.status == 'Completed' %}
-                                            <button class="createbillbtn" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
+                                            <button class="createbillbtn" style="background-color: aquamarine;" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
                                         {% elif booking.status == 'Bill created' %}
-                                            <button class="viewbill-btn" data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
+                                            <button class="viewbill-btn" style="background-color: #2cd0a1;" data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
                                             <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
                                         {% else %}
                                             <p>Cancelled</p>
@@ -557,7 +553,7 @@ table button{
                 </script>
             </div>
             <div class="createbill" id="createbill" style="display: none;">
-                <form class="billform" id="billform" method="post" action="{% url 'publishbill' %}">
+                <form class="billform" id="billform" method="post" action="{% url 'publishbill' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <label class="billlabel">Create Bill</label>                
                     <table id="billtable">
@@ -584,6 +580,8 @@ table button{
                             </tr>
                         </tbody>
                     </table>
+                    <p style="color: black;">Upload Bill : <input type="file" name="billimage" id="billimage"></p>
+                    
                     <input type="hidden" name="bookingid"  id='createbookingid'>
                     <input type="hidden" name="billData" id="billData">
                     <input type="hidden" name="totalfinalamount" id="totalfinalamount">
@@ -766,6 +764,7 @@ table button{
                         <label>Service Bill</label>
                         <input type="hidden" id="billbookingid" name="billbookingid">
                         <input type="hidden" id="totalamountinput" name="totalamountinput">
+                        <div id="billImageContainer"></div>
                         <table class="billtable" id="viewbilltable">
                             <thead>
                                 <th>Description</th>
@@ -801,6 +800,7 @@ table button{
                         <input type="hidden" name="deletebillbookingid" id="deletebillbookingid">
                         <input type="hidden" name="user_id" value="{{ user.user_id }}">
                     </form>
+
                 </div>
                 <script>
                     function viewbill(billbid,event){
@@ -842,10 +842,11 @@ table button{
                         .then(data => {
                             const totalamount = document.getElementById('totalbilllabel')
                             const totalamountinput = document.getElementById('totalamountinput')
+                            const billimage = document.getElementById('billimage'); 
                             const bill = data.bill;
                             totalamount.textContent = bill.total_amount
                             totalamountinput.value = bill.total_amount
-    
+
     
                             bill.items.forEach(item=>{
                                 const row = document.createElement('tr');
@@ -857,6 +858,19 @@ table button{
                                 `;
                                 viewbilltable.appendChild(row)
                             })
+                            const imageContainer = document.getElementById('billImageContainer');
+                            if (bill.bill_image_url) {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = bill.bill_image_url;
+                                imgElement.alt = "Bill Image";
+                                imgElement.style.maxWidth = "100%";
+                                imgElement.style.height = "auto";
+                                
+                                imageContainer.innerHTML = ''; // Clear any existing content
+                                imageContainer.appendChild(imgElement);
+                            } else {
+                                imageContainer.innerHTML = 'No image available';
+                            }
                         });
                         populatetable()
                     }

@@ -161,7 +161,7 @@
                 transform: translate(-50%, -50%); 
                 background-color: #77dd77;
                 left: 50%;
-                top: 70%;
+                top: 80%;
                 height: auto;
                 width:70%;
                 background-color: burlywood;
@@ -211,6 +211,11 @@
                 background-color: rgba(0, 0, 0, 0.8); 
                 display: none;
                 z-index: 1;
+            }
+            #billImageContainer{
+                height: 30%;
+                width: 80%;
+                margin: auto;
             }
             @media only screen and (max-width:500px){
                 table ,th, td {
@@ -408,6 +413,7 @@
                                     <br>
                                     <label>Bill Details</label>
                                     <input type="hidden" id="vbillbookingid">
+                                    <div id="billImageContainer"></div>
                                     <table class="billtable" id="billtable">
                                         <thead>
                                             <th>Description</th>
@@ -451,6 +457,19 @@
                                             `;
                                             billtable.appendChild(row)
                                         })
+                                        const imageContainer = document.getElementById('billImageContainer');
+                                        if (bill.bill_image_url) {
+                                            const imgElement = document.createElement('img');
+                                            imgElement.src = bill.bill_image_url;
+                                            imgElement.alt = "Bill Image";
+                                            imgElement.style.maxWidth = "100%";
+                                            imgElement.style.height = "auto";
+                                            
+                                            imageContainer.innerHTML = ''; // Clear any existing content
+                                            imageContainer.appendChild(imgElement);
+                                        } else {
+                                            imageContainer.innerHTML = 'No image available';
+                                        }
                                     });
                                 }
                             </script>

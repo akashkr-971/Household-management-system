@@ -134,4 +134,4 @@ class Billing(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
     payment_status = models.CharField(max_length=100)
-
+    bill_image_data = models.ImageField(upload_to='bill_images/',blank=True, null=True)

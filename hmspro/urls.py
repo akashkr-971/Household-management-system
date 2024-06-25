@@ -14,13 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 from hmsapp.views import home,landingpage,Userlogin,Clientsignup,forgetpassword,resetpassword,Userlogout,search,acceptbooking
 from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,updatebooking,orderhistory,accountdetails
 from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory,publishbill,getbill
 from hmsapp.views import initiate_payment,capture_payment,rate_service_provider,fetchreview,update_rate_service_provider
-from hmsapp.views import viewdetails,update_bill,delete_bill,adminpage,changeeligibility
+from hmsapp.views import viewdetails,update_bill,delete_bill,adminpage,changeeligibility,update_account,delete_account
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -57,6 +59,9 @@ urlpatterns = [
     path('viewdetails/<int:booking_id>/', viewdetails, name='viewdetails'),
     path('adminpage/', adminpage, name='adminpage'),
     path('changeeligibility/', changeeligibility, name='changeeligibility'),
+    path('accountdetails/update/', update_account, name='update_account'),
+    path('accountdetails/delete/', delete_account, name='delete_account'),
 ]
 
-
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

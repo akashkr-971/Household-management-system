@@ -88,20 +88,6 @@ span h3{
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 2;
 }
-.img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    display: none;
-    z-index: 1;
-}
-.img1 { background-image: url("{% static 'images/adimage1.webp' %}"); display: block; }
-.img2 { background-image: url("{% static 'images/adservice2.png' %}"); }
-.img3 { background-image: url("{% static 'images/adservice3.png' %}"); }
 .content {
     position: absolute;
     top: 50%;
@@ -541,7 +527,7 @@ input{
                                         <button class="update-btn" data-booking-id="{{ booking.booking_id }}" onclick="updatebooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Update</button>
                                         <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
                                     {% elif booking.status == 'Bill created' %}
-                                        <button class="viewbill-btn" data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
+                                        <button class="viewbill-btn" style="background-color: #20ed6b;" data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
                                     {% else %}
                                         <p>Cancelled</p>
                                     {% endif %}
@@ -686,6 +672,7 @@ input{
                     <input type="hidden" id="billbookingid" name="billbookingid">
                     <input type="hidden" name="userid" value={{user.user_id}}>
                     <input type="hidden" id="totalamountinput" name="totalamountinput">
+                    <div id="billImageContainer"></div>
                     <table class="billtable" id="billtable">
                         <thead>
                             <th>Description</th>
@@ -751,6 +738,19 @@ input{
                             `;
                             billtable.appendChild(row)
                         })
+                        const imageContainer = document.getElementById('billImageContainer');
+                            if (bill.bill_image_url) {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = bill.bill_image_url;
+                                imgElement.alt = "Bill Image";
+                                imgElement.style.maxWidth = "100%";
+                                imgElement.style.height = "auto";
+                                
+                                imageContainer.innerHTML = ''; // Clear any existing content
+                                imageContainer.appendChild(imgElement);
+                            } else {
+                                imageContainer.innerHTML = 'No image available';
+                            }
                     });
                     
                     populatetable()
