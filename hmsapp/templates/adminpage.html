@@ -103,8 +103,12 @@
             border-bottom: 1px solid #ffcdcd;
             word-wrap: break-word;
         }
-        th,tr {
+        tr {
             background-color: aliceblue;
+            height: 10px;
+        }
+        thead{
+            color: red;
             height: 10px;
         }
         tr:hover {
@@ -152,6 +156,7 @@
             width: 97%;
             margin: 10px;
             border-radius: 10px;
+            text-align: center;
         }
         .reporttab{
             display: flex;
@@ -165,21 +170,46 @@
         .reporttab h1,.reporttab h3{
             margin: 10px;
         }
-        .userdetails{
+        .userdetails {
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
             width: 97%;
             background-color: #66ed66;
             margin: 13px;
             border-radius: 10px;
-            max-height: 400px;
-            overflow: scroll;
-        }
-        .userdetails table{
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            }
+
+            .userdetails table {
             width: 95%;
-            overflow: scroll;
             margin-bottom: 20px;
-        }
+            }
+
+            .userdetails p {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s ease;
+            margin: auto;
+            }
+
+            .userdetails p:hover {
+            color: #5cb85c;
+            }
+
+            #dropdown-arrow {
+            font-size: 20px;
+            transition: transform 0.3s ease, color 0.3s ease;
+            }
     </style>
 </head>
 <body>
@@ -192,6 +222,7 @@
                 }
             </script>
         </div>
+        <div></div>
         <div class="acc">
             <span>
                 <h3>Account</h3>
@@ -206,7 +237,7 @@
         <div class="greet">Welcome {{ user.user_name }}</div>
         <div class="providerrequest">
             <table class="requesttable">
-                <th  colspan="7">New Requests</th>
+                <th  colspan="7">New Service Provider Requests</th>
                 <tr>
                     <th>Provider Id</th>
                     <th>Name</th>
@@ -282,30 +313,55 @@
             </div>
         </div>
         <div class="userdetails userlist">
-            <table>
-                <th colspan="5">User List</th>
-                <tr><td>ID</td><td>Name</td><td>Phone</td><td>Email</td><td>Location</td></tr>
-                {% if users %}
-                    {% for user in users %}
+            <p onclick="showusertable()">User list <span id="dropdown-arrow">&#x25BC;</span></p>
+            <table id="usertable" style="display: none;">
+                <thead>
+                    <tr style="color: red;">
+                        <td>ID</td>
+                        <td>Name</td>
+                        <td>Phone</td>
+                        <td>Email</td>
+                        <td>Location</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if clientusers %}
+                    {% for clientuser in clientusers %}
                     <tr>
-                        <td>{{ user.user_id }}</td>
-                        <td>{{ user.full_name }}</td>
-                        <td>{{ user.phone}}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.location}}</td>
+                        <td>{{ clientuser.user_id }}</td>
+                        <td>{{ clientuser.full_name }}</td>
+                        <td>{{ clientuser.phone}}</td>
+                        <td>{{ clientuser.email }}</td>
+                        <td>{{ clientuser.location}}</td>
                     </tr>
                     {% endfor %}
-                {% else %}
+                    {% else %}
                     <tr>
-                        <td colspan="4" style="text-align: center;">No Users.</td>
+                        <td colspan="5" style="text-align: center;">No Users.</td>
                     </tr>
-                {% endif %}
+                    {% endif %}
+                </tbody>
             </table>
         </div>
+        
+        <script>
+            function showusertable() {
+                var usertable = document.getElementById('usertable');
+                var arrow = document.getElementById('dropdown-arrow');
+
+                if (usertable.style.display === 'none') {
+                    usertable.style.display = 'table';
+                    arrow.innerHTML = '&#x25B2;'; 
+                } else {
+                    usertable.style.display = 'none';
+                    arrow.innerHTML = '&#x25BC;';
+                }
+            }
+        </script>
         <div class="userdetails providerlist">
-            <table>
-                <th colspan="6">Service provider List</th>
-                <tr>
+            <p onclick="showtable('provider')">Service Provider list <span id="dropdown-arrow-provider">&#x25BC;</span></p>
+            <table id="providertable" style="display: none;">
+                <tr style="color: red;">
                     <td>ID</td>
                     <td>Name</td>
                     <td>Phone</td>
@@ -332,9 +388,9 @@
             </table>
         </div>
         <div class="userdetails bookingdetails">
-            <table>
-                <th colspan="7">Booking details</th>
-                <tr>
+            <p onclick="showtable('booking')">Bookings list <span id="dropdown-arrow-booking">&#x25BC;</span></p>
+            <table id="bookingdetail" style="display: none;">
+                <tr style="color: red;">
                     <td>ID</td>
                     <td>Client ID</td>
                     <td>Provider ID</td>
@@ -363,9 +419,9 @@
             </table>
         </div>
         <div class="userdetails paymentdetails">
-            <table>
-                <th colspan="6">Payment Transaction</th>
-                <tr>
+            <p onclick="showtable('payment')">Payment Transactions list <span id="dropdown-arrow-payment">&#x25BC;</span></p>
+            <table id="paymenttable" style="display: none;margin-top: 20px;">
+                <tr style="color: red;">
                     <td>ID</td>
                     <td>Client ID</td>
                     <td>Provider ID</td>
@@ -391,7 +447,81 @@
                 {% endif %}
             </table>
         </div>
+        <div class="userdetails sitereview">
+            <p onclick="showtable('review')">Reviews list <span id="dropdown-arrow-review">&#x25BC;</span></p>
+            <table id="reviewtable" style="display: none;margin-top: 20px;">
+                <tr style="color: red;">
+                    <td>ID</td>
+                    <td>Name</td>
+                    <td>Review</td>
+                </tr>
+                {% if sitereview %}
+                {% for review in sitereview %}
+                <tr>
+                    <td>{{review.sitereview_id}}</td>
+                    <td>{{review.name}}</td>
+                    <td>{{review.review}}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">No Review Details.</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        <script>
+            function showtable(tbname){
+                if(tbname == "payment"){
+                    var paymenttable = document.getElementById('paymenttable');
+                    var paymentarrow = document.getElementById('dropdown-arrow-payment');
 
+                    if (paymenttable.style.display === 'none') {
+                        paymenttable.style.display = 'table';
+                        paymentarrow.innerHTML = '&#x25B2;';
+                    } else {
+                        paymenttable.style.display = 'none';
+                        paymentarrow.innerHTML = '&#x25BC;';
+                    }
+                }
+                else if (tbname == "provider") {
+                    var providertable = document.getElementById('providertable');
+                    var providerarrow = document.getElementById('dropdown-arrow-provider');
+
+                    if (providertable.style.display === 'none') {
+                        providertable.style.display = 'table';
+                        providerarrow.innerHTML = '&#x25B2;';
+                    } else {
+                        providertable.style.display = 'none';
+                        providerarrow.innerHTML = '&#x25BC;';
+                    }
+                }
+                else if (tbname == "booking") {
+                    var bookingtable = document.getElementById('bookingdetail');
+                    var bookingrarrow = document.getElementById('dropdown-arrow-booking');
+
+                    if (bookingtable.style.display === 'none') {
+                        bookingtable.style.display = 'table';
+                        bookingrarrow.innerHTML = '&#x25B2;';
+                    } else {
+                        bookingtable.style.display = 'none';
+                        bookingrarrow.innerHTML = '&#x25BC;';
+                    }
+                }
+                else if (tbname == "review") {
+                    var reviewtable = document.getElementById('reviewtable');
+                    var reviewarrow = document.getElementById('dropdown-arrow-review');
+
+                    if (reviewtable.style.display === 'none') {
+                        reviewtable.style.display = 'table';
+                        reviewarrow.innerHTML = '&#x25B2;';
+                    } else {
+                        reviewtable.style.display = 'none';
+                        reviewarrow.innerHTML = '&#x25BC;';
+                    }
+                }
+            }
+        </script>
 
 
         {% if messages %}

@@ -168,7 +168,7 @@ table button{
 .services-tab{
     background-color: rgb(127, 240, 153);
     border-radius: 10px;
-    margin:0px;
+    margin-bottom:20px;
 }
 .services {
     display: grid;
@@ -268,7 +268,7 @@ footer {
     text-align: center;
     padding-top: 20px;
     font-size: 14px;
-    position: absolute;
+    position: relative;
     bottom: 0;
 }
 .cancellationform , .updateform{
@@ -396,6 +396,9 @@ footer {
     transform: translate(-50%,-50%);
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     background-image: url('{% static "images/bkngimg.png" %}');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 .close {
     color: #aaa;
@@ -453,10 +456,41 @@ input{
 .bookingdetails tr td{
     width: 50%;
 }
+.form-container {
+    max-width: 800px;
+    margin: auto;
+    background-color:  blanchedalmond;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2{
+    text-align: center;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.submit-btn {
+    padding: 12px;
+    background-color: #5cb85c;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.submit-btn:hover {
+    background-color: #4cae4c;
+}
+.submit-btn:active {
+    background-color: #3e8e3e;
+}
 @media only screen and (max-width: 1400px) {
-    footer{
-        position: relative;
-    }
     .modal-content{
         width: 70%;
         height: 70%;
@@ -598,9 +632,9 @@ input{
                 <label for="updateDescription">Update Description:</label>
                 <input type="text" id="updateDescription" name="update_description" required></input>
                 <label for="updatetodate">Select date:</label>
-                <input type="date" id="updatetodate" name="updatetodate" required></input>
+                <input type="date" id="bookingDate" name="updatetodate" required></input>
                 <label for="updatetotime">Select time:</label>
-                <input type="time" id="updatetotime" name="updatetotime" required></input>
+                <input type="time" id="bookingTime" name="updatetotime" required></input>
                 <input type="hidden" name="booking_id" id="update_booking_id">
                 <input type="hidden" name="homeowner_id" id="update_homeownerid">
                 <input type="hidden" name="service_provider_id" id="update_serviceproviderid">
@@ -672,6 +706,7 @@ input{
                     <input type="hidden" id="billbookingid" name="billbookingid">
                     <input type="hidden" name="userid" value={{user.user_id}}>
                     <input type="hidden" id="totalamountinput" name="totalamountinput">
+                    <button onclick="printBill(event)" style="background-color: blue; color: white;height: 30px;width: 60px;float: right;">Print</button>
                     <div id="billImageContainer"></div>
                     <table class="billtable" id="billtable">
                         <thead>
@@ -762,6 +797,13 @@ input{
                     buttons = document.getElementById('buttons')
                     billtable.appendChild(buttons)
                 }
+                function printBill(event){
+                    event.preventDefault()
+                    event.stopPropagation();
+                    document.getElementById('buttons').style.display = 'none';
+                    window.print();
+                    document.getElementById('buttons').style.display = 'table-row';
+                }
             </script>
         </div>
         {% else %}
@@ -846,16 +888,16 @@ input{
                         {% csrf_token %}
                         <div class="bkgdetail">
                             <label for="username">User name : </label>
-                            <input type="text" name="username" required>
+                            <input type="text" name="username" value="{{ user.user_name }}" required>
 
                             <label for="jobdesc">Job Description : </label>
                             <input type="text" name="jobdesc">
 
                             <label for="date">Date : </label>
-                            <input type="date" name="date" required>
+                            <input type="date" name="date" id="bookingDate" required>
 
                             <label for="time">Time : </label>
-                            <input type="time" name="time" required>
+                            <input type="time" name="time" id="bookingTime" required>
 
                             <label for="location">location : </label>
                             <input type="text" name="location" required>
@@ -886,6 +928,34 @@ input{
                     closeform();
                 }
             });
+            document.addEventListener('DOMContentLoaded', event => {
+                    const datetime = document.getElementById('bookingDate');
+                    const now = new Date();
+                    now.setDate(now.getDate() + 1);
+                    const formattedDate = now.toISOString().split('T')[0];
+                    datetime.setAttribute('min', formattedDate);
+                    datetime.addEventListener('click',()=>{
+                        datetime.showPicker();
+                    });
+                });
+            document.addEventListener('DOMContentLoaded', event => {
+                    const timeInput = document.getElementById('bookingTime');
+                    timeInput.addEventListener('change', () => {
+                        const selectedTime = timeInput.value;
+                        const [hours, minutes] = selectedTime.split(':').map(Number);
+                        if ((hours >= 19 || hours < 7)) {
+                            alert('Please select a time between 7:00 AM and 7:00 PM.');
+                            timeInput.value = ''; 
+                        }
+                    });
+                    timeInput.setAttribute('min', '19:00');
+                    timeInput.setAttribute('max', '07:00');
+                    timeInput.addEventListener('click',()=>{
+                        timeInput.showPicker();
+                    });
+                });
+
+
             </script>
         </div>
     </div>
@@ -930,6 +1000,19 @@ input{
             }
         </script>
     {% endif %}
+<div class="form-container">
+    <h2>Submit Your Review</h2>
+    <form action=" {% url 'sitereview' %} " method="POST" class="review-form">
+        {% csrf_token %}
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" name="sitereviewname" placeholder="Enter your name" required>
+
+        <label for="review">Your Review:</label>
+        <textarea id="review" name="sitereview" placeholder="Enter your review here" required style="margin-bottom: 10px;font-size: 20px;" rows="5"></textarea>
+
+        <button type="submit" class="submit-btn">Submit</button>
+    </form>
+</div>
 </div>
 <footer>
     <h4>Contact us: askashkr971@gmail.com</h4>

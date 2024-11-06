@@ -21,7 +21,7 @@ from hmsapp.views import home,landingpage,Userlogin,Clientsignup,forgetpassword,
 from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,updatebooking,orderhistory,accountdetails
 from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory,publishbill,getbill
 from hmsapp.views import initiate_payment,capture_payment,rate_service_provider,fetchreview,update_rate_service_provider
-from hmsapp.views import viewdetails,update_bill,delete_bill,adminpage,changeeligibility,update_account,delete_account
+from hmsapp.views import viewdetails,update_bill,delete_bill,adminpage,changeeligibility,update_account,delete_account,sitereview
 from django.conf.urls.static import static
 
 urlpatterns = [
@@ -58,6 +58,7 @@ urlpatterns = [
     path('update_rate_service_provider/', update_rate_service_provider, name='update_rate_service_provider'),
     path('viewdetails/<int:booking_id>/', viewdetails, name='viewdetails'),
     path('adminpage/', adminpage, name='adminpage'),
+    path('sitereview/', sitereview, name='sitereview'),
     path('changeeligibility/', changeeligibility, name='changeeligibility'),
     path('accountdetails/update/', update_account, name='update_account'),
     path('accountdetails/delete/', delete_account, name='delete_account'),

@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
 from django.contrib import messages
 from .models import User, Homeowner ,Service , ServiceProvider ,Booking ,Cancellation , Update ,Billing
-from .models import Payment ,Reviews
+from .models import Payment ,Reviews ,Sitereview
 from django.http import HttpResponseBadRequest
 from django.core.mail import send_mail
 from django.conf import settings
@@ -40,11 +40,12 @@ def adminpage(request):
         user = User.objects.get(user_id=request.session['user_id'])
         if user.role == "admin":
             no_eligibility_providers = ServiceProvider.objects.filter(eligible='No')
-            users = User.objects.filter(role='client')
+            clientusers = User.objects.filter(role='client')
             providers = ServiceProvider.objects.all()
             paymentinfo = Payment.objects.all().order_by('-payment_id')
             bookinginfo = Booking.objects.all().order_by('-booking_id')
             message_list = list(messages.get_messages(request))
+            sitereview = Sitereview.objects.all()
 
             total_employee = ServiceProvider.objects.count()
             total_users = Homeowner.objects.count()
@@ -58,7 +59,7 @@ def adminpage(request):
                 'providers': no_eligibility_providers,
                 'user':user,
                 'messages':message_list,
-                'users' : users,
+                'clientusers' : clientusers,
                 'providersdetail' : providers,
                 'paymentinfo':paymentinfo,
                 'total_employees': total_employee,
@@ -69,6 +70,7 @@ def adminpage(request):
                 'cancelled_bookings': cancelled_bookings,
                 'completed_bookings' : Completed_bookings,
                 'booking_info':bookinginfo,
+                'sitereview' : sitereview,
                 })
         
     return render(request,'adminpage.html')
@@ -79,7 +81,9 @@ def serviceproviderhome(request):
         user = User.objects.get(user_id=request.session['user_id'])
         if user.role == "Service-provider":
             provider = ServiceProvider.objects.get(user=user)
-            
+            payments = Payment.objects.filter(service_provider_id=provider.service_provider_id)
+            total_amount = payments.aggregate(Sum('amount'))['amount__sum'] or 0
+
             if provider.has_new_message:
                 messages.info(request, provider.new_message)
                 provider.has_new_message = False
@@ -87,12 +91,12 @@ def serviceproviderhome(request):
                 provider.save()
 
             if provider.eligible == 'yes' : 
-                return render(request, 'serviceproviderhome.html', {'user': user})
+                return render(request, 'serviceproviderhome.html', {'user': user, 'payments': payments ,'total_amount': total_amount})
             elif provider.eligible == 'No':
                 messages.warning(request, "Your application is pending approval.")
-                return render(request, 'serviceproviderhome.html', {'user': user})
+                return render(request, 'serviceproviderhome.html', {'user': user ,'payments': payments ,'total_amount': total_amount})
             else:
-                return render(request, 'serviceproviderhome.html', {'user': user})
+                return render(request, 'serviceproviderhome.html', {'user': user ,'payments': payments ,'total_amount': total_amount})
     return render(request, 'Userlogin.html')
 
 def clientsignupwithoutotp(request):
@@ -572,6 +576,7 @@ def getbill(request,booking_id):
         'items': list(bill.items),
         'bill_image_url': bill.bill_image_data.url if bill.bill_image_data else None,
     }
+    print('the bill items are : ',bill_data['items']);
     return JsonResponse({'bill': bill_data})
 
 def initiate_payment(request):
@@ -694,7 +699,7 @@ def update_account(request):
         location = request.POST['location']
         user = User.objects.get(user_id = user_id)
 
-        if new_user_name == user.user_name and User.objects.filter(user_name=new_user_name).exists():
+        if new_user_name != user.user_name and User.objects.filter(user_name=new_user_name).exists():
             messages.error(request, 'User name already exists.')
         else:
             user.full_name = full_name
@@ -747,6 +752,15 @@ def changeeligibility(request):
             return redirect('adminpage')
     return render(request, 'adminpage')
 
+def sitereview(request):
+    if request.method == 'POST':
+        name = request.POST.get('sitereviewname')
+        sitereview = request.POST.get('sitereview')
+        rev = Sitereview.objects.create(name=name,review=sitereview)
+        rev.save()
+        return redirect('home')
+
+ 
 @csrf_exempt
 def capture_payment(request):
     if request.method == "POST":

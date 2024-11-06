@@ -159,10 +159,9 @@
                 display: none;
                 position: absolute;
                 transform: translate(-50%, -50%); 
-                background-color: #77dd77;
                 left: 50%;
-                top: 80%;
                 height: auto;
+                max-width:1000px;
                 width:70%;
                 background-color: burlywood;
                 font-size: 20px;
@@ -212,10 +211,8 @@
                 display: none;
                 z-index: 1;
             }
-            #billImageContainer{
-                height: 30%;
-                width: 80%;
-                margin: auto;
+            .billtable td, .billtable th{
+                width:30px;
             }
             @media only screen and (max-width:500px){
                 table ,th, td {
@@ -395,8 +392,7 @@
                     </script>
                 </div>
                 <div class="viewdetails" id="viewdetails">
-                    <div class="fullform">
-                        
+                    <div class="fullform">                      
                         <table class="vbdetails">
                             <label>Booking Details</label><br>
                             <tr><td>Booking id</td><td><label id="vbkngid"></label></td></tr>
@@ -443,7 +439,7 @@
                                     const bid=document.getElementById('vbillbookingid').value
                                     console.log('button clicked the booking value is : ',bid)
                                     const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
-                
+                                    billtable.innerHTML = '';
                                     fetch(`/getbill/${bid}/`).then(response => response.json())
                                     .then(data => {
                                         const bill = data.bill;
@@ -462,10 +458,10 @@
                                             const imgElement = document.createElement('img');
                                             imgElement.src = bill.bill_image_url;
                                             imgElement.alt = "Bill Image";
-                                            imgElement.style.maxWidth = "100%";
-                                            imgElement.style.height = "auto";
+                                            imgElement.style.maxWidth = "50%";
+                                            imgElement.style.height = "50%";
                                             
-                                            imageContainer.innerHTML = ''; // Clear any existing content
+                                            imageContainer.innerHTML = '';
                                             imageContainer.appendChild(imgElement);
                                         } else {
                                             imageContainer.innerHTML = 'No image available';
@@ -515,7 +511,7 @@
                             </form>
                             <script>
                                 function viewrating(id,bid) {
-                                    console.log('the booking id is : ',bid)
+                                    console.log('the rating booking id is : ',bid)
                                     document.getElementById('viewserviceprovider_id').value = id;
                                     document.getElementById('viewbookingid').value = bid
                                     document.getElementById('viewratingform').style.display = 'block';
@@ -600,8 +596,6 @@
                             document.getElementById('viewdetails').style.display='block';
                             document.getElementById('fullbodyoverlay').style.display='block'
                             
-                            console.log(status)
-
                             if(status == 'Confirmed' || status == 'Completed' || status == 'Cancelled' || status == 'Completed'){
                                 asssignvalue(bkngid,sname,job,desc,bdate,sdate)
                                 document.getElementById('vbill').style.display='none';
@@ -621,6 +615,7 @@
                             else if(status=='Paid'){
                                 asssignvalue(bkngid,sname,job,desc,bdate,sdate)
                                 viewbill(bkngid)
+                                document.getElementById('viewdetails').style.top = '80%'
                                 fetch(`/viewdetails/${bkngid}/`).then(response => response.json())
                                     .then(data => {
                                         const view  = data.view
@@ -652,6 +647,9 @@
                         function closeviewdiv(){
                             document.getElementById('viewdetails').style.display='none'
                             document.getElementById('fullbodyoverlay').style.display='none'
+                            document.getElementById('bottom').style.display='block';
+                            const billtable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
+                            billtable.innerHTML=''
                         }
                     </script>
                 </div>

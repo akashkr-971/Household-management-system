@@ -135,3 +135,8 @@ class Billing(models.Model):
     date = models.DateField()
     payment_status = models.CharField(max_length=100)
     bill_image_data = models.ImageField(upload_to='bill_images/',blank=True, null=True)
+
+class Sitereview(models.Model):
+    sitereview_id = models.AutoField(primary_key=True)
+    name = models.TextField()
+    review = models.TextField()
