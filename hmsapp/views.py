@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
 from django.contrib import messages
 from .models import User, Homeowner ,Service , ServiceProvider ,Booking ,Cancellation , Update ,Billing
-from .models import Payment ,Reviews ,Sitereview
+from .models import Payment ,Reviews ,Sitereview ,Wallet
 from django.http import HttpResponseBadRequest
 from django.core.mail import send_mail
 from django.conf import settings
@@ -75,29 +75,67 @@ def adminpage(request):
         
     return render(request,'adminpage.html')
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import User, ServiceProvider, Payment, Wallet, Booking
+
 def serviceproviderhome(request):
     user = None
+    
+    # Check if the user is logged in
     if 'user_id' in request.session:
         user = User.objects.get(user_id=request.session['user_id'])
+
+        # Check if the user is a Service Provider
         if user.role == "Service-provider":
             provider = ServiceProvider.objects.get(user=user)
             payments = Payment.objects.filter(service_provider_id=provider.service_provider_id)
-            total_amount = payments.aggregate(Sum('amount'))['amount__sum'] or 0
+
+            # Get or create the wallet for the service provider
+            wallet, created = Wallet.objects.get_or_create(user=user, defaults={'total_amount': 0, 'withdrawn_amount': 0, 'remaining_amount': 0})
+            total_amount = wallet.total_amount
+            withdrawn_amount = wallet.withdrawn_amount
+            remaining_amount = wallet.remaining_amount
 
             if provider.has_new_message:
                 messages.info(request, provider.new_message)
                 provider.has_new_message = False
                 provider.new_message = ''
                 provider.save()
+                
+            bookings = Booking.objects.filter(
+                service_provider=provider,
+                status__in=['Pending', 'Confirmed', 'Bill created']
+            )
 
-            if provider.eligible == 'yes' : 
-                return render(request, 'serviceproviderhome.html', {'user': user, 'payments': payments ,'total_amount': total_amount})
+            if provider.eligible == 'yes': 
+                context = {
+                    'user': user,
+                    'payments': payments,
+                    'total_amount': total_amount,
+                    'withdrawn_amount': withdrawn_amount,
+                    'remaining_amount': remaining_amount,
+                    'bookings': bookings,
+                }
+                return render(request, 'serviceproviderhome.html', context)
+
             elif provider.eligible == 'No':
                 messages.warning(request, "Your application is pending approval.")
-                return render(request, 'serviceproviderhome.html', {'user': user ,'payments': payments ,'total_amount': total_amount})
+                context = {
+                    'user': user,
+                    'payments': payments,
+                    'total_amount': total_amount,
+                }
+                return render(request, 'serviceproviderhome.html', context)
             else:
-                return render(request, 'serviceproviderhome.html', {'user': user ,'payments': payments ,'total_amount': total_amount})
-    return render(request, 'Userlogin.html')
+                context = {
+                    'user': user,
+                    'payments': payments,
+                    'total_amount': total_amount,
+                }
+                return render(request, 'serviceproviderhome.html', context)
+    return redirect('Userlogin')
+
 
 def clientsignupwithoutotp(request):
     if request.method == 'POST':
@@ -759,8 +797,47 @@ def sitereview(request):
         rev = Sitereview.objects.create(name=name,review=sitereview)
         rev.save()
         return redirect('home')
-
  
+def wallet_view(request):
+    wallet = Wallet.objects.get(user=request.user)
+    
+    context = {
+        'total_amount': wallet.total_amount,
+        'withdrawn_amount': wallet.withdrawn_amount,
+        'remaining_amount': wallet.remaining_amount,
+    }
+    
+    return render(request, 'serviceproviderhome.html', context)
+
+def process_withdrawal(request):
+    user=request.session['user_id']
+    if request.method == 'POST':
+        print("called")
+        data = json.loads(request.body)
+        withdraw_amount = Decimal(data.get('amount'))
+        print(withdraw_amount)
+        upi_id = data.get('upiId')
+
+        wallet = Wallet.objects.get(user=user)
+
+        if withdraw_amount <= 0:
+            return JsonResponse({'success': False, 'message': 'Invalid withdrawal amount.'})
+
+        if withdraw_amount > wallet.remaining_amount:
+            return JsonResponse({'success': False, 'message': 'Insufficient funds.'})
+
+        print(wallet.total_amount)
+        wallet.withdrawn_amount += withdraw_amount
+        wallet.remaining_amount = wallet.total_amount - wallet.withdrawn_amount
+        wallet.save()
+
+        return JsonResponse({'success': True, 'message': 'Withdrawal processed successfully.'})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request.'})
+
+def withdrawal_success(request):
+    return render(request, 'withdrawal_success.html')
+
 @csrf_exempt
 def capture_payment(request):
     if request.method == "POST":
@@ -789,6 +866,16 @@ def capture_payment(request):
                 booking.totalrate = payment.amount
                 booking.save()
 
+                service_provider = payment.service_provider
+                amount = payment.amount
+                wallet, created = Wallet.objects.get_or_create(user=service_provider.user)
+                if not created:
+                    wallet.total_amount += amount
+                    wallet.remaining_amount += amount
+                else:
+                    wallet.total_amount = amount
+                wallet.save()
+
                 user_id = payment.homeowner.user.user_id
                 authorized_amount = payment.amount
                 amount_in_paise = int(authorized_amount * 100)
@@ -800,5 +887,23 @@ def capture_payment(request):
             print('Error:', e)
             return render(request, 'home.html', {'status': 'failed'})
     return HttpResponseBadRequest()
+
+# @csrf_exempt  
+# def process_withdrawal(request):
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body)
+#             amount = data.get('amount')
+#             upi_id = data.get('upiId')
+
+#             if not amount or not upi_id:
+#                 return JsonResponse({'message': 'Invalid input. Amount and UPI ID are required.'}, status=400)
+#             return JsonResponse({'message': f'Withdrawal of {amount} processed successfully to UPI ID: {upi_id}.'})
+#         except json.JSONDecodeError:
+#             return JsonResponse({'message': 'Invalid JSON input.'}, status=400)
+#         except Exception as e:
+#             return JsonResponse({'message': f'Error processing withdrawal: {str(e)}'}, status=500)
+#     else:
+#         return JsonResponse({'message': 'Invalid request method.'}, status=405)
 
 

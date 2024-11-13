@@ -894,10 +894,10 @@ input{
                             <input type="text" name="jobdesc">
 
                             <label for="date">Date : </label>
-                            <input type="date" name="date" id="bookingDate" required>
+                            <input type="date" name="date" id="bookingDateInForm" required>
 
                             <label for="time">Time : </label>
-                            <input type="time" name="time" id="bookingTime" required>
+                            <input type="time" name="time" id="bookingTimeInForm" required>
 
                             <label for="location">location : </label>
                             <input type="text" name="location" required>
@@ -928,34 +928,51 @@ input{
                     closeform();
                 }
             });
-            document.addEventListener('DOMContentLoaded', event => {
-                    const datetime = document.getElementById('bookingDate');
+             document.addEventListener('DOMContentLoaded', event => {
+                    const datetime1 = document.getElementById('bookingDate');
+                    const datetime2 = document.getElementById('bookingDateInForm');
                     const now = new Date();
                     now.setDate(now.getDate() + 1);
                     const formattedDate = now.toISOString().split('T')[0];
-                    datetime.setAttribute('min', formattedDate);
-                    datetime.addEventListener('click',()=>{
-                        datetime.showPicker();
+                    datetime1.setAttribute('min', formattedDate);
+                    datetime1.addEventListener('click', () => {
+                        datetime1.showPicker();
+                    });
+                    datetime2.setAttribute('min', formattedDate);
+                    datetime2.addEventListener('click', () => {
+                        datetime2.showPicker();
                     });
                 });
-            document.addEventListener('DOMContentLoaded', event => {
-                    const timeInput = document.getElementById('bookingTime');
-                    timeInput.addEventListener('change', () => {
-                        const selectedTime = timeInput.value;
+                document.addEventListener('DOMContentLoaded', event => {
+                    const timeInput1 = document.getElementById('bookingTime');
+                    const timeInput2 = document.getElementById('bookingTimeInForm');
+                    timeInput1.addEventListener('change', () => {
+                        const selectedTime = timeInput1.value;
                         const [hours, minutes] = selectedTime.split(':').map(Number);
                         if ((hours >= 19 || hours < 7)) {
                             alert('Please select a time between 7:00 AM and 7:00 PM.');
-                            timeInput.value = ''; 
+                            timeInput1.value = '';
                         }
                     });
-                    timeInput.setAttribute('min', '19:00');
-                    timeInput.setAttribute('max', '07:00');
-                    timeInput.addEventListener('click',()=>{
-                        timeInput.showPicker();
+                    timeInput1.setAttribute('min', '07:00');
+                    timeInput1.setAttribute('max', '19:00');
+                    timeInput1.addEventListener('click', () => {
+                        timeInput1.showPicker();
+                    });
+                    timeInput2.addEventListener('change', () => {
+                        const selectedTime = timeInput2.value;
+                        const [hours, minutes] = selectedTime.split(':').map(Number);
+                        if ((hours >= 19 || hours < 7)) {
+                            alert('Please select a time between 7:00 AM and 7:00 PM.');
+                            timeInput2.value = '';
+                        }
+                    });
+                    timeInput2.setAttribute('min', '07:00');
+                    timeInput2.setAttribute('max', '19:00');
+                    timeInput2.addEventListener('click', () => {
+                        timeInput2.showPicker();
                     });
                 });
-
-
             </script>
         </div>
     </div>

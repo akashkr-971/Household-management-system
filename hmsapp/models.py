@@ -140,3 +140,17 @@ class Sitereview(models.Model):
     sitereview_id = models.AutoField(primary_key=True)
     name = models.TextField()
     review = models.TextField()
+
+class Wallet(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="wallet")
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    withdrawn_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    remaining_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def update_remaining_amount(self):
+        """Method to update the remaining amount based on total and withdrawn"""
+        self.remaining_amount = self.total_amount - self.withdrawn_amount
+        self.save()
+
+    def __str__(self):
+        return f"Wallet for {self.user.username} - Total: {self.total_amount}, Withdrawn: {self.withdrawn_amount}, Remaining: {self.remaining_amount}"

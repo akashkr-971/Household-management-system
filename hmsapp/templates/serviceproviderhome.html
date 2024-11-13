@@ -394,58 +394,64 @@ input{
         <div class="greet">Welcome {% if user %}{{ user.user_name }}{% else %}Guest{% endif %}</div>
         <div class="pentask">
             <p>Pending Tasks</p>
-            {% if user %}
             <table id="detailstable">
                 <thead>
                     <tr>
                         <th>Booking ID</th>
                         <th>Name</th>
-                        <th>location</th>
+                        <th>Location</th>
                         <th>Booking Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% if user.serviceprovider.bookings.all%}
-                        {% for booking in user.serviceprovider.bookings.all %}
-                            {% if booking.status != 'Cancelled' and booking.status != 'Paid' %}
-                            {% if booking.isupdated == 'No' %}
-                            <tr onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}')">
-                            {% else %}
-                            {% for update in booking.update_set.all %}
-                                <tr onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}','{{ update.description }}')">
-                            {% endfor %}
-                            {% endif %}   
-                                    <td>{{ booking.booking_id }}</td>
-                                    <td>{{ booking.homeowner.user.full_name }}</td>
-                                    <td>{{ booking.location }}</td>
-                                    <td>{{ booking.status }}</td>
-                                    <td>
-                                        {% if booking.status == 'Pending' %}
-                                            <button class="accept-btn" data-booking-id="{{ booking.booking_id }}" onclick="acceptbooking('{{ booking.booking_id }}'); event.stopPropagation();">Accept</button>
-                                            <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
-                                        {% elif booking.status == 'Confirmed' %}
-                                            <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
-                                            <button class="complete-btn" data-booking-id="{{ booking.booking_id }}" onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Completed</button>
-                                        {% elif booking.status == 'Completed' %}
-                                            <button class="createbillbtn" style="background-color: aquamarine;" data-booking-id="{{ booking.booking_id }}" onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create bill</button>
-                                        {% elif booking.status == 'Bill created' %}
-                                            <button class="viewbill-btn" style="background-color: #2cd0a1;" data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
-                                            <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}" onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved payment</button>
-                                        {% else %}
-                                            <p>Cancelled</p>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endif %}          
+                    {% if bookings %}
+                    {% for booking in bookings %}
+                    {% if booking.isupdated == 'No' %}
+                    <tr
+                        onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}')">
+                        {% else %}
+                        {% for update in booking.update_set.all %}
+                    <tr
+                        onclick="Viewbooking('{{ booking.homeowner.user.full_name }}','{{ booking.location }}','{{ booking.homeowner.user.phone }}','{{ booking.servicedate }}','{{ booking.servicetime }}','{{ booking.isupdated }}','{{ update.description }}')">
                         {% endfor %}
+                        {% endif %}
+                        <td>{{ booking.booking_id }}</td>
+                        <td>{{ booking.homeowner.user.full_name }}</td>
+                        <td>{{ booking.location }}</td>
+                        <td>{{ booking.status }}</td>
+                        <td>
+                            {% if booking.status == 'Pending' %}
+                            <button class="accept-btn" data-booking-id="{{ booking.booking_id }}"
+                                onclick="acceptbooking('{{ booking.booking_id }}'); event.stopPropagation();">Accept</button>
+                            <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}"
+                                onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
+                            {% elif booking.status == 'Confirmed' %}
+                            <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}"
+                                onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
+                            <button class="complete-btn" data-booking-id="{{ booking.booking_id }}"
+                                onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Completed</button>
+                            {% elif booking.status == 'Bill created' %}
+                            <button class="viewbill-btn" style="background-color: #2cd0a1;"
+                                data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View
+                                bill</button>
+                            <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}"
+                                onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved
+                                payment</button>
+                            {% else %}
+                            <p>Cancelled</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
                     {% else %}
                     <tr>
-                        <td colspan="6">No upcoming bookings available</td>
+                        <td colspan="5">No Pending bookings available</td>
                     </tr>
                     {% endif %}
                 </tbody>
             </table>
+
             <div class="cancellationform" style="display: none;" id="cancellationform">
                 <form method="post" action="{% url 'cancelbooking' %}">
                     {% csrf_token %}
@@ -1068,7 +1074,6 @@ input{
                     }
                 </script>
             </div>
-            {% endif %}
         </div>
         <div class="paymentdetails">
             <p>Payment Details</p>
@@ -1079,7 +1084,7 @@ input{
                         <th>Booking ID</th>
                         <th>Amount</th>
                         <th>Payment Status</th>
-                        <th>Payment Mathod</th>
+                        <th>Payment Method</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1104,13 +1109,76 @@ input{
         <div class="withdrawamount">
             <p>Wallet</p>
             <table>
-                <tr><td>Total Amount</td><td>{{ total_amount }}</td></tr>
-                <tr><td>Withdrawn Amount</td><td>0</td></tr>
-                <tr><td>Remaining Amount</td><td>{{ total_amount }}</td></tr>
-                <tr><td>Enter the amount to withdraw</td><td><input type="number" required></td></tr>
-                <tr><td colspan="2"><input type="submit" value="Withdraw" class="complete-btn" style="height: 30px;width: 100px;font-size: 18px;border-radius: 20px;"></td></tr>
+                <tr>
+                    <td>Total Amount</td>
+                    <td>{{ total_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Withdrawn Amount</td>
+                    <td>{{ withdrawn_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Remaining Amount</td>
+                    <td><label id="remamount">{{ remaining_amount }}</label></td>
+                </tr>
+                <tr>
+                    <td>Enter the amount to withdraw</td>
+                    <td><input type="number" id="withdrawAmount" required></td>
+                </tr>
+                <tr>
+                    <td>Enter UPI ID</td>
+                    <td><input type="text" id="upiId" placeholder="e.g., user@bank" required></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="button" value="Withdraw" class="complete-btn"
+                            style="height: 30px; width: 100px; font-size: 18px; border-radius: 20px;"
+                            onclick="submitWithdrawal()">
+                    </td>
+                </tr>
             </table>
         </div>
+        
+        <script>
+            function submitWithdrawal() {
+                const withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);
+                const remaount = parseFloat(document.getElementById('remamount').innerText);
+                const upiId = document.getElementById('upiId').value;
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                console.log("the rem amount is ",remaount)
+                console.log(withdrawAmount <= remaount)
+                if (!withdrawAmount || withdrawAmount <= 0 || withdrawAmount >= remaount) {
+                    alert('Please enter a valid amount to withdraw.');
+                    return;
+                }
+
+                if (!upiId) {
+                    alert('Please enter a valid UPI ID.');
+                    return;
+                }
+
+                alert(`Processing withdrawal of ${withdrawAmount} to UPI ID: ${upiId}`);
+                fetch('/process_withdrawal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ amount: withdrawAmount, upiId: upiId }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.success) {
+                            window.location.href = "/withdrawal_success";
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        </script>
     </div>
 
     <div class="bottom">
