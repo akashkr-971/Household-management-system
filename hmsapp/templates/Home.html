@@ -330,7 +330,7 @@ footer {
     position: fixed;
     display: flex;
     flex-direction: column;
-    height: auto;
+    height: 900px;
     width: 600px;
     top: 50%;
     left: 50%;
@@ -340,6 +340,7 @@ footer {
     padding-top: 20px;
     border-radius:10px;
     z-index: 2;
+    overflow: scroll;
 }
 .billcontainer table{
     margin-top: 10px;
@@ -425,6 +426,9 @@ input{
     display: flex;
     justify-content: center;
     flex-direction: column;
+}
+.bkgdetail input{
+    height: 30px;
 }
 .bkngformbutton{
     display: flex;
@@ -560,6 +564,8 @@ input{
                                     {% elif booking.status == 'Confirmed' %}
                                         <button class="update-btn" data-booking-id="{{ booking.booking_id }}" onclick="updatebooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Update</button>
                                         <button class="cancel-btn" data-booking-id="{{ booking.booking_id }}" onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
+                                    {% elif booking.status == 'Completed' %}
+                                        <p>Bill is being created</p>
                                     {% elif booking.status == 'Bill created' %}
                                         <button class="viewbill-btn" style="background-color: #20ed6b;" data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
                                     {% else %}
@@ -779,9 +785,8 @@ input{
                                 imgElement.src = bill.bill_image_url;
                                 imgElement.alt = "Bill Image";
                                 imgElement.style.maxWidth = "100%";
-                                imgElement.style.height = "auto";
-                                
-                                imageContainer.innerHTML = ''; // Clear any existing content
+                                imgElement.style.height = "600px";
+                                imageContainer.innerHTML = ''; 
                                 imageContainer.appendChild(imgElement);
                             } else {
                                 imageContainer.innerHTML = 'No image available';

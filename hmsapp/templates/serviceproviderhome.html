@@ -1,374 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Household Management System</title>
-<style>
-body {
-    margin: 0;
-    padding: 0;
-    height:100%;
-}
-.top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    top: 0;
-    width: 100%;
-    height: 80px;
-    background-color: #333;
-    color: #fff;
-    padding: 0 0px;
-}
-.name {
-    font-weight: 600;
-    flex:3;
-    text-align:center;
-    display:flex;
-    justify-content:center;
-}
-.searchbar{
-    height: 80px;
-    display:flex;
-    align-items:center;
-    flex:5;
-    justify-content:center;
-}
-#search {
-    width: 80%;
-    height: 30px;
-    border-radius: 15px;
-    padding: 5px 10px;
-    font-size: 14px;
-}
-.acc {
-    font-weight: 600;
-    flex:2;
-    text-align:center;
-    display:flex;
-    justify-content:center;
-    height:80px;
-}
-span h3{
-    position:relative;
-    top:10px;
-}
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 120px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-    z-index: 1;
-}
-.acc:hover .dropdown-content {
-    display: block;
-    top:80px;
-    border-radius: 0 0 10px 10px;
-    background-color: #333;
-    
-}
-.dropdown-content:hover{
-    display:block;
-}
-.dropdown-content a {
-    color: white;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    font-size: 18px;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-}
-.dropdown-content a:hover {
-    background-color:black;
-}
-.mid-bar {
-    margin-top: 40px;
-    margin-bottom: 40px;
-    padding: 20px;
-    margin: 0;
-}
-.greet{
-    font-size: 30px;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    margin: 10px 0 ;
-    font-weight: 800;
-}
-.pentask,.paymentdetails,.withdrawamount{
-    text-align: center;
-    height: 300px;
-    font-size: 20px;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-weight: 600;
-    background-color: blanchedalmond;
-    border-radius: 10px;
-    padding: 10px;
-    overflow:scroll;
-}
-button {
-    height: 80px;
-    width: 100%;
-    border: none;
-    background-color: #ddd;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-}
-.bottom {
-    position:relative;
-    bottom: 0;
-    width: 100%;
-    height: 80px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding-top: 20px;
-    font-size: 14px;
-}
-table {
-    width: 100%;
-    border-collapse:collapse;
-    border: 1px solid wheat;
-    border-radius: 10px;
-}
-th, td {
-    padding: 8px;
-    text-align: center;
-    border-bottom: 1px solid #ffcdcd;
-    word-wrap: break-word;
-}
-th,tr {
-    background-color: aliceblue;
-}
-tr:hover {
-    background-color: #f5f5f5;
-}
-table button{
-    height: 30px;
-    width: 80%;
-    border: none;
-    background-color: #ddd;
-    cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 2px;
-}
-.cancel-btn{
-    background-color: rgb(228, 49, 49);
-    color: white;
-}
-.accept-btn,.recievedbtn{
-    background-color: rgba(37, 254, 88, 0.813);
-    color: rgb(14, 4, 4);
-    margin-bottom: 1px;
-    height: auto;
-}
-.cancellationform{
-    display: flex;
-    position: absolute;
-    background-color: rgb(243, 193, 193);
-    padding: 20px;
-    border-radius: 5px;
-    z-index: 10;
-    top: 48%;
-    left: 36%;
-}
-.cancellationform input[type="text"]{
-    height:30px;
-    width: 200px;
-}
-.cancellationform input[type="submit"]{
-    height:30px;
-    width: 80px;
-    background-color: rgb(61, 163, 246);
-    color: white;
-    border-radius: 10px;
-    font-size: 18px;
-    border: none;
-}
-.cancellationform input[type="button"]{
-    height:30px;
-    width: 80px;
-    background-color: rgb(255, 57, 57);
-    color: white;
-    border-radius: 10px;
-    font-size: 18px;
-    border: none;
-}
-.updateform input[type="time"]{
-    height:30px;
-    width: 200px;
-}
-.viewcontainer{
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    height: 100px;
-    z-index: 3;
-    transform: translate(-50%,-50%);
-}
-.complete-btn{
-    background-color: rgb(52, 245, 52);
-    color: white;
-    padding: 0px;
-}
-.createbill{
-    height: 70%;
-    width: 70%;
-    background-color: #2cd0a1;
-    color: white;
-    position:absolute;
-    top: 13%;
-    left: 18%;
-    overflow: auto;
-    z-index: 3;
-}
-.billlabel{
-    display: flex;
-    justify-content: center;
-    padding: 10px 0; 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Management System</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
 
-}
-.createbill table{
-    color: black;
-    width: 100%;
-}
-.createbill table input{
-    border: none;
-    height: 100%;
-    width: 80%;
-    background:transparent;
-    font-size: 18px;
-    text-align: center;
-    font-weight: 600;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-}
-.createbill table input[type="button"]{
-    font-size: 20px;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-weight: 600;
-}
-.buttonlast{
-    display: flex;
-    height: 40px ;
-    justify-content: center;
-    justify-content: center;
-}
-.buttonlast button{
-    width: 150px;
-    height: 30px;
-    margin: 10px 10px;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-}
-.viewbuttons button{
-    width: 30%;
-}
-.updatebuttons button{
-    width: 24%;
-}
-.billcontainer{
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    width: 600px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #77dd77;
-    padding: 5px;
-    padding-top: 20px;
-    border-radius:10px;
-    z-index: 3;
-}
-.billcontainer table{
-    margin-top: 10px;
-}
-.updatebutton {
-    background-color: #f38d20;
-    color: white;
-    width: 100%;
-}
-.updateinput{
-    border: none;
-    height: 100%;
-    width: 80%;
-    background:transparent;
-    font-size: 18px;
-    text-align: center;
-    font-weight: 600;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-}
-.fullbodyoverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); 
-    display: none;
-    z-index: 2;
-}
-.requestreply{
-    background-color: #66ed66;
-    border-radius: 10px;
-    height: 150px;
-    width: 400px;
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    z-index: 3;
-}
-.paymentdetails,.withdrawamount{
-    margin-top: 20px;
-}
-input{
-    margin-top: 5px;
-    width:250px;
-    border-radius: 10px;
-    height: 30px;
-    margin-bottom: 5px;
-    font-size: 16px;
-    font-weight: 600;
-}
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #333;
+            color: #fff;
+            padding: 0 0px;
+        }
 
-@media only screen and (max-width: 600px) {
-    .bottom{
-        position: inherit;
-        bottom: 0;
-    }
-    #search{
-        width:70%;
-    }
-    .uptask{
-        width:95%
-    }
-    .services{
-        height:100%
-    }
-    table ,th, td {
-        font-size: 8px;
-        font-weight: 300;
-    }
-    table button{
-        height: 20px;
-        width: 50px;
-        font-size: 10px;
+        .name {
+            font-weight: 600;
+            flex: 3;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+        }
 
-    }
+        .searchbar {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            flex: 5;
+            justify-content: center;
+        }
 
-}
+        #search {
+            width: 80%;
+            height: 30px;
+            border-radius: 15px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
 
-</style>
+        .acc {
+            font-weight: 600;
+            flex: 2;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            height: 80px;
+        }
+
+        span h3 {
+            position: relative;
+            top: 10px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 120px;
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .acc:hover .dropdown-content {
+            display: block;
+            top: 80px;
+            border-radius: 0 0 10px 10px;
+            background-color: #333;
+
+        }
+
+        .dropdown-content:hover {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 18px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        .dropdown-content a:hover {
+            background-color: black;
+        }
+
+        .mid-bar {
+            margin-top: 40px;
+            margin-bottom: 40px;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .greet {
+            font-size: 30px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            margin: 10px 0;
+            font-weight: 800;
+        }
+
+        .pentask,
+        .paymentdetails,
+        .withdrawamount {
+            text-align: center;
+            height: 300px;
+            font-size: 20px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-weight: 600;
+            background-color: blanchedalmond;
+            border-radius: 10px;
+            padding: 10px;
+            overflow: scroll;
+        }
+
+        button {
+            height: 80px;
+            width: 100%;
+            border: none;
+            background-color: #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .bottom {
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding-top: 20px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid wheat;
+            border-radius: 10px;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ffcdcd;
+            word-wrap: break-word;
+        }
+
+        th,
+        tr {
+            background-color: aliceblue;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        table button {
+            height: 30px;
+            width: 80%;
+            border: none;
+            background-color: #ddd;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .cancel-btn {
+            background-color: rgb(228, 49, 49);
+            color: white;
+        }
+
+        .accept-btn,
+        .recievedbtn {
+            background-color: rgba(37, 254, 88, 0.813);
+            color: rgb(14, 4, 4);
+            margin-bottom: 1px;
+            height: 30px;
+        }
+
+        .cancellationform {
+            display: flex;
+            position: absolute;
+            background-color: rgb(243, 193, 193);
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 10;
+            top: 48%;
+            left: 36%;
+        }
+
+        .cancellationform input[type="text"] {
+            height: 30px;
+            width: 200px;
+        }
+
+        .cancellationform input[type="submit"] {
+            height: 30px;
+            width: 80px;
+            background-color: rgb(61, 163, 246);
+            color: white;
+            border-radius: 10px;
+            font-size: 18px;
+            border: none;
+        }
+
+        .cancellationform input[type="button"] {
+            height: 30px;
+            width: 80px;
+            background-color: rgb(255, 57, 57);
+            color: white;
+            border-radius: 10px;
+            font-size: 18px;
+            border: none;
+        }
+
+        .updateform input[type="time"] {
+            height: 30px;
+            width: 200px;
+        }
+
+        .viewcontainer {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            height: 100px;
+            z-index: 3;
+            transform: translate(-50%, -50%);
+        }
+
+        .complete-btn {
+            background-color: rgb(52, 245, 52);
+            color: white;
+            padding: 0px;
+        }
+
+        .createbill {
+            height: 70%;
+            width: 70%;
+            background-color: #2cd0a1;
+            color: white;
+            position: absolute;
+            top: 13%;
+            left: 18%;
+            overflow: auto;
+            z-index: 3;
+        }
+
+        .billlabel {
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+
+        }
+
+        .createbill table {
+            color: black;
+            width: 100%;
+        }
+
+        .createbill table input {
+            border: none;
+            height: 100%;
+            width: 80%;
+            background: transparent;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        .createbill table input[type="button"] {
+            font-size: 20px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-weight: 600;
+        }
+
+        .buttonlast {
+            display: flex;
+            height: 40px;
+            justify-content: center;
+            justify-content: center;
+        }
+
+        .buttonlast button {
+            width: 150px;
+            height: 30px;
+            margin: 10px 10px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .viewbuttons button {
+            width: 30%;
+        }
+
+        .updatebuttons button {
+            width: 24%;
+        }
+
+        .billcontainer {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            width: 600px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #77dd77;
+            padding: 5px;
+            padding-top: 20px;
+            border-radius: 10px;
+            z-index: 3;
+        }
+
+        .billcontainer table {
+            margin-top: 10px;
+        }
+
+        .updatebutton {
+            background-color: #f38d20;
+            color: white;
+            width: 100%;
+        }
+
+        .updateinput {
+            border: none;
+            height: 100%;
+            width: 80%;
+            background: transparent;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        .fullbodyoverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 2;
+        }
+
+        .requestreply {
+            background-color: #66ed66;
+            border-radius: 10px;
+            height: 150px;
+            width: 400px;
+            position: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+        }
+
+        .paymentdetails,
+        .withdrawamount {
+            margin-top: 20px;
+        }
+
+        input {
+            margin-top: 5px;
+            width: 250px;
+            border-radius: 10px;
+            height: 30px;
+            margin-bottom: 5px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .bottom {
+                position: inherit;
+                bottom: 0;
+            }
+
+            #search {
+                width: 70%;
+            }
+
+            .uptask {
+                width: 95%
+            }
+
+            .services {
+                height: 100%
+            }
+
+            table,
+            th,
+            td {
+                font-size: 8px;
+                font-weight: 300;
+            }
+
+            table button {
+                height: 20px;
+                width: 50px;
+                font-size: 10px;
+
+            }
+
+        }
+    </style>
 </head>
-    <body>
+
+<body>
     <div class="fullbodyoverlay" id="fullbodyoverlay"></div>
     <div class="top-bar">
         <div class="name">Household Management System</div>
@@ -378,16 +439,16 @@ input{
             </span>
             <div class="dropdown-content">
                 {% if user %}
-                    <a href="{% url 'accountdetails' %}">Account Details</a>
-                    <a href="{% url 'jobhistory' %}">Job History</a>
-                    <a href="{% url 'resetpassword' %}">Reset password</a>
-                    <a href="{% url 'logout' %}">Logout</a>
+                <a href="{% url 'accountdetails' %}">Account Details</a>
+                <a href="{% url 'jobhistory' %}">Job History</a>
+                <a href="{% url 'resetpassword' %}">Reset password</a>
+                <a href="{% url 'logout' %}">Logout</a>
                 {% else %}
-                    <a href="{% url 'Userlogin' %}">Login</a>
-                    <a href="{% url 'Clientsignup' %}">Signup</a>
+                <a href="{% url 'Userlogin' %}">Login</a>
+                <a href="{% url 'Clientsignup' %}">Signup</a>
                 {% endif %}
             </div>
-            
+
         </div>
     </div>
     <div class="mid-bar">
@@ -431,10 +492,13 @@ input{
                                 onclick="cancelbooking('{{ booking.booking_id }}','{{ booking.homeowner.user.user_id }}','{{ booking.service_provider.service_provider_id }}'); event.stopPropagation();">Cancel</button>
                             <button class="complete-btn" data-booking-id="{{ booking.booking_id }}"
                                 onclick="completebooking('{{ booking.booking_id }}'); event.stopPropagation();">Completed</button>
+                            {% elif booking.status == 'Completed' %}
+                            <button class="complete-btn" data-booking-id="{{ booking.booking_id }}"
+                                onclick="createbill('{{ booking.booking_id }}'); event.stopPropagation();">Create Bill</button>
                             {% elif booking.status == 'Bill created' %}
                             <button class="viewbill-btn" style="background-color: #2cd0a1;"
-                                data-booking-id="{{ booking.booking_id }}" onclick="viewbill('{{ booking.booking_id }}',event)">View
-                                bill</button>
+                                data-booking-id="{{ booking.booking_id }}"
+                                onclick="viewbill('{{ booking.booking_id }}',event)">View bill</button>
                             <button class="recievedbtn" data-booking-id="{{ booking.booking_id }}"
                                 onclick="finishbooking('{{ booking.booking_id }}'); event.stopPropagation();">Recieved
                                 payment</button>
@@ -458,73 +522,114 @@ input{
                     <table class="canceltable" style="th{
                         width: 100%;
                     }">
-                        <tr><th colspan="2">Cancellation Reason</th></tr>
+                        <tr>
+                            <th colspan="2">Cancellation Reason</th>
+                        </tr>
                         <tr>
                             <td colspan="2"><input type="text" name="cancellation_reason" required>
-                            <input type="hidden" id="cancel_booking_id" name="booking_id">
-                            <input type="hidden" id="cancel_homeownerid" name="homeownerid">
-                            <input type="hidden" id="cancel_serviceproviderid" name="serviceproviderid"></td>
+                                <input type="hidden" id="cancel_booking_id" name="booking_id">
+                                <input type="hidden" id="cancel_homeownerid" name="homeownerid">
+                                <input type="hidden" id="cancel_serviceproviderid" name="serviceproviderid">
+                            </td>
                         </tr>
-                        <tr><td><input type="submit" value="Submit" name="submit"></td><td><input type="button" value="Cancel" onclick="closecancelform()"></td></tr>
+                        <tr>
+                            <td><input type="submit" value="Submit" name="submit"></td>
+                            <td><input type="button" value="Cancel" onclick="closecancelform()"></td>
+                        </tr>
                     </table>
                 </form>
                 <script>
-                    function cancelbooking(bid,uid,sid){
-                        document.getElementById('cancel_booking_id').value=bid;
-                        document.getElementById('cancel_homeownerid').value=uid;
-                        document.getElementById('cancel_serviceproviderid').value=sid;
-                        
-                        document.getElementById('fullbodyoverlay').style.display=='block'
-                        document.getElementById('cancellationform').style.display='block';
+                    function cancelbooking(bid, uid, sid) {
+                        document.getElementById('cancel_booking_id').value = bid;
+                        document.getElementById('cancel_homeownerid').value = uid;
+                        document.getElementById('cancel_serviceproviderid').value = sid;
+
+                        document.getElementById('fullbodyoverlay').style.display == 'block'
+                        document.getElementById('cancellationform').style.display = 'block';
                     }
-                    function closecancelform(){
+                    function closecancelform() {
                         var cancellationform = document.getElementById('cancellationform')
                         cancellationform.style.display = 'none';
-                        document.getElementById('fullbodyoverlay').style.display=='none'
+                        document.getElementById('fullbodyoverlay').style.display == 'none'
                     }
                 </script>
             </div>
-            <div class="viewbooking" >
-                <div class="viewcontainer" >
-                    <table id="viewtable" border="0"  style="display: none;">
-                        <tr style="color: red;background-color: blue;"><th>Title</th><th></th><th>Details</th></tr>
-                        <tr><td>Name</td><td>:</td><td><label id="namelabel"></label></td></tr>
-                        <tr><td>Location</td><td>:</td><td><label id="locationlabel"></label></td></tr>
-                        <tr><td>Phone number</td><td>:</td><td><label id="phonelabel"></label></td></tr>
-                        <tr><td>Date</td><td>:</td><td><label id="datelabel"></label></td></tr>
-                        <tr><td>Time</td><td>:</td><td><label id="timelabel"></label></td></tr>
-                        <tr id="updated-data"><td>Description</td><td>:</td><td><label id="updatedisc"></label></td></tr>
-                        <tr><td colspan="3"  style="padding: 0;"><input type="button" value="Close" onclick="closeviewform()" style="width: 80%;border-radius: 10px;background-color: rgb(246, 80, 80);color: white;height: 25px;font: 16px;"></td></tr>
-                        <style>td{
-                            height: 18px;
-                            padding: 8px;
-                        }</style>
+            <div class="viewbooking">
+                <div class="viewcontainer">
+                    <table id="viewtable" border="0" style="display: none;">
+                        <tr style="color: red;background-color: blue;">
+                            <th>Title</th>
+                            <th></th>
+                            <th>Details</th>
+                        </tr>
+                        <tr>
+                            <td>Name</td>
+                            <td>:</td>
+                            <td><label id="namelabel"></label></td>
+                        </tr>
+                        <tr>
+                            <td>Location</td>
+                            <td>:</td>
+                            <td><label id="locationlabel"></label></td>
+                        </tr>
+                        <tr>
+                            <td>Phone number</td>
+                            <td>:</td>
+                            <td><label id="phonelabel"></label></td>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td>:</td>
+                            <td><label id="datelabel"></label></td>
+                        </tr>
+                        <tr>
+                            <td>Time</td>
+                            <td>:</td>
+                            <td><label id="timelabel"></label></td>
+                        </tr>
+                        <tr id="updated-data">
+                            <td>Description</td>
+                            <td>:</td>
+                            <td><label id="updatedisc"></label></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding: 0;"><input type="button" value="Close"
+                                    onclick="closeviewform()"
+                                    style="width: 80%;border-radius: 10px;background-color: rgb(246, 80, 80);color: white;height: 25px;font: 16px;">
+                            </td>
+                        </tr>
+                        <style>
+                            td {
+                                height: 18px;
+                                padding: 8px;
+                            }
+                        </style>
                     </table>
                 </div>
                 <script>
-                    function Viewbooking(uname,location,phone,date,time,updated,desc){
-                        document.getElementById('namelabel').textContent=uname;
-                        document.getElementById('locationlabel').textContent=location;
-                        document.getElementById('phonelabel').textContent=phone;
-                        document.getElementById('datelabel').textContent=date;
-                        document.getElementById('timelabel').textContent=time;
-                        document.getElementById('fullbodyoverlay').style.display='block'
-                        if(updated=='yes'){
-                        document.getElementById('updated-data').style.display='table-row'
-                        document.getElementById('updatedisc').textContent=desc;
+                    function Viewbooking(uname, location, phone, date, time, updated, desc) {
+                        document.getElementById('namelabel').textContent = uname;
+                        document.getElementById('locationlabel').textContent = location;
+                        document.getElementById('phonelabel').textContent = phone;
+                        document.getElementById('datelabel').textContent = date;
+                        document.getElementById('timelabel').textContent = time;
+                        document.getElementById('fullbodyoverlay').style.display = 'block'
+                        if (updated == 'yes') {
+                            document.getElementById('updated-data').style.display = 'table-row'
+                            document.getElementById('updatedisc').textContent = desc;
 
                         }
-                        else{
-                            document.getElementById('updated-data').style.display='none'
+                        else {
+                            document.getElementById('updated-data').style.display = 'none'
                         }
-    
-                        viewtable=document.getElementById('viewtable')
-                        viewtable.style.display='block'
+
+                        viewtable = document.getElementById('viewtable')
+                        viewtable.style.display = 'block'
                     }
-                    function closeviewform(){
+                    function closeviewform() {
                         var viewtable = document.getElementById('viewtable')
                         viewtable.style.display = 'none';
-                        document.getElementById('fullbodyoverlay').style.display='none'
+                        document.getElementById('fullbodyoverlay').style.display = 'none'
                     }
                 </script>
             </div>
@@ -536,8 +641,8 @@ input{
                     <input type="submit" value="Accept" style="display: none;">
                 </form>
                 <script>
-                    function acceptbooking(abid){
-                        document.getElementById('acceptbookingid').value=abid;
+                    function acceptbooking(abid) {
+                        document.getElementById('acceptbookingid').value = abid;
                         document.getElementById('accept-booking-form').submit();
                     }
                 </script>
@@ -550,8 +655,8 @@ input{
                     <input type="submit" value="Accept" style="display: none;">
                 </form>
                 <script>
-                    function completebooking(cbid){
-                        document.getElementById('completebookingid').value=cbid;
+                    function completebooking(cbid) {
+                        document.getElementById('completebookingid').value = cbid;
                         document.getElementById('completebookingform').submit();
                     }
                 </script>
@@ -564,16 +669,17 @@ input{
                     <input type="submit" value="Accept" style="display: none;">
                 </form>
                 <script>
-                    function finishbooking(cbid){
-                        document.getElementById('finishbookingid').value=cbid;
+                    function finishbooking(cbid) {
+                        document.getElementById('finishbookingid').value = cbid;
                         document.getElementById('finishbookingform').submit();
                     }
                 </script>
             </div>
             <div class="createbill" id="createbill" style="display: none;">
-                <form class="billform" id="billform" method="post" action="{% url 'publishbill' %}" enctype="multipart/form-data">
+                <form class="billform" id="billform" method="post" action="{% url 'publishbill' %}"
+                    enctype="multipart/form-data">
                     {% csrf_token %}
-                    <label class="billlabel">Create Bill</label>                
+                    <label class="billlabel">Create Bill</label>
                     <table id="billtable">
                         <thead>
                             <th>Description</th>
@@ -583,8 +689,9 @@ input{
                         </thead>
                         <tbody>
                             <tr>
-                                <td><input type="text" readonly value="Service" ></td>
-                                <td><input id="raterow" value="{{ user.serviceprovider.rate }}/{{ user.serviceprovider.unit }}"></td>
+                                <td><input type="text" readonly value="Service"></td>
+                                <td><input id="raterow"
+                                        value="{{ user.serviceprovider.rate }}/{{ user.serviceprovider.unit }}"></td>
                                 <td><input type="number" id="serviceQuantity" onkeyup="calculatefirstAmount()"></td>
                                 <td><input type="number" id="serviceamount"></td>
                             </tr>
@@ -599,41 +706,44 @@ input{
                         </tbody>
                     </table>
                     <p style="color: black;">Upload Bill : <input type="file" name="billimage" id="billimage"></p>
-                    
-                    <input type="hidden" name="bookingid"  id='createbookingid'>
+
+                    <input type="hidden" name="bookingid" id='createbookingid'>
                     <input type="hidden" name="billData" id="billData">
                     <input type="hidden" name="totalfinalamount" id="totalfinalamount">
                     <div class="buttonlast">
-                        <button style="background-color: red;color: white;" onclick="closebillform(event)">Close</button>
-                        <button style="background-color: rgb(21, 0, 255);color: white; width: 200px;" onclick="calculatetotal(event)" >Calculate Total</button>
-                        <button style="background-color: green; color: white;" onclick="gatherdata(event)">Publish</button>
+                        <button style="background-color: red;color: white;"
+                            onclick="closebillform(event)">Close</button>
+                        <button style="background-color: rgb(21, 0, 255);color: white; width: 200px;"
+                            onclick="calculatetotal(event)">Calculate Total</button>
+                        <button style="background-color: green; color: white;"
+                            onclick="gatherdata(event)">Publish</button>
                     </div>
                 </form>
                 <script>
-                    let rowcount=0;
-                    function createbill(createbid){
-                        document.getElementById('fullbodyoverlay').style.display='block'
-                        document.getElementById('createbill').style.display='block'
+                    let rowcount = 0;
+                    function createbill(createbid) {
+                        document.getElementById('fullbodyoverlay').style.display = 'block'
+                        document.getElementById('createbill').style.display = 'block'
                         document.getElementById('createbookingid').value = createbid
                     }
-                    function deleterow(){
+                    function deleterow() {
                         const maintable = document.getElementById('billtable').getElementsByTagName('tbody')[0];
                         const rowCount = maintable.rows.length;
-                        console.log('nuber of row counted = '+rowcount)
-                        rowscannotdelete = [0,rowCount-1,rowCount-2];
+                        console.log('nuber of row counted = ' + rowcount)
+                        rowscannotdelete = [0, rowCount - 1, rowCount - 2];
                         if (rowCount > 3) {
-                            firstdeleteablerow=rowCount-3;
-                            while(rowscannotdelete.includes(firstdeleteablerow)){
+                            firstdeleteablerow = rowCount - 3;
+                            while (rowscannotdelete.includes(firstdeleteablerow)) {
                                 firstdeleteablerow++
                             }
                             maintable.deleteRow(firstdeleteablerow)
                         }
-                        else{
+                        else {
                             console.log('not enough row')
                         }
                         rowcount--
-                    }         
-                    function addrow(){
+                    }
+                    function addrow() {
                         rowcount++;
                         const lastrow = document.getElementById('lastrow');
                         const totalrow = document.getElementById('totalrow')
@@ -651,14 +761,14 @@ input{
 
                         const secondField = document.createElement('input');
                         secondField.type = 'number';
-                        secondField.id='raterow'+rowcount
-                        
+                        secondField.id = 'raterow' + rowcount
+
                         const thirdField = document.createElement('input');
-                        thirdField.id='serviceQuantity'+rowcount
+                        thirdField.id = 'serviceQuantity' + rowcount
                         thirdField.type = 'number';
-                        
+
                         const fourthField = document.createElement('input');
-                        fourthField.id='serviceamount'+rowcount
+                        fourthField.id = 'serviceamount' + rowcount
                         fourthField.type = 'number';
 
                         firstCol.appendChild(firstField);
@@ -675,53 +785,53 @@ input{
                         maintable.appendChild(lastrow);
                         maintable.appendChild(totalrow);
 
-                        secondField.onkeyup = function(){
+                        secondField.onkeyup = function () {
                             calculateAmount('raterow' + rowcount, 'serviceQuantity' + rowcount, 'serviceamount' + rowcount);
                         };
-                        thirdField.onkeyup = function() {
+                        thirdField.onkeyup = function () {
                             calculateAmount('raterow' + rowcount, 'serviceQuantity' + rowcount, 'serviceamount' + rowcount);
                         };
                     }
-                    function calculateAmount(rate,quantity,amount){
+                    function calculateAmount(rate, quantity, amount) {
                         quantity = document.getElementById(quantity).value
                         rate = document.getElementById(rate).value
-                        total=quantity*rate;
-                        amount=document.getElementById(amount)
-                        amount.value=total
-                        console.log('the amount is ',total)
+                        total = quantity * rate;
+                        amount = document.getElementById(amount)
+                        amount.value = total
+                        console.log('the amount is ', total)
                     }
-                    function calculatefirstAmount(){
+                    function calculatefirstAmount() {
                         quantity = document.getElementById('serviceQuantity').value;
-                        rate=document.getElementById('raterow').value
+                        rate = document.getElementById('raterow').value
                         slash = rate.indexOf('.')
                         ratevalue = rate.substring(0, slash);
-                        total=quantity*ratevalue;
-                        amount=document.getElementById('serviceamount')
-                        amount.value=total
+                        total = quantity * ratevalue;
+                        amount = document.getElementById('serviceamount')
+                        amount.value = total
                     }
-                    function calculatetotal(event){
+                    function calculatetotal(event) {
                         event.preventDefault();
-                        event.stopPropagation(); 
+                        event.stopPropagation();
                         const maintable = document.getElementById('billtable')
                         const rowCount = maintable.rows.length;
-                        let total=0;
-                        for (let i = 1; i < rowCount-2; i++) {
+                        let total = 0;
+                        for (let i = 1; i < rowCount - 2; i++) {
                             const cellValue = parseFloat(maintable.rows[i].cells[3].children[0].value);
-                            if(!isNaN(cellValue)){
-                                total+=cellValue
-                                console.log('the value is ',cellValue)
+                            if (!isNaN(cellValue)) {
+                                total += cellValue
+                                console.log('the value is ', cellValue)
                             }
                         }
-                        document.getElementById('totallabel').textContent=total
-                        document.getElementById('totalfinalamount').value=total
+                        document.getElementById('totallabel').textContent = total
+                        document.getElementById('totalfinalamount').value = total
                     }
-                    function closebillform(event){
+                    function closebillform(event) {
                         event.preventDefault();
-                        event.stopPropagation(); 
-                        document.getElementById('createbill').style.display='none'
-                        document.getElementById('fullbodyoverlay').style.display='none'
+                        event.stopPropagation();
+                        document.getElementById('createbill').style.display = 'none'
+                        document.getElementById('fullbodyoverlay').style.display = 'none'
                     }
-                    function gatherdata(event){
+                    function gatherdata(event) {
                         event.preventDefault();
                         event.stopPropagation();
                         calculatetotal(event);
@@ -735,25 +845,25 @@ input{
                         tableRows.forEach((row) => {
                             const cells = row.cells;
                             if (cells.length === 4) {
-                            const [descriptionCell, priceCell, quantityCell, amountCell] = cells;
+                                const [descriptionCell, priceCell, quantityCell, amountCell] = cells;
 
-                            const description = descriptionCell.querySelector('input')?.value || '';
-                            const price = priceCell.querySelector('input')?.value || '-';
-                            const quantity = quantityCell.querySelector('input')?.value || '-';
-                            const amount = amountCell.querySelector('input')?.value || '';
+                                const description = descriptionCell.querySelector('input')?.value || '';
+                                const price = priceCell.querySelector('input')?.value || '-';
+                                const quantity = quantityCell.querySelector('input')?.value || '-';
+                                const amount = amountCell.querySelector('input')?.value || '';
 
-                            if (description && amount) {
-                                data.push({ description, price, quantity, amount });
-                            }
-                            else {
-                                if (!description) {
-                                    descriptionMissing = true;
+                                if (description && amount) {
+                                    data.push({ description, price, quantity, amount });
                                 }
-                                if (!amount) {
-                                    amountMissing = true;
+                                else {
+                                    if (!description) {
+                                        descriptionMissing = true;
+                                    }
+                                    if (!amount) {
+                                        amountMissing = true;
+                                    }
                                 }
                             }
-                        }
                         });
                         if (descriptionMissing || amountMissing) {
                             let errorMessage = '';
@@ -776,7 +886,7 @@ input{
                 </script>
             </div>
             <div class="viewbill">
-                <div class="billcontainer" id="billcontainer" style="display: none;" >
+                <div class="billcontainer" id="billcontainer" style="display: none;">
                     <form action="{% url 'update_bill' %}" method="post">
                         {%csrf_token%}
                         <label>Service Bill</label>
@@ -796,19 +906,25 @@ input{
                                     <td colspan="2"><label id="totalbilllabel"></label></td>
                                 </tr>
                                 <tr id="viewbuttons" class="viewbuttons">
-                                    <td colspan="4"><button onclick="closebill(event)" style="background-color: red;color: white;">Close</button>
-                                    <button onclick="deletebill(event)" style="background-color: red;color: white;">Delete Bill</button>
-                                    <button class="updatebutton" onclick="updatebill(event)">Update</button></td>
+                                    <td colspan="4"><button onclick="closebill(event)"
+                                            style="background-color: red;color: white;">Close</button>
+                                        <button onclick="deletebill(event)"
+                                            style="background-color: red;color: white;">Delete Bill</button>
+                                        <button class="updatebutton" onclick="updatebill(event)">Update</button>
+                                    </td>
                                 </tr>
                                 <tr id="updatetotalrow" style="display: none;">
                                     <td colspan="2"><label>The Total price is</label></td>
                                     <td colspan="2"><label id="updatetotalbilllabel">0.00</label></td>
                                 </tr>
                                 <tr id="updatebuttons" class="updatebuttons" style="display: none;">
-                                    <td colspan="4"><button onclick="cancelupdate(event)" style="background-color: red;color: white;">Cancel</button>
-                                    <button onclick="deleteupdaterow(event)" style="background-color: red;color: white;">Delete row</button>
-                                    <button class="updatebutton" onclick="addupdaterow(event)">Add row</button>
-                                    <button class="updatebutton" onclick="submitupdate(event)">Submit</button></td>
+                                    <td colspan="4"><button onclick="cancelupdate(event)"
+                                            style="background-color: red;color: white;">Cancel</button>
+                                        <button onclick="deleteupdaterow(event)"
+                                            style="background-color: red;color: white;">Delete row</button>
+                                        <button class="updatebutton" onclick="addupdaterow(event)">Add row</button>
+                                        <button class="updatebutton" onclick="submitupdate(event)">Submit</button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -821,99 +937,99 @@ input{
 
                 </div>
                 <script>
-                    function viewbill(billbid,event){
+                    function viewbill(billbid, event) {
                         event.preventDefault();
                         event.stopPropagation();
-                        document.getElementById('billbookingid').value=billbid
+                        document.getElementById('billbookingid').value = billbid
                         document.getElementById('deletebillbookingid').value = billbid
-                        document.getElementById('billcontainer').style.display='block';
-                        document.getElementById('fullbodyoverlay').style.display='block'
+                        document.getElementById('billcontainer').style.display = 'block';
+                        document.getElementById('fullbodyoverlay').style.display = 'block'
                         fetchbill();
                     }
-                    function closebill(event){
+                    function closebill(event) {
                         event.preventDefault()
                         event.stopPropagation();
-                        document.getElementById('fullbodyoverlay').style.display='none'
-                        document.getElementById('billcontainer').style.display='none'
+                        document.getElementById('fullbodyoverlay').style.display = 'none'
+                        document.getElementById('billcontainer').style.display = 'none'
                         const billtable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
-                        billtable.innerHTML=''
+                        billtable.innerHTML = ''
 
                         totalrow = document.getElementById('viewtotalrow')
                         billtable.appendChild(totalrow)
                         buttons = document.getElementById('viewbuttons')
                         billtable.appendChild(buttons)
-                        
+
                         updatevaluerow = document.getElementById('updatetotalrow')
-                        updatevaluerow.style.display='none'
+                        updatevaluerow.style.display = 'none'
                         billtable.appendChild(updatevaluerow)
                         last_row = document.getElementById('updatebuttons')
-                        last_row.style.display='none'
+                        last_row.style.display = 'none'
                         billtable.appendChild(last_row)
-                        
-                    }
-                    function fetchbill(){
-                        const bid=document.getElementById('billbookingid').value
-                        console.log('button clicked the value is : ',bid)
-                        const viewbilltable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
-    
-                        fetch(`/getbill/${bid}/`).then(response => response.json())
-                        .then(data => {
-                            const totalamount = document.getElementById('totalbilllabel')
-                            const totalamountinput = document.getElementById('totalamountinput')
-                            const billimage = document.getElementById('billimage'); 
-                            const bill = data.bill;
-                            totalamount.textContent = bill.total_amount
-                            totalamountinput.value = bill.total_amount
 
-    
-                            bill.items.forEach(item=>{
-                                const row = document.createElement('tr');
-                                row.innerHTML=`
+                    }
+                    function fetchbill() {
+                        const bid = document.getElementById('billbookingid').value
+                        console.log('button clicked the value is : ', bid)
+                        const viewbilltable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
+
+                        fetch(`/getbill/${bid}/`).then(response => response.json())
+                            .then(data => {
+                                const totalamount = document.getElementById('totalbilllabel')
+                                const totalamountinput = document.getElementById('totalamountinput')
+                                const billimage = document.getElementById('billimage');
+                                const bill = data.bill;
+                                totalamount.textContent = bill.total_amount
+                                totalamountinput.value = bill.total_amount
+
+
+                                bill.items.forEach(item => {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
                                 <td>${item.description}</td>
                                 <td>${item.price}</td>
                                 <td>${item.quantity}</td>
                                 <td>${item.amount}</td>
                                 `;
-                                viewbilltable.appendChild(row)
-                            })
-                            const imageContainer = document.getElementById('billImageContainer');
-                            if (bill.bill_image_url) {
-                                const imgElement = document.createElement('img');
-                                imgElement.src = bill.bill_image_url;
-                                imgElement.alt = "Bill Image";
-                                imgElement.style.maxWidth = "100%";
-                                imgElement.style.height = "auto";
-                                
-                                imageContainer.innerHTML = ''; // Clear any existing content
-                                imageContainer.appendChild(imgElement);
-                            } else {
-                                imageContainer.innerHTML = 'No image available';
-                            }
-                        });
+                                    viewbilltable.appendChild(row)
+                                })
+                                const imageContainer = document.getElementById('billImageContainer');
+                                if (bill.bill_image_url) {
+                                    const imgElement = document.createElement('img');
+                                    imgElement.src = bill.bill_image_url;
+                                    imgElement.alt = "Bill Image";
+                                    imgElement.style.maxWidth = "100%";
+                                    imgElement.style.height = "auto";
+
+                                    imageContainer.innerHTML = ''; // Clear any existing content
+                                    imageContainer.appendChild(imgElement);
+                                } else {
+                                    imageContainer.innerHTML = 'No image available';
+                                }
+                            });
                         populatetable()
                     }
-                    function populatetable(){
+                    function populatetable() {
                         viewbilltable = document.getElementById('viewbilltable')
                         totalrow = document.getElementById('viewtotalrow')
                         viewbilltable.appendChild(totalrow)
                         buttons = document.getElementById('viewbuttons')
                         viewbilltable.appendChild(buttons)
                     }
-                    function deletebill(event){
+                    function deletebill(event) {
                         event.preventDefault();
                         event.stopPropagation();
-                        document.getElementById('deletebillbookingid').value= document.getElementById('billbookingid').value
+                        document.getElementById('deletebillbookingid').value = document.getElementById('billbookingid').value
                         const confirmdeleteSubmit = confirm('Are you sure you want to delete the bill?');
                         if (confirmdeleteSubmit) {
                             document.getElementById('delete-bill-form').submit();
                         }
-                    }                   
-                    function updatebill(){
+                    }
+                    function updatebill() {
                         event.preventDefault();
-                        document.getElementById('viewtotalrow').style.display='none'
-                        document.getElementById('viewbuttons').style.display="none"
+                        document.getElementById('viewtotalrow').style.display = 'none'
+                        document.getElementById('viewbuttons').style.display = "none"
                         const billTable = document.getElementById('viewbilltable')
-                        for (let i = 1; i < billTable.rows.length-2; i++) {
+                        for (let i = 1; i < billTable.rows.length - 2; i++) {
                             const row = billTable.rows[i];
                             if (row.cells.length > 2) {
                                 for (let j = 0; j < row.cells.length; j++) {
@@ -930,15 +1046,15 @@ input{
                                 console.log('yes')
                             }
                         }
-                        document.getElementById('updatetotalbilllabel').textContent='0.00'
+                        document.getElementById('updatetotalbilllabel').textContent = '0.00'
                         populateupdateview();
                     }
-                    function populateupdateview(){
+                    function populateupdateview() {
                         const billTable = document.getElementById('viewbilltable')
                         updatevaluerow = document.getElementById('updatetotalrow')
-                        updatevaluerow.style.display ='table-row'
+                        updatevaluerow.style.display = 'table-row'
                         last_row = document.getElementById('updatebuttons')
-                        last_row.style.display='table-row'
+                        last_row.style.display = 'table-row'
                         billTable.appendChild(updatevaluerow)
                         billTable.appendChild(last_row)
                     }
@@ -952,7 +1068,7 @@ input{
                         document.getElementById('viewbuttons').style.display = 'table-row';
 
                         const billTable = document.getElementById('viewbilltable');
-                        for (let i = 1; i < billTable.rows.length-2; i++) {
+                        for (let i = 1; i < billTable.rows.length - 2; i++) {
                             const row = billTable.rows[i];
                             const deletableAttribute = row.getAttribute('data-deletable');
                             if (deletableAttribute === 'true') {
@@ -964,43 +1080,43 @@ input{
                                     const cell = row.cells[j];
                                     const inputField = cell.firstChild;
                                     if (inputField && inputField.tagName.toLowerCase() === 'input') {
-                                        const originalValue  = inputField.getAttribute('data-original-value');
+                                        const originalValue = inputField.getAttribute('data-original-value');
                                         const label = document.createElement('label');
-                                        label.textContent = originalValue ;
+                                        label.textContent = originalValue;
                                         cell.innerHTML = '';
                                         cell.appendChild(label);
                                     }
                                 }
                             }
                         }
-                    }                 
-                    function deleteupdaterow(event){
+                    }
+                    function deleteupdaterow(event) {
                         event.preventDefault();
                         const maintable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
                         const rowCount = maintable.rows.length;
-                        console.log('nuber of row counted = '+rowcount)
-                        rowscannotdelete = [0,rowCount-1,rowCount-2];
+                        console.log('nuber of row counted = ' + rowcount)
+                        rowscannotdelete = [0, rowCount - 1, rowCount - 2];
                         if (rowCount > 3) {
-                            firstdeleteablerow=rowCount-3;
-                            while(rowscannotdelete.includes(firstdeleteablerow)){
+                            firstdeleteablerow = rowCount - 3;
+                            while (rowscannotdelete.includes(firstdeleteablerow)) {
                                 firstdeleteablerow++
                             }
                             const rowToDelete = maintable.rows[firstdeleteablerow];
                             const isDeletable = rowToDelete.getAttribute('data-deletable') === 'true';
-                            console.log('this is',isDeletable)
+                            console.log('this is', isDeletable)
 
                             if (isDeletable) {
                                 maintable.deleteRow(firstdeleteablerow);
                             }
                             else {
                                 console.log('Row is not deletable');
-                                }
-                            } 
+                            }
+                        }
                         else {
                             console.log('not enough rows');
                         }
                     }
-                    function addupdaterow(event){
+                    function addupdaterow(event) {
                         event.preventDefault();
                         const lastrow = document.getElementById('updatebuttons');
                         const maintable = document.getElementById('viewbilltable').getElementsByTagName('tbody')[0];
@@ -1018,11 +1134,11 @@ input{
                         const secondField = document.createElement('input');
                         secondField.type = 'number';
                         secondField.classList.add('updateinput')
-                        
+
                         const thirdField = document.createElement('input');
                         thirdField.type = 'number';
                         thirdField.classList.add('updateinput')
-                        
+
                         const fourthField = document.createElement('input');
                         fourthField.type = 'number';
                         fourthField.classList.add('updateinput')
@@ -1039,38 +1155,38 @@ input{
 
                         maintable.appendChild(newRow);
                     }
-                    function submitupdate(event){
+                    function submitupdate(event) {
                         event.preventDefault()
-                        let hasvalues=true
+                        let hasvalues = true
                         const billTable = document.getElementById('viewbilltable');
-                        for (let i = 1; i < billTable.rows.length-2; i++) {
+                        for (let i = 1; i < billTable.rows.length - 2; i++) {
                             let firstcellValue = billTable.rows[i].cells[0].querySelector('input').value;
                             let lastcellValue = billTable.rows[i].cells[3].querySelector('input').value;
-                            if(firstcellValue !='' && lastcellValue !=''){
-                                console.log('first value is : ',firstcellValue)
-                                console.log('last value is : ',lastcellValue)
+                            if (firstcellValue != '' && lastcellValue != '') {
+                                console.log('first value is : ', firstcellValue)
+                                console.log('last value is : ', lastcellValue)
                                 console.log('it has values')
                                 calculateupdatetotal();
                             }
-                            else if(firstcellValue =='' && lastcellValue ==''){
+                            else if (firstcellValue == '' && lastcellValue == '') {
 
                             }
                         }
                     }
-                    function calculateupdatetotal(){
+                    function calculateupdatetotal() {
                         const maintable = document.getElementById('viewbilltable')
                         const rowCount = maintable.rows.length;
                         console.log(rowCount)
-                        let total=0;
-                        for (let i = 1; i < rowCount-4; i++) {
+                        let total = 0;
+                        for (let i = 1; i < rowCount - 4; i++) {
                             console.log(i)
                             let cellValue = maintable.rows[i].cells[3].querySelector('input').value;
-                            console.log('the cellvaluse is : ',cellValue)
-                            cellValue=parseFloat(cellValue)
-                            total+=cellValue
-                            console.log('the total id s' , total)
+                            console.log('the cellvaluse is : ', cellValue)
+                            cellValue = parseFloat(cellValue)
+                            total += cellValue
+                            console.log('the total id s', total)
                         }
-                        document.getElementById('updatetotalbilllabel').textContent=total
+                        document.getElementById('updatetotalbilllabel').textContent = total
                     }
                 </script>
             </div>
@@ -1138,7 +1254,7 @@ input{
                 </tr>
             </table>
         </div>
-        
+
         <script>
             function submitWithdrawal() {
                 const withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);
@@ -1146,7 +1262,7 @@ input{
                 const upiId = document.getElementById('upiId').value;
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-                console.log("the rem amount is ",remaount)
+                console.log("the rem amount is ", remaount)
                 console.log(withdrawAmount <= remaount)
                 if (!withdrawAmount || withdrawAmount <= 0 || withdrawAmount >= remaount) {
                     alert('Please enter a valid amount to withdraw.');
@@ -1185,20 +1301,22 @@ input{
         <h4>Contact us: akashkr971@gmail.com</h4>
     </div>
     {% if messages %}
-        <div>
-            {% for message in messages %}
-            <div class="requestreply" id="requestreply">
-                <strong>{{message}}</strong>
-                <button onclick="closerequestreply()" style="background-color: red;color: white;border: 1px;height: 30px;width: 100px;border-radius: 10px;font-size: 16px;margin-top: 10px;">Close</button>
-            </div>
-            {% endfor %}
+    <div>
+        {% for message in messages %}
+        <div class="requestreply" id="requestreply">
+            <strong>{{message}}</strong>
+            <button onclick="closerequestreply()"
+                style="background-color: red;color: white;border: 1px;height: 30px;width: 100px;border-radius: 10px;font-size: 16px;margin-top: 10px;">Close</button>
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
     <script>
-        function closerequestreply(){
-            document.getElementById('requestreply').style.display='none';
+        function closerequestreply() {
+            document.getElementById('requestreply').style.display = 'none';
         }
 
     </script>
-    </body>
+</body>
+
 </html>

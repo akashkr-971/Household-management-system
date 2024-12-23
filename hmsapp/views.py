@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
 from django.contrib import messages
 from .models import User, Homeowner ,Service , ServiceProvider ,Booking ,Cancellation , Update ,Billing
-from .models import Payment ,Reviews ,Sitereview ,Wallet
+from .models import Payment ,Reviews ,Sitereview ,Wallet 
 from django.http import HttpResponseBadRequest
 from django.core.mail import send_mail
 from django.conf import settings
@@ -21,10 +21,14 @@ from django.db.models import Q
 import json
 import random
 import razorpay
+from django.shortcuts import render, redirect
+from .models import User, ServiceProvider, Payment, Wallet, Booking
+
 # Create your views here.
 
 def landingpage(request):
-    return render(request,'index.html')
+    review = Sitereview.objects.all()
+    return render(request,'index.html',{'reviews': review})
 
 def home(request):
     user=None;
@@ -75,39 +79,26 @@ def adminpage(request):
         
     return render(request,'adminpage.html')
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import User, ServiceProvider, Payment, Wallet, Booking
-
 def serviceproviderhome(request):
     user = None
-    
-    # Check if the user is logged in
     if 'user_id' in request.session:
         user = User.objects.get(user_id=request.session['user_id'])
-
-        # Check if the user is a Service Provider
         if user.role == "Service-provider":
             provider = ServiceProvider.objects.get(user=user)
             payments = Payment.objects.filter(service_provider_id=provider.service_provider_id)
-
-            # Get or create the wallet for the service provider
             wallet, created = Wallet.objects.get_or_create(user=user, defaults={'total_amount': 0, 'withdrawn_amount': 0, 'remaining_amount': 0})
             total_amount = wallet.total_amount
             withdrawn_amount = wallet.withdrawn_amount
             remaining_amount = wallet.remaining_amount
-
             if provider.has_new_message:
                 messages.info(request, provider.new_message)
                 provider.has_new_message = False
                 provider.new_message = ''
-                provider.save()
-                
+                provider.save()                
             bookings = Booking.objects.filter(
                 service_provider=provider,
-                status__in=['Pending', 'Confirmed', 'Bill created']
+                status__in=['Pending', 'Confirmed','Completed', 'Bill created']
             )
-
             if provider.eligible == 'yes': 
                 context = {
                     'user': user,
@@ -118,7 +109,6 @@ def serviceproviderhome(request):
                     'bookings': bookings,
                 }
                 return render(request, 'serviceproviderhome.html', context)
-
             elif provider.eligible == 'No':
                 messages.warning(request, "Your application is pending approval.")
                 context = {
@@ -135,7 +125,6 @@ def serviceproviderhome(request):
                 }
                 return render(request, 'serviceproviderhome.html', context)
     return redirect('Userlogin')
-
 
 def clientsignupwithoutotp(request):
     if request.method == 'POST':
@@ -520,7 +509,7 @@ def completebooking(request):
     if request.method == 'POST':
         booking_id = request.POST.get('booking_id')
         new_status = request.POST.get('new_status')
-
+        print("The new ststus after completee bookings is = ",new_status)
         booking=Booking.objects.get(booking_id=booking_id)
         booking.status = new_status
         booking.save()

@@ -148,7 +148,6 @@ class Wallet(models.Model):
     remaining_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def update_remaining_amount(self):
-        """Method to update the remaining amount based on total and withdrawn"""
         self.remaining_amount = self.total_amount - self.withdrawn_amount
         self.save()
 
