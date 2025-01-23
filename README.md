@@ -27,7 +27,6 @@ The goal is to make the process of finding and selecting service providers **eas
 ## Features  
 
 - **Service Availability Check**: Customers can see which service providers are available for their desired service.  
-- **Cost Snapshot**: Provides an estimate of the usual costs for required parts and services.  
 - **Rating-Based Selection**: Allows customers to choose service providers based on ratings and reviews.  
 - **User-Friendly Interface**: Designed to ensure smooth navigation and usability.  
 
