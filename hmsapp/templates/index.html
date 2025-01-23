@@ -266,7 +266,7 @@ button {
     z-index: 4;
 }
 .showreview {
-    width: 93%;
+    width: 97%;
     background-color:rgb(127, 240, 153);
     padding: 10px;
     border-radius: 10px;
@@ -468,7 +468,7 @@ button {
 </div>
 <div class="showreview">
     <h1 style="text-align: center;">Check our client reviews about the site</h1>
-    <marquee direction="left" scrollamount="10">
+    <marquee direction="left" scrollamount="10" onmouseover="this.stop();" onmouseout="this.start();">
         <div class="review-container">
             {% for review in reviews %}
             <div class="review-card">
@@ -482,7 +482,16 @@ button {
 
 
 <div class="footer">
-    <h4>Contact us: askashkr971@gmail.com</h4>
+    <footer>
+        <div style="text-align: center;color: white;font-size: 14px;">
+            <h4 style="margin: 0; font-weight: bold;">Household Management System</h4>
+            <p style="margin: 5px 0;">Simplifying your household tasks, one click at a time.</p>
+            <p style="margin: 0; font-size: 14px;">© 2025 Household Management System. All rights reserved.
+            </p>
+            <p style="margin:2px; font-size: 14px;">Contact us at akashkr@gmail.com.</p>
+    
+        </div>
+    </footer>
 </div>
 </body>
 </html>
