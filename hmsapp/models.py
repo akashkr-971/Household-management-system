@@ -153,3 +153,9 @@ class Wallet(models.Model):
 
     def __str__(self):
         return f"Wallet for {self.user.username} - Total: {self.total_amount}, Withdrawn: {self.withdrawn_amount}, Remaining: {self.remaining_amount}"
+    
+
+class Contactus(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()

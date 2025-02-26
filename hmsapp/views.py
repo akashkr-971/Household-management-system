@@ -22,7 +22,7 @@ import json
 import random
 import razorpay
 from django.shortcuts import render, redirect
-from .models import User, ServiceProvider, Payment, Wallet, Booking
+from .models import User, ServiceProvider, Payment, Wallet, Booking, Contactus
 
 # Create your views here.
 
@@ -43,7 +43,7 @@ def adminpage(request):
     if 'user_id' in request.session:
         user = User.objects.get(user_id=request.session['user_id'])
         if user.role == "admin":
-            no_eligibility_providers = ServiceProvider.objects.filter(eligible='No')
+            no_eligibility_providers = ServiceProvider.objects.filter(eligible="Not accepted")
             clientusers = User.objects.filter(role='client')
             providers = ServiceProvider.objects.all()
             paymentinfo = Payment.objects.all().order_by('-payment_id')
@@ -827,6 +827,19 @@ def process_withdrawal(request):
 def withdrawal_success(request):
     return render(request, 'withdrawal_success.html')
 
+def contactus(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+        contactus = Contactus.objects.create(name=name, email=email,message=message)
+        contactus.save()
+        return render(request, 'index.html')
+    return render(request, 'index.html')
+
+def paymentfailed(request):
+    return render(request, 'paymentfailed.html')
+
 @csrf_exempt
 def capture_payment(request):
     if request.method == "POST":
@@ -869,13 +882,16 @@ def capture_payment(request):
                 authorized_amount = payment.amount
                 amount_in_paise = int(authorized_amount * 100)
                 captured_payment = client.payment.capture(payment_id, amount_in_paise)
-                return render(request, 'payment_status.html', {'status': 'success','razorpay_payment_id': payment_id,'user_id': user_id})
+                return render(request, 'payment_status.html', {'status': 'success', 'razorpay_payment_id': payment_id, 'user_id': user_id})
             else:
-                return render(request, 'payment_status.html', {'status': 'failed','user_id': user_id})
+                return render(request, 'paymentfailed.html', {'status': 'failed', 'error': 'Payment verification failed.'})
         except (razorpay.errors.SignatureVerificationError, ValueError, KeyError) as e:
             print('Error:', e)
-            return render(request, 'home.html', {'status': 'failed'})
+            return render(request, 'paymentfailed.html', {'status': 'failed', 'error': str(e)})
     return HttpResponseBadRequest()
+
+
+
 
 # @csrf_exempt  
 # def process_withdrawal(request):

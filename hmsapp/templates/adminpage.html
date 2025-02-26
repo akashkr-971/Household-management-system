@@ -180,7 +180,6 @@
             margin: 13px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-height: 500px;
             overflow-y: auto;
             overflow-x: auto;
             }
@@ -199,7 +198,7 @@
             align-items: center;
             gap: 10px;
             transition: color 0.3s ease;
-            margin: auto;
+            margin: 10px;
             }
 
             .userdetails p:hover {
@@ -368,6 +367,7 @@
                     <td>Location</td>
                     <td>Profession</td>
                     <td>Rate/Unit</td>
+                    <td>Action</td>
                 </tr>
                 {% if providersdetail %}
                     {% for provider in providersdetail %}
@@ -378,14 +378,29 @@
                         <td>{{ provider.user.location }}</td>
                         <td>{{ provider.profession }}</td>
                         <td>{{ provider.rate }}/{{ provider.unit }}</td>
+                        <td>
+                            <button onclick="deactivateProvider('{{ provider.service_provider_id }}')" style="background-color: red;color: white;">Deactivate</button>
+                        </td>
                     </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="5" style="text-align: center;">No Service provider.</td>
+                        <td colspan="7" style="text-align: center;">No Service provider.</td>
                     </tr>
                 {% endif %}
             </table>
+            <form action="{% url 'changeeligibility' %}" method="post" id="deactivateForm">
+                {% csrf_token %}
+                <input type="hidden" name="providerid" id="deactivateProviderId">
+                <input type="hidden" name="eligibility" value="no">
+                <input type="submit" id="deactivateSubmit" style="display: none;">
+            </form>
+            <script>
+                function deactivateProvider(providerId) {
+                    document.getElementById('deactivateProviderId').value = providerId;
+                    document.getElementById('deactivateSubmit').click();
+                }
+            </script>
         </div>
         <div class="userdetails bookingdetails">
             <p onclick="showtable('booking')">Bookings list <span id="dropdown-arrow-booking">&#x25BC;</span></p>
@@ -418,8 +433,8 @@
                 {% endif %}
             </table>
         </div>
-        <div class="userdetails paymentdetails">
-            <p onclick="showtable('payment')">Payment Transactions list <span id="dropdown-arrow-payment">&#x25BC;</span></p>
+        <div class="userdetails paymentdetails" id="paymentdetails">
+            <p onclick="showtable('payment')">Payment Table <span id="dropdown-arrow-payment">&#x25BC;</span></p>
             <table id="paymenttable" style="display: none;margin-top: 20px;">
                 <tr style="color: red;">
                     <td>ID</td>
@@ -474,6 +489,7 @@
             function showtable(tbname){
                 if(tbname == "payment"){
                     var paymenttable = document.getElementById('paymenttable');
+                    var paymentdetails = document.getElementById('paymentdetails');
                     var paymentarrow = document.getElementById('dropdown-arrow-payment');
 
                     if (paymenttable.style.display === 'none') {

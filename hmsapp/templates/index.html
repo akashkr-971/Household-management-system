@@ -310,6 +310,60 @@ button {
     font-size: 18px;
     color: #555;
 }
+.about-us {
+    background-color: rgb(127, 240, 153);
+    padding: 40px;
+    border-radius: 10px;
+    margin: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.about-us h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+.about-us p {
+    margin-bottom: 10px;
+    color: #0e0a0a;
+    line-height: 1.6;
+}
+.contact-us {
+    background-color: rgb(127, 240, 153);
+    padding: 40px;
+    border-radius: 10px;
+    margin: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.form input, .form textarea {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+}
+.form button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -466,6 +520,29 @@ button {
         }
     </script>
 </div>
+
+<div class="about-us">
+    <h1 style="text-align: center;">About Us</h1>
+    <div style="padding: 20px; text-align: center;">
+        <p>Welcome to the Household Management System, your one-stop solution for all household services. We are dedicated to providing top-notch services to make your life easier and more convenient.</p>
+        <p>Our mission is to connect you with skilled professionals who can handle a wide range of household tasks, from plumbing and electrical work to carpentry and interior design. We strive to deliver quality services that exceed your expectations.</p>
+        <p>With our user-friendly platform, you can easily book services, manage appointments, and get the help you need, when you need it. Thank you for choosing us to be your trusted partner in household management.</p>
+    </div>
+</div>
+
+<div class="contact-us">
+    <h1 style="text-align: center;">Contact Us</h1>
+    <div class="form-container">
+        <form class="form" action="{% url 'contactus' %}" method="POST">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <textarea name="message" placeholder="Message" required></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</div>
+
 <div class="showreview">
     <h1 style="text-align: center;">Check our client reviews about the site</h1>
     <marquee direction="left" scrollamount="10" onmouseover="this.stop();" onmouseout="this.start();">
@@ -495,3 +572,4 @@ button {
 </div>
 </body>
 </html>
+

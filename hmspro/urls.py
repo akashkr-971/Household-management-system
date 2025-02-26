@@ -22,6 +22,7 @@ from hmsapp.views import services,serviceproviderhome,bookings,cancelbooking,upd
 from hmsapp.views import completebooking,finishbooking,verifyotp,clientsignupwithoutotp,jobhistory,publishbill,getbill
 from hmsapp.views import initiate_payment,capture_payment,rate_service_provider,fetchreview,update_rate_service_provider,process_withdrawal
 from hmsapp.views import viewdetails,update_bill,delete_bill,adminpage,changeeligibility,update_account,delete_account,sitereview,withdrawal_success
+from hmsapp.views import contactus,paymentfailed
 from django.conf.urls.static import static
 
 urlpatterns = [
@@ -64,6 +65,8 @@ urlpatterns = [
     path('accountdetails/delete/', delete_account, name='delete_account'),
      path('process_withdrawal', process_withdrawal, name='process_withdrawal'),
     path('withdrawal_success', withdrawal_success, name='withdrawal_success'),
+    path('contactus', contactus, name='contactus'),
+    path('paymentfailed/', paymentfailed, name='paymentfailed'),
 ]
 
 if settings.DEBUG:

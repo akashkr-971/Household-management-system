@@ -6,6 +6,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Household Management System</title>
 <style>
+@media print {
+    body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    .billcontainer {
+        height: auto;
+        max-height: 100%;
+        overflow: visible;
+    }
+    .billcontainer table {
+        page-break-inside: avoid;
+    }
+    .billcontainer img {
+        max-height: 100%;
+        max-width: 100%;
+    }
+    .modal-content {
+        width: 100%;
+        height: 100%;
+    }
+}
 *{
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
@@ -665,15 +688,51 @@ input{
         </div>
         <div class="viewbooking" >
             <div class="viewcontainer" >
-                <table id="viewtable" border="0" style="display: none;" >
-                    <tr style="color: red;background-color: blue;"><th>Title</th><th> </th><th>Details</th></tr>
-                    <tr><td>Name</td><td>:</td><td><label id="namelabel"></label></td></tr>
-                    <tr><td>Job</td><td>:</td><td><label id="joblabel"></label></td></tr>
-                    <tr><td>Phone number</td><td>:</td><td><label id="phonelabel"></label></td></tr>
-                    <tr><td>Date</td><td>:</td><td><label id="datelabel"></label></td></tr>
-                    <tr><td>Time</td><td>:</td><td><label id="timelabel"></label></td></tr>
-                    <tr id="updated-data"><td>Description</td><td>:</td><td><label id="updatedisc"></label></td></tr>
-                    <tr><td colspan="3"  style="padding: 0;"><input type="button" value="Close" onclick="closeviewform()" style="width: 80%;border-radius: 10px;background-color: rgb(246, 80, 80);color: white;height: 25px;font: 16px;"></td></tr>
+                <table id="viewtable" border="0" style="display: none; width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <thead>
+                        <tr style="color: rgb(0, 0, 0); background-color: #333;">
+                            <th style="padding: 10px; border-top-left-radius: 10px;">Title</th>
+                            <th> </th>
+                            <th style="padding: 10px; border-top-right-radius: 10px;">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px;">Name</td>
+                            <td>:</td>
+                            <td style="padding: 10px;"><label id="namelabel"></label></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Job</td>
+                            <td>:</td>
+                            <td style="padding: 10px;"><label id="joblabel"></label></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Phone number</td>
+                            <td>:</td>
+                            <td style="padding: 10px;"><label id="phonelabel"></label></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Date</td>
+                            <td>:</td>
+                            <td style="padding: 10px;"><label id="datelabel"></label></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Time</td>
+                            <td>:</td>
+                            <td style="padding: 10px;"><label id="timelabel"></label></td>
+                        </tr>
+                        <tr id="updated-data">
+                            <td style="padding: 10px;">Description</td>
+                            <td>:</td>
+                            <td style="padding: 10px;"><label id="updatedisc"></label></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding: 10px; text-align: center;">
+                                <input type="button" value="Close" onclick="closeviewform()" style="width: 80%; border-radius: 10px; background-color: rgb(246, 80, 80); color: white; height: 35px; font-size: 16px; cursor: pointer;">
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <script>

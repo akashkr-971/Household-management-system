@@ -1,3 +1,5 @@
+            
+            
 {% load static %}
 
 <html lang="en">
@@ -58,6 +60,8 @@
             width: 20px;
             height: 20px;
             background-image:url('{% static "images/showpass.png" %}');
+            background-size: contain;
+            
         }
 
         input[type="password"] {
@@ -112,7 +116,8 @@
             {% endif %}
             <div><label for="fname">Full Name*</label><br><input type="text" name="fname" required></div>
             <div><label for="uname">User Name*</label><br><input type="text" name="uname" required></div>
-            <div><label for="email">Email*</label><br><input type="email" name="email" required></div>
+            <div><label for="email">Email*</label><br><input type="email" id="email" name="email" oninput="validateEmail()" required></div>
+            <div id="erroremail"></div>
             <div class="password-container">
                 <label for="pass">Password*</label><br>
                 <input type="password" name="pass" id="pass" required>
@@ -123,8 +128,10 @@
                 <input oninput="verifyPassword()" type="password" name="cpass" id="cpass" required>
                 <span class="toggle-password" onclick="togglePasswordVisibility('cpass')"></span>
             </div>
-            <div><label for="phone">Phone number*</label><br><input type="number" name="phone" required></div>
-            <div><label for="Location">Location</label><br><input type="text" name="location"></div>
+            <div id="errorcnfpass"></div>
+            <div><label for="phone">Phone number*</label><br><input type="number" id="phone" name="phone" oninput="validatePhoneNumber()" required></div>
+            <div id="errorphno"></div>
+            <div><label for="Location">Location</label><br><input type="text" name="location" id="location"></div>
             <div class="role">
                 <label>Role*</label><br>
                 <input type="radio" name="role" id="client-radio" value="client" checked onclick="toggleproviderinfo()">
@@ -166,15 +173,59 @@
         </div>
     </form>
     <script>
+        function validatePhoneNumber() {
+            var phoneNumber = document.getElementById('phone').value;
+            var regex = /^[0-9]{10}$/;
+            if (!regex.test(phoneNumber)) {
+                document.getElementById("errorphno").innerHTML = "Please enter a valid phone number.";
+                document.getElementById("errorphno").style.color = "red";
+                return false;
+            }
+            document.getElementById("errorphno").innerHTML = "";
+
+            return true;
+        }
+
+        function validateform(){
+            var profession = document.getElementById("Profession").value;
+            var unit = document.getElementById("unit").value;
+
+            if (profession === "---Select a profession---" || unit === "---Select a unit---") {
+                alert("Please select a profession and unit.");
+                return false;
+            }
+
+            if (!validatePhoneNumber()) {
+                return false;
+            }
+            if (!validateEmail()) {
+                return false;
+            }
+
+            return true;
+        }
+        function validateEmail() {
+            var email = document.getElementById('email').value;
+            var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            if (!regex.test(email)) {
+                document.getElementById("erroremail").innerHTML = "Please enter a valid email address.";
+                document.getElementById("erroremail").style.color = "red";
+                return false;
+            }
+            document.getElementById("erroremail").innerHTML = "";
+            return true;
+        }
+
         function verifyPassword(){
             var entered=document.getElementById('pass').value;
             var cnfpassword=document.getElementById('cpass').value;
             if(entered!==cnfpassword){
-                document.getElementById("cpass").setCustomValidity("Password do not match");
+                document.getElementById("errorcnfpass").innerHTML = "Password do not match";
+                document.getElementById("errorcnfpass").style.color = "red";
                 return false;
             } 
             else {
-                document.getElementById("cpass").setCustomValidity("");
+                document.getElementById("errorcnfpass").innerHTML ="";
                 return true;
             }
         }
@@ -234,6 +285,28 @@
             }
             return true;
         }
+        window.onload = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.display_name) {
+                                document.getElementById('location').value = data.display_name;
+                            } else {
+                                alert('No results found');
+                            }
+                        })
+                        .catch(error => {
+                            alert('Failed to fetch address: ' + error);
+                        });
+                });
+            }
+        }
     </script>
 </body>
 </html>
+

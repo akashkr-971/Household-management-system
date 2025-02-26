@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Payment Failed</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            color: white;
+            height: 100vh;
+            margin: 0;
+        }
+        .main {
+            background-color: #444;
+            border: 1px solid #555;
+            padding: 20px;
+            width: 60%;
+            max-width: 500px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            color: red;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <h1>Payment Failed</h1>
+        <p>Sorry, Your payment was not successful. Please try again.</p>
+        <p>Error: {{ error }}</p>
+        <button onclick="returnhome('{{ user_id }}')">Return Home</button>
+    </div>
+</body>
+<script>
+    function returnhome(user_id) {
+        window.location.href = '/home/';
+    }
+</script>
+</html>
+
