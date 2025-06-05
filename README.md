@@ -1,6 +1,6 @@
 # Household Management System  
 
-This project is a **Mini-project** developed for my 6th semester in college. It is designed to simplify household service management for customers, allowing them to find and book service providers efficiently and also integrated to pay through online using razorpay gateway.  
+This project is a **Mini-project** developed for my 6th semester in college. It is designed to simplify household service management for customers, allowing them to find and book service providers efficiently and also integrated payment gateway to pay through online using razorpay gateway.  
 
 ## Overview  
 
