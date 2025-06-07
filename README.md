@@ -11,6 +11,7 @@ The **Household Management System** is a web application built using:
 This system caters to customers seeking household services like:  
 - Plumbing  
 - Electrical work  
+- Landscaping
 - Carpentry  
 - Interior design  
 - Other similar activities  
